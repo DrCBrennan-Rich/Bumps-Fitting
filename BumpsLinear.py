@@ -31,7 +31,7 @@ Model.Gradient.value = 0.2
 Model.Intercept.value = 0.5
 
 problem = bmp.FitProblem(Model)
-
+'''
 problem.show()
 
 
@@ -52,7 +52,7 @@ InterceptErrors = [median[1]-lower[1],upper[1]-median[1]]
 
 print('The Gradient is',result['x'][0],'with error range', GradientErrors)
 print('The Intercept is',result['x'][1],'with error range', InterceptErrors)
-
+'''
 
 '''
 GradientSamples  = [A[0] for A in Samples]
@@ -77,3 +77,4 @@ plt.show()
 
 #Errors = errplot.calc_errors_from_state(problem, state, nshown=50, random=True, portion: float | None = None)
 #errplot.show_errors(Errors)
+
