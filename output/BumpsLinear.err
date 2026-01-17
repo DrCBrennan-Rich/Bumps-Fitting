@@ -1,0 +1,9 @@
+.Gradient = 0.299999 in [0,1]
+.Intercept = 0.999993 in [0,1]
+
+[chisq=0.000(82), nllf=9.33319e-08]
+              Parameter       mean  median    best [   68% interval] [   95% interval]
+ 1             Gradient 0.3019(37)  0.3018  0.3000 [  0.298   0.306] [  0.295   0.309]
+ 2            Intercept  0.968(25)  0.9737  1.0000 [  0.937   0.993] [  0.913   0.999]
+
+Statistics and plots based on 620 samples (50.0% of total samples drawn)
