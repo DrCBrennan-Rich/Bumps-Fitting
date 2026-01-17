@@ -1,5 +1,6 @@
 # Bumps-Fitting
 This is a series of scripts for performing fitting with the Bumps package: https://bumps.readthedocs.io/en/stable/
+
 Specifically implemetning the DREAM Markov Chain Monte Carlo (MCMC) methods: https://doi.org/10.1016/j.envsoft.2015.08.013
 
 Currently the specific .py files exist for:
