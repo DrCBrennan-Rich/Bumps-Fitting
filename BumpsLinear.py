@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct  2 01:50:56 2025
-
 @author: pycbr
 """
-
 #### Run in the console with: bumps -b --fit=dream --burn=200 --samples=1000 --init=random --export=LinearOutput --session=Linear.h5 BumpsLinear.py
 
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 def line(x, Gradient, Intercept):
     return Gradient*x + Intercept
@@ -34,22 +31,3 @@ problem = bmp.FitProblem(Model)
 
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
-
-#Define the plotting function here
-def Plot(figfile=None):
-    
-    plt.errorbar(x, y, dy, fmt='s', 
-                   color = 'red', ecolor='black', capsize=3,)
-    plt.plot(x, Model.Gradient.value * x + Model.Intercept.value, '-', color = 'black')
-    plt.xlabel("Temperature (K)")
-    plt.ylabel("M$_s$ (emu / cm$^3$)")
-    plt.xlim(0, 1.1*np.max(x))
-    
-    plt.figure()
-    if figfile is not None:
-        plt.savefig(figfile, format = 'png', dpi=300)
-        plt.close()
-
-problem.plot = Plot
-
-
