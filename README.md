@@ -5,9 +5,9 @@ Specifically implemetning the DREAM Markov Chain Monte Carlo (MCMC) methods: htt
 
 Currently the specific .py files exist for:
 
-Fitting of a straight line - BumpsLinear.py
-Fitting of Bloch-3/2 law - BumpsBloch3_2.py
-Fitting of a Gaussian peak - BumpsPeakFitting.py
+1. Fitting of a straight line - BumpsLinear.py
+2. Fitting of Bloch-3/2 law - BumpsBloch3_2.py
+3. Fitting of a Gaussian peak - BumpsPeakFitting.py
 
 The enviroment file can be found in: requirements.txt
 
