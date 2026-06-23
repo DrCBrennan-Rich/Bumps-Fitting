@@ -14,10 +14,6 @@ T_c = 10 #Critical temperature in K
 alpha = 1
 y_max = 10*alpha
 
-def line(x, Gradient, Intercept):
-    return Gradient*x + Intercept
-
-
 def IcRn_single(d, xi, Delta):
     kB = 1#1.38e-23
     e = 1#1.6e-19
