@@ -7,6 +7,7 @@
 
 import bumps.names as bmp
 import numpy as np
+import matplotlib.pyplot as plt
 
 #Coherence lengths
 CoherenceLength_F1=0.3 #nm
@@ -60,15 +61,13 @@ problem = bmp.FitProblem(Model)
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
 
-
-import matplotlib.pyplot as plt
-
+#Run some test values to see how they affect the final plot
 for d_0pi_test in [0.2,0.5,1,2,3]:
     ytest = JC_model(
         d_F,
         Amplitude=10000, 
-        xi_F1=1.0, 
-        xi_F2=1.0, 
+        CoherenceLength_F1=1.0, 
+        CoherenceLength_F2=1.0, 
         d_0pi=d_0pi_test, 
     )
     plt.plot(d_F, ytest, label=f"d_0pi={d_0pi_test}")
