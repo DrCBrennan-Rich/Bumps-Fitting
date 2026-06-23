@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 30 11:20:34 2026
-
 @author: pycbr
 """
-#Heim's Paper
-#### Run with: bumps -b --fit=dream --burn=2000 --samples=50000 --init=random --export=L11_NathanIntermediate3 --session=JJSession.h5 JJCriticalCurrentNathanIntermediate.py
+#Equation (6) from https://doi.org/10.1063/5.0195229
+#### Run with: bumps -b --fit=dream --burn=2000 --samples=50000 --init=random --export=L11_NathanIntermediate3 --session=JJSession.h5 JJ_Phenomenologica.py
 
 import bumps.names as bmp
 import numpy as np
