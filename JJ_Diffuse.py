@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 30 11:20:34 2026
-
 @author: pycbr
 """
-#Heim's Paper
-#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Heim --session=JJSession.h5 JJCriticalCurrentHeim.py
+#Equation (27) from 10.1088/1367-2630/17/11/113022
+#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=DiffuseFit --session=JJSession.h5 JJ_Diffuse.py
 
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 
 k_B = 8.617333262e-5  #eV/K 
-
 T = 4.2    #K Temperature
 T_c = 9.2  #K Critical temperature
 
