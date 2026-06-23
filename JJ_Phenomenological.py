@@ -7,20 +7,16 @@
 
 import bumps.names as bmp
 import numpy as np
-from scipy.integrate import quad
 
 #Coherence lengths
-xi_F1=0.3 #nm
-xi_F2=0.16 #nm
+CoherenceLength_F1=0.3 #nm
+CoherenceLength_F2=0.16 #nm
 
-def line(x, Gradient, Intercept):
-    return Gradient*x + Intercept
-
-def JC_model(d_F, Amplitude, xi_F1, xi_F2, d_0pi):
+def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     
-    SinTerm = np.sin((d_F-d_0pi)/xi_F2)
+    SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
     
-    return Amplitude*(np.exp(-d_F/xi_F1)*np.abs(SinTerm))
+    return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
 
 
 
@@ -32,22 +28,21 @@ Model = bmp.Curve(
     JC_model,
     d_F, y, dy,
     Amplitude=10000, 
-    xi_F1=0.3, 
-    xi_F2=0.16, 
+    CoherenceLength_F1=0.3, 
+    CoherenceLength_F2=0.16, 
     d_0pi=1.0,
 )
-
 
 ### Limits of fitting values ###
 
 Model.Amplitude.range(90,350)
 Model.d_0pi.range(0.0,0.99*np.pi*xi_F2)
 
-Model.xi_F1.range(0.1,0.3)
-Model.xi_F2.range(0.1,0.2)
+Model.CoherenceLength_F1.range(0.1,0.3)
+Model.CoherenceLength_F2.range(0.1,0.2)
 
-#Model.xi_F1.dev(std=0.1, mean=0.3, limits=None)
-#Model.xi_F2.dev(std=0.1, mean=0.16, limits=None)
+#Model.CoherenceLength_F1.dev(std=0.1, mean=0.3, limits=None)
+#Model.CoherenceLength_F2.dev(std=0.1, mean=0.16, limits=None)
 
 #######
 
@@ -56,8 +51,8 @@ Model.xi_F2.range(0.1,0.2)
 Model.Amplitude.value = 130
 Model.d_0pi.value = 1
 
-Model.xi_F1.value = 0.1
-Model.xi_F2.value = 0.16
+Model.CoherenceLength_F1.value = 0.1
+Model.CoherenceLength_F2.value = 0.16
 
 
 problem = bmp.FitProblem(Model)
