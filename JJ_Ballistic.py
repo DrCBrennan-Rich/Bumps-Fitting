@@ -55,8 +55,6 @@ def IcRn_model(d, xi, Delta):
 d,y,dy = np.loadtxt('TestData2.txt').T 
 Model = bmp.Curve(IcRn_model, d, y, dy)
 
-
-
 ### Limits of fitting values ###
 
 Model.Delta.range(25,30) 
@@ -64,7 +62,6 @@ Model.xi.range(0.01,7)
 
 #Model.Gradient.dev(std=0.05, mean=None, limits=None)
 #Model.Intercept.dev(std=0.5, mean=None, limits=None)
-
 
 #Initial values
 
