@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar 30 11:20:34 2026
-
 @author: pycbr
 """
 #Equation (1) from https://doi.org/10.1063/5.0195229
