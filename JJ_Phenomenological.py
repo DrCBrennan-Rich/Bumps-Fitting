@@ -3,7 +3,7 @@
 @author: pycbr
 """
 #Equation (6) from https://doi.org/10.1063/5.0195229
-#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=ExportFolder --session=JJSession.h5 JJ_Phenomenologica.py
+#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=ExportFolder --session=JJSession.h5 JJ_Phenomenological.py
 
 import bumps.names as bmp
 import numpy as np
@@ -19,11 +19,8 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     
     return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
 
-
-
 #Load the data from the file Data.txt
 d_F,y,dy = np.loadtxt('L11 data 4.2K.txt').T 
-
 
 Model = bmp.Curve(
     JC_model,
@@ -31,8 +28,7 @@ Model = bmp.Curve(
     Amplitude=10000, 
     CoherenceLength_F1=0.3, 
     CoherenceLength_F2=0.16, 
-    d_0pi=1.0,
-)
+    d_0pi=1.0)
 
 ### Limits of fitting values ###
 
@@ -54,7 +50,6 @@ Model.d_0pi.value = 1
 
 Model.CoherenceLength_F1.value = 0.1
 Model.CoherenceLength_F2.value = 0.16
-
 
 problem = bmp.FitProblem(Model)
 
