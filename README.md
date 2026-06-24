@@ -9,6 +9,7 @@ Currently the specific .py files exist for:
 2. Fitting of Bloch-3/2 law - BumpsBloch3_2.py
 3. Fitting of a Gaussian peak - BumpsPeakFitting.py
 4. Bloch-Gruneisen fitting - BumpsBlochGruneisen.py
+
 Still under development, the critical current through a Josephson junction as a function of junction thickness
 5. Ballistic regime - JJ_Ballistic.py
 6. Diffuse regime - JJ_Diffuse.py
