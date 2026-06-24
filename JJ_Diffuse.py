@@ -9,7 +9,8 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 
-k_B = 8.617333262e-5  #eV/K 
+k_B = 8.617333262E-5  #eV/K
+hbar = 6.582E-16 #eVs
 T = 4.2    #K Temperature
 T_c = 9.2  #K Critical temperature
 
