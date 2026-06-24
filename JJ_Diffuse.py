@@ -33,11 +33,11 @@ def line(x, Gradient, Intercept):
     return Gradient*x + Intercept
 
 
-def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=1):
+def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=nmax):
   
     dF = np.asarray(dF, dtype=float)
     jc = np.zeros_like(dF)
-
+    
     for n in range(int(nmax)):
         omega = np.pi*k_B*T*(2*n+1)
 
@@ -120,6 +120,23 @@ for Htest in [100,500,1000, 30000]:
         Delta=Delta
     )
     plt.plot(d, ytest, label=f"H={Htest}")
+
+plt.legend()
+plt.show()
+
+for NmaxTest in [1,3,5,10]:
+    ytest = JC_model(
+        d,
+        A=1,
+        H=30000,
+        dN=dN_nm/CoherenceLength_N,
+        T=T/T_c,
+        DN=DN,
+        DF=DF,
+        Delta=Delta,
+        nmax=NmaxTest
+    )
+    plt.plot(d, ytest, label=f"nmax={NmaxTest}")
 
 plt.legend()
 plt.show()
