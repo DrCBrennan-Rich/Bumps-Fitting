@@ -108,7 +108,7 @@ problem = bmp.FitProblem(Model)
 problem.show()
 
 
-for Htest in [100,500,1000, 30000]:
+for Htest in [100,500,1000,30000]:
     ytest = JC_model(
         d,
         A=1,
