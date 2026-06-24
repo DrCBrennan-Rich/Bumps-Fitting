@@ -26,14 +26,14 @@ DF = 1E0 #1E-5
 
 Delta = 1.55E-3 #/(k_B*T_c)
 
-#Matsubara cutoff
-nmax=1
+#Matsubara cutoff frequency
+FreqCutoff=1
 
 def line(x, Gradient, Intercept):
     return Gradient*x + Intercept
 
 
-def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=nmax):
+def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=FreqCutoff):
   
     dF = np.asarray(dF, dtype=float)
     jc = np.zeros_like(dF)
@@ -117,12 +117,16 @@ for Htest in [100,500,1000, 30000]:
         T=T/T_c,
         DN=DN,
         DF=DF,
-        Delta=Delta
+        Delta=Delta,
+        nmax=FreqCutoff
     )
     plt.plot(d, ytest, label=f"H={Htest}")
 
 plt.legend()
 plt.show()
+
+
+
 
 for NmaxTest in [1,3,5,10]:
     ytest = JC_model(
