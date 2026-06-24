@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 k_B = 8.617333262E-5  #eV/K
-hbar = 6.582E-16 #eVs
+hbar = 6.582E-16 #eV*s
 T = 4.2    #K Temperature
 T_c = 9.2  #K Critical temperature
 
@@ -21,11 +21,18 @@ dN_nm = 100   #nm N thickness
 CoherenceLength_F = 30.0 #nm
 CoherenceLength_N = 30.0 #nm
 
+#Diffusion Coefficients defined as CoherenceLength^2 * (2pi*k_B*T_c)/hbar
+DiffusionCoef_N = 2*np.pi*T_c*CoherenceLength_N*CoherenceLength_N/hbar
+
+DiffusionCoef_F = 2*np.pi*T_c*CoherenceLength_F*CoherenceLength_F/hbar
+
 #Diffusion constants, if using dirty limit: D ~xi^2*(pi*k_B*T_c/hbar).
 DN = (CoherenceLength_N/CoherenceLength_F)*(CoherenceLength_N/CoherenceLength_F) #1e-2
 DF = 1E0 #1E-5
 
-Delta = 1.55E-3 #/(k_B*T_c)
+SC_gap = 1.55E-3 #eV
+
+Delta = 1.55E-3 #eV
 
 #Matsubara cutoff frequency
 FreqCutoff=1
@@ -40,14 +47,14 @@ def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=FreqCutoff):
     jc = np.zeros_like(dF)
     
     for n in range(int(nmax)):
-        omega = np.pi*k_B*T*(2*n+1)
+        omega = np.pi*k_B*T*(2*n+1)/hbar
 
         # diffusion wavevectors
-        kN = np.sqrt(2.0*omega/DN)
-        kF = np.sqrt(2.0*(omega+1j*H)/DF)
+        k_N = np.sqrt(2.0*omega/DN)
+        k_F = np.sqrt(2.0*(omega+1j*H)/DF)
 
-        zN = kN*dN
-        zF = kF*dF
+        zN = k_N*dN
+        zF = k_F*dF
 
         #Stable exponential
         exp_pos = np.exp(zF)
@@ -60,7 +67,7 @@ def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=FreqCutoff):
         #Stable sech^2(x) = 1 / cosh^2(x)
         sech2 = 1.0 / np.cosh(zN)**2
 
-        Term = ((Delta*Delta)/(omega*omega))*(1/np.cosh(zN)**2)*np.real(kF*sinh_inv)
+        Term = ((Delta*Delta)/(omega*omega))*(1/np.cosh(zN)**2)*np.real(k_F*sinh_inv)
 
         jc += Term
         
