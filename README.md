@@ -11,6 +11,7 @@ Currently the specific .py files exist for:
 4. Bloch-Gruneisen fitting - BumpsBlochGruneisen.py
 
 Still under development, the critical current through a Josephson junction as a function of junction thickness
+
 5. Ballistic regime - JJ_Ballistic.py
 6. Diffuse regime - JJ_Diffuse.py
 7. Phenomenological intermediate regime - JJ_Phenomenological.py
