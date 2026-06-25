@@ -20,7 +20,7 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
 
 #Load the data from the file Data.txt
-d_F,y,dy = np.loadtxt('L11 data 4.2K.txt').T 
+d_F,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T 
 
 Model = bmp.Curve(
     JC_model,
@@ -32,8 +32,10 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-Model.Amplitude.range(90,350)
-Model.d_0pi.range(0.0,0.99*np.pi*xi_F2) #Due to the periodicity of d_0pi, this will be the paramter range
+Model.Amplitude.range(20,120)
+#Model.CoherenceLength_F1.dev(std=0.1, mean=0.3, limits=None)
+
+Model.d_0pi.range(0.0,0.9*np.pi*CoherenceLength_F2) #Due to the periodicity of d_0pi, this will be the paramter range
 
 Model.CoherenceLength_F1.range(0.1,0.3)
 Model.CoherenceLength_F2.range(0.1,0.2)
