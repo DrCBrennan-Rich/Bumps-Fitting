@@ -31,4 +31,5 @@ set MPLBACKEND=SVG
 
 #### Things to work on ####
 Exporting both vector and raster images after fitting (the Bumps default are pngs)
+
 Vectorise ballistic fit
