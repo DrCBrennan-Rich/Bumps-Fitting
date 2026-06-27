@@ -156,7 +156,7 @@ problem = bmp.FitProblem(Model)
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
 
-
+#Plot the datapoints used in the fitting
 plt.errorbar(
     d, y, yerr=dy,
     fmt='o',
