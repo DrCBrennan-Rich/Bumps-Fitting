@@ -37,7 +37,7 @@ Delta = 1.55E-3 #eV
 #Matsubara cutoff frequency
 FreqCutoff=5
 
-def JC_model2(d_F, Amplitude, H, dN, T, 
+def JC_model(d_F, Amplitude, H, dN, T, 
               DiffusionCoef_N, DiffusionCoef_F, 
               SC_gap, nmax=FreqCutoff):
   
@@ -72,8 +72,6 @@ def JC_model2(d_F, Amplitude, H, dN, T,
 
 
 d,y,dy = Data.T 
-#d = d/CoherenceLength_F
-
 
 Model = bmp.Curve(
     JC_model2,
@@ -115,7 +113,7 @@ plt.errorbar(
 )
 
 for Htest in [40E14]:
-    ytest = JC_model2(
+    ytest = JC_model(
         d,
         Amplitude=1,
         H=Htest,
