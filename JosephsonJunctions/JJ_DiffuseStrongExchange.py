@@ -15,7 +15,7 @@ Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
 Resistance = 1.4E-3 #ohms
 
-def JC_model(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
+def JC_DiffuseExchange(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
 #the np.sinc function is normalised as default so need to divide argument by pi
     SincTerm = np.sinc(d_F/(np.pi*CoherenceLength)) 
     
@@ -25,7 +25,7 @@ def JC_model(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
 d,y,dy = np.loadtxt('L11 data 4.2K.txt').T #units of nm, mA, mA
 
 Model = bmp.Curve(
-    JC_model,
+    JC_DiffuseExchange,
     d, y, dy,
     Temperature=Temperature,
     SC_gap = SC_gap,
@@ -68,7 +68,7 @@ plt.errorbar(
 )
 
 for CoherenceLenght_test in [0.5]:
-    ytest = JC_model(
+    ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         SC_gap = SC_gap,
