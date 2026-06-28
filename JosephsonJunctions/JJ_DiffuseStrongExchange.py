@@ -13,7 +13,8 @@ k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
-Resistance = 1.4E-3 #ohms
+Resistivity = 1.4E-3 #ohm meters
+e = 1.6021766E-19 #Coulombs
 
 def JC_DiffuseExchange(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
 #the np.sinc function is normalised as default so need to divide argument by pi
