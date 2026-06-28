@@ -14,9 +14,6 @@ hbar = 6.582E-16 #eV*s
 T = 4.2    #K Temperature
 T_c = 9.2  #K Critical temperature
 
-#dF = np.loadtxt("PtCoPt data 4.2K.txt")[:, 0]
-
-
 #Coherence lengths
 CoherenceLength_F = 30.0 #nm
 CoherenceLength_N = 30.0 #nm
