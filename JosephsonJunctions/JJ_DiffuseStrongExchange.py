@@ -16,6 +16,10 @@ CoherenceLength = 0.3 #nm
 Resistivity = 1.4E-3 #ohm meters
 e = 1.6021766E-19 #Coulombs
 
+def Chi_Solver():
+    Chi = 1
+    return Chi
+
 def JC_DiffuseExchange(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
 #the np.sinc function is normalised as default so need to divide argument by pi
     SincTerm = np.sinc(d_F/(np.pi*CoherenceLength)) 
