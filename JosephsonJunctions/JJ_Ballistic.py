@@ -5,10 +5,19 @@
 #Equation (1) from https://doi.org/10.1063/5.0195229
 #### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_Ballistic.py
 
+#### WARNING ####
+
+#The function JC_model has been written to be fast and easily callable thousands
+#of times. This is at the cost of stability if the ferromagnetic coherence
+#length is smaller than 0.2 nm (see associated Figure on GitHub):
+#https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/Ballistic_CoherenceLengthComparison.pdf
+#And so this should be set as the lower fitting bound.
+#In situations where the coherence length is approaching this limit, it would be advisable to use:
+#https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/JJ_Ballistic_simplified.py
+
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import quad_vec
 from scipy.integrate import trapezoid
 
 
@@ -24,43 +33,6 @@ T = 5 #K
 e = 1.6E-19
 
 Beta = 1/(k_B*T)
-
-def IcRn_single(d, xi, Delta):
-    kB = 1#1.38e-23
-    e = 1#1.6e-19
-    T = 5
-
-    #Precompute on grid
-    alpha = max(d/xi, 1e-6)
-    y_max = 10*alpha
-    Ny = 300
-    y = np.linspace(alpha, y_max, Ny)
-
-    PhiList = np.linspace(0,2*np.pi,60)
-
-    A = np.pi*Delta*alpha*alpha/(2*e)
-
-    Ic = 0
-
-    for phi in PhiList:
-        Sin1 = np.sin(0.5*(phi-y))
-        Sin2 = np.sin(0.5*(phi+y))
-
-        Tanh1 = np.tanh(Delta*np.cos(0.5*(phi-y))/(2*kB*T))
-        Tanh2 = np.tanh(Delta*np.cos(0.5*(phi+y))/(2*kB*T))
-
-        Integrand = (Sin1*Tanh1+Sin2*Tanh2)/(y*y*y)
-
-        Iphi = A*np.trapezoid(Integrand, y)
-
-        if Iphi > Ic:
-            Ic = Iphi
-
-    return Ic
-
-def IcRn_model(d, xi, Delta):
-    return np.array([IcRn_single(di, xi, Delta) for di in np.atleast_1d(d)])
-
 
 def JC_model(Thickness, CoherenceLength, SC_gap):
     
@@ -89,48 +61,6 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
         Ic[i] = np.max(np.abs(Iphi))
         
     return Ic
-
-
-def JC_model2(Thickness, CoherenceLength, SC_gap):
-
-    PhiList = np.linspace(0,2*np.pi,100)
-
-    AlphaList = np.maximum(Thickness/CoherenceLength,1e-6)
-
-    Ic = np.zeros_like(AlphaList)
-
-    prefactor = np.pi*SC_gap/(2*Resistance)
-
-    for i, Alpha in enumerate(AlphaList):
-
-        def Integrand(y):
-
-            SinMinus = np.sin(0.5*(PhiList-y))
-            SinPlus  = np.sin(0.5*(PhiList+y))
-
-            TanhMinus = np.tanh(
-                0.5*Beta*SC_gap*np.cos(0.5*(PhiList-y))
-            )
-
-            TanhPlus = np.tanh(
-                0.5*Beta*SC_gap*np.cos(0.5*(PhiList+y))
-            )
-
-            return (SinMinus*TanhMinus + SinPlus*TanhPlus)/y**3
-
-        Iphi, err = quad_vec(
-            Integrand,
-            Alpha,
-            np.inf,
-            epsrel=1e-8,
-            epsabs=1e-8
-        )
-
-        Iphi *= prefactor*Alpha**2
-
-        Ic[i] = np.max(np.abs(Iphi))
-
-    return Ic
         
 
 #Load the data from the file Data.txt
@@ -156,36 +86,42 @@ problem = bmp.FitProblem(Model)
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
 
-#Plot the datapoints used in the fitting
+#Plot data points if desired
+'''
 plt.errorbar(
     d, y, yerr=dy,
     fmt='o',
     capsize=3,
     label='Experimental data'
 )
+'''
+x_axis = np.linspace(0.01,10,100)
 
-
-for CoherenceLength_test in [0.4]:
+for CoherenceLength_test in [8E-2, 20E-2, 5E-1, 1]:
     ytest = JC_model(
-        d,
+        x_axis,
         CoherenceLength=CoherenceLength_test,
-        SC_gap = 4.5E-3
+        SC_gap = 1.5E-3
     )
-    plt.plot(d, ytest, label=f"Coherence Length={CoherenceLength_test}", color='pink')
+    plt.plot(x_axis, ytest, label=f"Coherence Length={CoherenceLength_test}")
     plt.yscale('log')
 
+plt.xlabel("Ferromagnet thickness (nm)")
+plt.ylabel(r"Critical current density $J_c$ (mA/m$^2$)")
+
 plt.legend()
-plt.savefig("Ballistic.svg", format="svg")
+plt.savefig("CoherenceLengthComparison.svg", format="svg")
 plt.show()
-
-
+'''
+a = 10.5E-2
 for SC_gap_test in [1.5E-3,4E-3,8E-3,12E-3]:
     ytest = JC_model(
         d,
-        CoherenceLength=8E-2,
+        CoherenceLength=a,
         SC_gap = SC_gap_test
     )
-    plt.plot(d, ytest, label=f"Gap={SC_gap_test}")
+    plt.plot(d, ytest, label=f"Gap={SC_gap_test} and {a}")
 
 plt.legend()
 plt.show()
+'''
