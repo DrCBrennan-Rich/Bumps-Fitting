@@ -31,12 +31,7 @@ DiffusionCoef_N = 2*np.pi*k_B*T_c*(CoherenceLength_N*nm)**2/hbar #m^2/s
 
 DiffusionCoef_F = 2*np.pi*k_B*T_c*(CoherenceLength_F*nm)**2/hbar
 
-#Diffusion constants, if using dirty limit: D ~xi^2*(pi*k_B*T_c/hbar).
-#DN = (CoherenceLength_N/CoherenceLength_F)*(CoherenceLength_N/CoherenceLength_F) #1e-2
-#DF = 1E0 #1E-5
-
 SC_gap = 1.55E-3 #eV
-
 Delta = 1.55E-3 #eV
 
 #Matsubara cutoff frequency
