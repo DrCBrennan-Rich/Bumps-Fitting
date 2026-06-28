@@ -3,7 +3,7 @@
 @author: pycbr
 """
 #Equation (18) from https://doi.org/10.1088/1367-2630/17/11/113022
-#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_Ballistic_simplified.py
+#Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_DiffuseStrongExchange.py
 
 import bumps.names as bmp
 import numpy as np
