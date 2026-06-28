@@ -24,7 +24,7 @@ CoherenceLength_N = 30.0 #nm
 nm = 1E-9 #Conversion factor
 
 #Load the data from the file Data.txt
-Data = np.loadtxt("PtCoPt data 4.2K.txt")
+Data = np.loadtxt("L11 data 4.2K.txt")
 Thicknesses = Data[:, 0]*nm #Thickness in m
 
 dN = 100*nm   #N thickness
@@ -35,8 +35,8 @@ DiffusionCoef_N = 2*np.pi*k_B*T_c*(CoherenceLength_N*nm)**2/hbar #m^2/s
 DiffusionCoef_F = 2*np.pi*k_B*T_c*(CoherenceLength_F*nm)**2/hbar
 
 #Diffusion constants, if using dirty limit: D ~xi^2*(pi*k_B*T_c/hbar).
-DN = (CoherenceLength_N/CoherenceLength_F)*(CoherenceLength_N/CoherenceLength_F) #1e-2
-DF = 1E0 #1E-5
+#DN = (CoherenceLength_N/CoherenceLength_F)*(CoherenceLength_N/CoherenceLength_F) #1e-2
+#DF = 1E0 #1E-5
 
 SC_gap = 1.55E-3 #eV
 
@@ -44,47 +44,6 @@ Delta = 1.55E-3 #eV
 
 #Matsubara cutoff frequency
 FreqCutoff=5
-
-def line(x, Gradient, Intercept):
-    return Gradient*x + Intercept
-
-'''
-def JC_model(dF, A, H, dN, T, DN, DF, Delta, nmax=FreqCutoff):
-  
-    dF = np.asarray(dF, dtype=float)
-    jc = np.zeros_like(dF)
-    
-    for n in range(int(nmax)):
-        omega = np.pi*k_B*T*(2*n+1)/hbar
-
-        # diffusion wavevectors
-        k_N = np.sqrt(2.0*omega/DN)
-        k_F = np.sqrt(2.0*(omega+1j*H)/DF)
-
-        zN = k_N*dN
-        zF = k_F*dF
-
-        #Stable exponential
-        exp_pos = np.exp(zF)
-        exp_neg = np.exp(-zF)
-
-        sinh_zF = 0.5*(exp_pos-exp_neg)
-
-        sinh_inv = 1.0/sinh_zF
-
-        #Stable sech^2(x) = 1 / cosh^2(x)
-        sech2 = 1.0 / np.cosh(zN)**2
-
-        Term = ((Delta*Delta)/(omega*omega))*(1/np.cosh(zN)**2)*np.real(k_F*sinh_inv)
-
-        jc += Term
-        
-    if not np.all(np.isfinite(jc)):
-        return np.inf * np.ones_like(jc)
-
-    return A*np.abs(jc)
-'''
-
 
 def JC_model2(d_F, Amplitude, H, dN, T, 
               DiffusionCoef_N, DiffusionCoef_F, 
@@ -106,10 +65,6 @@ def JC_model2(d_F, Amplitude, H, dN, T,
         z_N = WaveVec_N*dN
         z_F = WaveVec_F*d_F
 
-        #Stable exponential
-        #exp_pos = np.exp(z_F)
-        #exp_neg = np.exp(-z_F)
-
         #sinh_zF = 0.5*(exp_pos-exp_neg)
 
         sinh_inv = 1.0/np.sinh(z_F)
@@ -125,7 +80,7 @@ def JC_model2(d_F, Amplitude, H, dN, T,
 
 
 d,y,dy = Data.T 
-d = d/CoherenceLength_F
+#d = d/CoherenceLength_F
 
 
 Model = bmp.Curve(
@@ -135,8 +90,8 @@ Model = bmp.Curve(
     H=500,
     dN=dN,
     T=4.2/T_c,
-    DiffusionCoef_N=DN,
-    DiffusionCoef_F=DF,
+    DiffusionCoef_N=DiffusionCoef_N,
+    DiffusionCoef_F=DiffusionCoef_F,
     SC_gap = Delta
 )
 
@@ -152,46 +107,52 @@ Model.Amplitude.range(25,300)
 
 #Initial values
 
-Model.H.value = 5E18
-Model.Amplitude.value = 1
+Model.H.value = 15E18
+Model.Amplitude.value = 100
 
 problem = bmp.FitProblem(Model)
 
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
 
+plt.errorbar(
+    d, y, yerr=dy,
+    fmt='o',
+    capsize=3,
+    label='Experimental data'
+)
 
-for Htest in [40E18,43E18,45E18,48E18,50E18]:
+for Htest in [40E14]:
     ytest = JC_model2(
         d,
         Amplitude=1,
         H=Htest,
         dN=dN,
         T=T/T_c,
-        DiffusionCoef_N=DN,
-        DiffusionCoef_F=DF,
+        DiffusionCoef_N=DiffusionCoef_N,
+        DiffusionCoef_F=DiffusionCoef_F,
         SC_gap = Delta,
         nmax=FreqCutoff
     )
     plt.plot(d, ytest, label=f"H={Htest}")
-
+plt.yscale('log')
 plt.legend()
 plt.show()
 
 
 for A_test in [1,3,5,10]:
-    ytest = JC_model2(
+    ytest = JC_model(
         d,
         Amplitude=A_test,
-        H=10E18,
+        H=4.5E17,
         dN=dN,
         T=T/T_c,
-        DiffusionCoef_N=DN,
-        DiffusionCoef_F=DF,
+        DiffusionCoef_N=DiffusionCoef_N,
+        DiffusionCoef_F=DiffusionCoef_F,
         SC_gap = Delta,
         nmax=5
     )
     plt.plot(d, ytest, label=f"Amplitude={A_test}")
-
+plt.yscale('log')
 plt.legend()
 plt.show()
