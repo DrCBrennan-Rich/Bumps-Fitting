@@ -15,6 +15,21 @@ Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
 Resistivity = 1.4E-3 #ohm meters
 e = 1.6021766E-19 #Coulombs
+hbar = 6.582E-16 #eV*s
+
+n=1
+
+T = 4.2
+T_c = 8.5
+
+omega = np.pi*k_B*T*(2*n+1)/hbar
+
+Omega = omega/(np.pi*T_c)
+
+OmegaTilde = 1
+eta = 1
+q = np.sqrt(OmegaTilde+eta)
+
 
 def Chi_Solver():
     Chi = 1
