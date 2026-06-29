@@ -14,66 +14,81 @@ k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
-Resistivity = 1.4E-3 #ohm meters
+Resistivity = 1.4E-8 #ohm meters
 e = 1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
 H =1 
 tau = 1
 
-
 n=1
-
 T = 4.2
 T_c = 8.5
-
-omega = np.pi*k_B*T*(2*n+1)/hbar
-
-Omega = omega/(np.pi*T_c)
-
-OmegaTilde = 1
-eta = 1
-q = np.sqrt(OmegaTilde+eta)
-
 FreqCutoff=5
 
-N_list = np.linspace(1,FreqCutoff,FreqCutoff)
-Omega_list = (T/T_c)*(2*N_list+1)
+N_list = np.arange(FreqCutoff)
+Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
-q_list = np.sqrt(Omega_list+(H/(np.pi*k_B*T_c))+(hbar/(np.pi*tau*k_B*T_c)))
+eta = hbar/(np.pi*tau*k_B*T_c)
+gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
 
-gamma_list = q_list/CoherenceLength
-
-gamma = 1
-eta =1
-theta = 1
-
-def Trancendental_Quartic(Chi,gamma,Omega,eta,theta):
-    
+def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
+    Chi = Chi_vec[0]+1j*Chi_vec[1]
     S = np.sin(theta)
     u = np.sqrt(Omega+eta*(1-Chi*Chi))
-    
-    return Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+(0.25*S*S)
+    Residual = Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+0.25*S*S
+    return [np.real(Residual), np.imag(Residual)]
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list):
+def Solve_Quartic_Exact(gamma,Omega,theta):
+    S = np.sin(theta)
+    u = np.sqrt(Omega)
+
+    coeffs = [1,2*gamma*u*S,(gamma*u)**2-1,-(gamma*u*S),0.25*S*S]
+
+    Roots = np.roots(coeffs)
+    return Roots
+
+def Pick_Root(Roots,gamma,Omega,theta):
+    
+    LHS = 2*gamma*np.sqrt(Omega)*Roots
+    RHS = np.sin(theta-2*np.arcsin(Roots))
+    
+    i = np.argmin(np.abs(RHS-LHS))
+    return Roots[i]
+
+def solve_chi_continuation(gamma, Omega, theta, eta):
+    #Initial value taken from exact solution when eta=0
+    Roots = Solve_Quartic_Exact(gamma, Omega, theta)
+    chi0 = Pick_Root(Roots,gamma,Omega,theta)
+
+    Guess = [chi0.real, chi0.imag]
+    #Relax eta=0 condition
+    Solution = fsolve(
+        Trancendental_Quartic,
+        x0=Guess,
+        args=(gamma, Omega, eta, theta)
+    )
+
+    return Solution[0] + 1j*Solution[1]
+
+
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list, theta, eta):
     
     Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
     
     J_c = np.zeros_like(d_F, dtype='float')
-    Guess = 0.5
     
-    for gamma,omega in zip(gamma_list,Omega_list):
-        Chi = fsolve(Trancendental_Quartic, x0=Guess,args=(gamma, Omega, eta, theta))
-        Guess = Chi
-        
+    for gamma, w in zip(gamma_list, Omega_list):
+
+        Chi = solve_chi_continuation(gamma, w, theta, eta)
+
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
          
     return Amplitude*J_c
 
-
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('L11 data 4.2K.txt').T #units of nm, mA, mA
-
+'''
 Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
@@ -106,7 +121,7 @@ problem = bmp.FitProblem(Model)
 
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
-
+'''
 #Run some test values to see how they affect the final plot
 plt.errorbar(
     d, y, yerr=dy,
@@ -119,8 +134,10 @@ for CoherenceLenght_test in [0.5]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
-        Resistivity = Resistivity, 
-    )
+        Resistivity = Resistivity,
+        gamma_list=gamma_list,
+        theta=1,
+        eta=1)
     plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLenght_test}")
 
 plt.legend()
