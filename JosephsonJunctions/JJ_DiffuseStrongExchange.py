@@ -71,7 +71,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLength):
     
     Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
     
@@ -100,11 +100,11 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-#Model.CoherenceLength.range(1,3)
+Model.CoherenceLength.range(1,3)
 #Model.SC_gap.range(1E-3,2E-3)
-Model.Temperature.range(3,5)
+#Model.Temperature.range(3,5)
 #Model.Temperature.value = 4.2
-#Model.Resistance.range(1.3E-3,1.5E-3)
+Model.eta.range(1.3E-3,1.5E-3)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -115,10 +115,10 @@ Model.Temperature.range(3,5)
 
 #Initial values
 
-#Model.CoherenceLength.value = 0.3
+Model.CoherenceLength.value = 1.3
 #Model.SC_gap.value = 1.5E-3
 Model.Temperature.value = 4.2
-#Model.Resistance.value = 1.4E-3
+Model.eta.value = 1.4E-3
 
 problem = bmp.FitProblem(Model)
 
@@ -133,12 +133,12 @@ plt.errorbar(
     label='Experimental data'
 )
 
-for CoherenceLength_test in [0.5]:
+for CoherenceLength_test in [0.5,2,5]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
-
+        CoherenceLength=CoherenceLength_test,
         theta=1,
         eta=1)
     plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLength_test}")
