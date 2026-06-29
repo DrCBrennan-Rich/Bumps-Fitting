@@ -54,21 +54,6 @@ def Trancendental_Quartic(Chi,gamma,Omega,eta,theta):
     
     return Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+(0.25*S*S)
 
-class Chi_Solver:
-
-    def __init__(self):
-        self.previous = {}
-
-    def solve(self, omega, params):
-
-        guess = self.previous.get(omega, default_guess)
-
-        chi = fsolve(..., x0=guess)
-
-        self.previous[omega] = chi
-
-        return chi
-
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list):
     
     Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
