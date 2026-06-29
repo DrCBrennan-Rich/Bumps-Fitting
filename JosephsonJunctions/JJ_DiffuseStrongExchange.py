@@ -80,7 +80,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list):
         Chi = fsolve(Trancendental_Quartic, x0=Guess,args=(gamma, Omega, eta, theta))
         Guess = Chi
         
-        Term = np.real(gamma*np.exp(-gamma*d_F))*Chi*Chi
+        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
          
     return Amplitude*J_c
