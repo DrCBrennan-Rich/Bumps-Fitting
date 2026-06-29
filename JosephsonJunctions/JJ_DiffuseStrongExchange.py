@@ -8,6 +8,7 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
 
 k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
@@ -16,6 +17,9 @@ CoherenceLength = 0.3 #nm
 Resistivity = 1.4E-3 #ohm meters
 e = 1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
+H =1 
+tau = 1
+
 
 n=1
 
@@ -30,16 +34,63 @@ OmegaTilde = 1
 eta = 1
 q = np.sqrt(OmegaTilde+eta)
 
+FreqCutoff=5
 
-def Chi_Solver():
-    Chi = 1
-    return Chi
+N_list = np.linspace(1,FreqCutoff,FreqCutoff)
+Omega_list = (T/T_c)*(2*N_list+1)
 
-def JC_DiffuseExchange(d_F, Temperature, SC_gap, CoherenceLength, Resistance):
-#the np.sinc function is normalised as default so need to divide argument by pi
-    SincTerm = np.sinc(d_F/(np.pi*CoherenceLength)) 
+q_list = np.sqrt(Omega_list+(H/(np.pi*k_B*T_c))+(hbar/(np.pi*tau*k_B*T_c)))
+
+gamma_list = q_list/CoherenceLength
+
+gamma = 1
+eta =1
+theta = 1
+
+def Trancendental_Quartic(Chi,gamma,Omega,eta,theta):
     
-    return (np.pi*SC_gap*SC_gap)*np.abs(SincTerm)/(4*k_B*Temperature*Resistance)
+    S = np.sin(theta)
+    u = np.sqrt(Omega+eta*(1-Chi*Chi))
+    
+    return Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+(0.25*S*S)
+
+Guess = 0.5
+
+chi = fsolve(
+    Trancendental_Quartic,
+    x0=Guess,
+    args=(gamma, Omega, eta, theta)
+)
+
+class Chi_Solver:
+
+    def __init__(self):
+        self.previous = {}
+
+    def solve(self, omega, params):
+
+        guess = self.previous.get(omega, default_guess)
+
+        chi = fsolve(..., x0=guess)
+
+        self.previous[omega] = chi
+
+        return chi
+
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list):
+    
+    Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
+    
+    J_c = np.zeros_like(d_F, dtype='float')
+    
+    for gamma in gamma_list:
+        
+        Term = np.real(gamma*np.exp(-gamma*d_F))
+        
+        J_c += Term
+         
+    return Amplitude*J_c
+
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('L11 data 4.2K.txt').T #units of nm, mA, mA
@@ -48,14 +99,12 @@ Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
     Temperature=Temperature,
-    SC_gap = SC_gap,
-    CoherenceLength=CoherenceLength, 
-    Resistance=Resistance)
+    Resistivity = Resistivity)
 
 ### Limits of fitting values ###
 
 #Model.CoherenceLength.range(1,3)
-Model.SC_gap.range(1E-3,2E-3)
+#Model.SC_gap.range(1E-3,2E-3)
 Model.Temperature.range(3,5)
 #Model.Temperature.value = 4.2
 #Model.Resistance.range(1.3E-3,1.5E-3)
@@ -69,8 +118,8 @@ Model.Temperature.range(3,5)
 
 #Initial values
 
-Model.CoherenceLength.value = 0.3
-Model.SC_gap.value = 1.5E-3
+#Model.CoherenceLength.value = 0.3
+#Model.SC_gap.value = 1.5E-3
 Model.Temperature.value = 4.2
 #Model.Resistance.value = 1.4E-3
 
@@ -91,9 +140,7 @@ for CoherenceLenght_test in [0.5]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
-        SC_gap = SC_gap,
-        CoherenceLength=CoherenceLenght_test, 
-        Resistance=Resistance, 
+        Resistivity = Resistivity, 
     )
     plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLenght_test}")
 
