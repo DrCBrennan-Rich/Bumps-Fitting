@@ -29,7 +29,7 @@ N_list = np.arange(FreqCutoff)
 Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
 eta = hbar/(np.pi*tau*k_B*T_c)
-gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
+
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     Chi = Chi_vec[0]+1j*Chi_vec[1]
@@ -71,14 +71,17 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list, theta, eta):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta):
     
     Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
     
     J_c = np.zeros_like(d_F, dtype='float')
     
+    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
+    
     for gamma, w in zip(gamma_list, Omega_list):
-
+        
+        theta = np.arctan(SC_gap/(k_B*T_c*w))
         Chi = solve_chi_continuation(gamma, w, theta, eta)
 
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
@@ -88,7 +91,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, gamma_list, theta, eta):
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('L11 data 4.2K.txt').T #units of nm, mA, mA
-'''
+
 Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
@@ -121,7 +124,7 @@ problem = bmp.FitProblem(Model)
 
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
 problem.show()
-'''
+
 #Run some test values to see how they affect the final plot
 plt.errorbar(
     d, y, yerr=dy,
@@ -130,15 +133,15 @@ plt.errorbar(
     label='Experimental data'
 )
 
-for CoherenceLenght_test in [0.5]:
+for CoherenceLength_test in [0.5]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
-        gamma_list=gamma_list,
+
         theta=1,
         eta=1)
-    plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLenght_test}")
+    plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLength_test}")
 
 plt.legend()
 plt.yscale('log')
