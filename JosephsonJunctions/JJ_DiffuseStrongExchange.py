@@ -67,7 +67,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLength, H):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, eta, CoherenceLength, H):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -104,8 +104,7 @@ Model = bmp.Curve(
 
 Model.CoherenceLength.range(1E-3,10)
 Model.H.range(1E-6,5E-3)
-#Model.Temperature.range(3,5)
-#Model.Temperature.value = 4.2
+Model.Temperature.range(1,10)
 Model.eta.range(1.3E-6,1.5E-1)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
@@ -135,18 +134,18 @@ plt.errorbar(
     label='Experimental data'
 )
 
-for H_test in [0.5E2,2E2,5E2]:
+for H_test in [0.01]: #0.00432
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
-        CoherenceLength=0.58,
-        theta=1,
-        eta=0.04,
+        CoherenceLength=0.33,
+        
+        eta= 0.109,#0.109,
         H=H_test)
     plt.plot(d, ytest, label=f"H_test={H_test}")
-
+    
 plt.legend()
 plt.yscale('log')
-plt.savefig("BallisticSimplified.svg", format="svg")
+plt.savefig("DiffuseStrongExchange.svg", format="svg")
 plt.show()
