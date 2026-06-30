@@ -15,7 +15,7 @@ SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
 Resistivity = 1.4E-8 #ohm meters
-e = 1.6021766E-19 #Coulombs
+e = 1#1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
 H =1 
 tau = 1
@@ -25,10 +25,7 @@ T = 4.2
 T_c = 8.5
 FreqCutoff=5
 
-N_list = np.arange(FreqCutoff)
-Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
-eta = hbar/(np.pi*tau*k_B*T_c)
 
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
@@ -71,11 +68,16 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLength):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLength, H):
     
-    Amplitude = (16*np.pi*Temperature)/(e*Resistivity)
+    Amplitude = 1E-9*(16*np.pi*Temperature)/(e*Resistivity)
     
     J_c = np.zeros_like(d_F, dtype='float')
+    
+    N_list = np.arange(FreqCutoff)
+    Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
+
+    eta = hbar/(np.pi*tau*k_B*T_c)
     
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
@@ -96,15 +98,16 @@ Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
     Temperature=Temperature,
-    Resistivity = Resistivity)
+    Resistivity = Resistivity,
+    H=H)
 
 ### Limits of fitting values ###
 
-Model.CoherenceLength.range(1,3)
-#Model.SC_gap.range(1E-3,2E-3)
+Model.CoherenceLength.range(1E-3,10)
+Model.H.range(1E-6,5E-3)
 #Model.Temperature.range(3,5)
 #Model.Temperature.value = 4.2
-Model.eta.range(1.3E-3,1.5E-3)
+Model.eta.range(1.3E-6,1.5E-1)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -116,7 +119,7 @@ Model.eta.range(1.3E-3,1.5E-3)
 #Initial values
 
 Model.CoherenceLength.value = 1.3
-#Model.SC_gap.value = 1.5E-3
+Model.H.value = 1.5E-3
 Model.Temperature.value = 4.2
 Model.eta.value = 1.4E-3
 
@@ -133,15 +136,16 @@ plt.errorbar(
     label='Experimental data'
 )
 
-for CoherenceLength_test in [0.5,2,5]:
+for H_test in [0.5,2,5]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
-        CoherenceLength=CoherenceLength_test,
+        CoherenceLength=0.58,
         theta=1,
-        eta=1)
-    plt.plot(d, ytest, label=f"CoherenceLength={CoherenceLength_test}")
+        eta=0.04,
+        H=H_test)
+    plt.plot(d, ytest, label=f"H_test={H_test}")
 
 plt.legend()
 plt.yscale('log')
