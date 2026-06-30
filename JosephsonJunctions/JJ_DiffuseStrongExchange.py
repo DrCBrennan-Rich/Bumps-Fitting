@@ -17,8 +17,10 @@ CoherenceLength = 3.0 #nm
 Resistivity = 16.8 #ohm nm
 e = 1#1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
-H =1 
-tau = 1
+FermiVelocity = 3.3E5 #m/s
+MeanFreePath = 0.283496 #nm
+
+
 
 n=1
 T = 4.2
@@ -63,9 +65,11 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
         x0=Guess,
         args=(gamma, Omega, eta, theta)
     )
+
     return Solution[0] + 1j*Solution[1]
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
+
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_BNF):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -81,7 +85,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
     for gamma, w in zip(gamma_list, Omega_list):
         
         theta = np.arctan(SC_gap/(k_B*T_c*w))
-        Chi = solve_chi_continuation(gamma, w, theta, eta)
+        Chi = solve_chi_continuation(gamma_BNF, w, theta, eta)
 
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
@@ -102,8 +106,9 @@ Model = bmp.Curve(
 
 Model.CoherenceLength.range(1E-3,10)
 Model.H.range(1E-6,5E-3)
-Model.Temperature.range(1,10)
-Model.SpinScatterTime.range(1E-14,1E-12)
+#Model.Temperature.range(1,10)
+Model.SpinScatterTime.range(1E-14,1E-8)
+Model.gamma_BNF.range(0.01,100)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -118,6 +123,7 @@ Model.CoherenceLength.value = 1.3
 Model.H.value = 1.5E-3
 Model.Temperature.value = 4.2
 Model.SpinScatterTime.value = 100E-15
+Model.gamma_BNF.value = 100E-15
 
 problem = bmp.FitProblem(Model)
 
@@ -129,15 +135,16 @@ plt.errorbar(
     d, y, yerr=dy,
     fmt='H',
     capsize=3,
-    label='Experimental data')
+    label='Experimental data'
+)
 
 for tau_test in [100E-15]: #0.00432
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
-        CoherenceLength=0.33,
-        
+        CoherenceLength=0.3,
+        gamma_BNF = 0.5,
         SpinScatterTime= tau_test,#0.109,
         H=0.01)
     plt.plot(d, ytest, label=f"eta={tau_test}")
