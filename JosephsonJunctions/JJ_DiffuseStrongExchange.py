@@ -88,10 +88,10 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLengt
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
          
-    return Amplitude*J_c
+    return Amplitude*np.abs(J_c)
 
 #Load the data from the file Data.txt
-d,y,dy = np.loadtxt('L11 data 4.2K.txt').T #units of nm, mA, mA
+d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
 Model = bmp.Curve(
     JC_DiffuseExchange,
