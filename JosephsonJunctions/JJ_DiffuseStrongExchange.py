@@ -149,5 +149,5 @@ for H_test in [0.5,2,5]:
 
 plt.legend()
 plt.yscale('log')
-plt.savefig("BallisticSimplified.svg", format="svg")
+plt.savefig("Diffuse.svg", format="svg")
 plt.show()
