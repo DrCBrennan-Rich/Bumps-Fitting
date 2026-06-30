@@ -63,11 +63,9 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
         x0=Guess,
         args=(gamma, Omega, eta, theta)
     )
-
     return Solution[0] + 1j*Solution[1]
 
-
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, eta, CoherenceLength, H):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -76,7 +74,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, eta, CoherenceLength, H):
     N_list = np.arange(FreqCutoff)
     Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
-    eta = hbar/(np.pi*tau*k_B*T_c)
+    eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
     
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
@@ -105,7 +103,7 @@ Model = bmp.Curve(
 Model.CoherenceLength.range(1E-3,10)
 Model.H.range(1E-6,5E-3)
 Model.Temperature.range(1,10)
-Model.eta.range(1.3E-6,1.5E-1)
+Model.SpinScatterTime.range(1E-14,1E-12)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -119,7 +117,7 @@ Model.eta.range(1.3E-6,1.5E-1)
 Model.CoherenceLength.value = 1.3
 Model.H.value = 1.5E-3
 Model.Temperature.value = 4.2
-Model.eta.value = 1.4E-3
+Model.SpinScatterTime.value = 100E-15
 
 problem = bmp.FitProblem(Model)
 
@@ -131,19 +129,19 @@ plt.errorbar(
     d, y, yerr=dy,
     fmt='H',
     capsize=3,
-    label='Experimental data'
-)
+    label='Experimental data')
 
-for H_test in [0.01]: #0.00432
+for tau_test in [100E-15]: #0.00432
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
         Resistivity = Resistivity,
         CoherenceLength=0.33,
         
-        eta= 0.109,#0.109,
-        H=H_test)
-    plt.plot(d, ytest, label=f"H_test={H_test}")
+        SpinScatterTime= tau_test,#0.109,
+        H=0.01)
+    plt.plot(d, ytest, label=f"eta={tau_test}")
+    
     
 plt.legend()
 plt.yscale('log')
