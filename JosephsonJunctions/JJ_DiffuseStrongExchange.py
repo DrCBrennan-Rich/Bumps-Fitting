@@ -13,8 +13,8 @@ from scipy.optimize import fsolve
 k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
-CoherenceLength = 0.3 #nm
-Resistivity = 1.4E-8 #ohm meters
+CoherenceLength = 3.0 #nm
+Resistivity = 16.8 #ohm nm
 e = 1#1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
 H =1 
@@ -23,10 +23,9 @@ tau = 1
 n=1
 T = 4.2
 T_c = 8.5
-FreqCutoff=5
+FreqCutoff=50
 
-
-
+Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     Chi = Chi_vec[0]+1j*Chi_vec[1]
@@ -70,7 +69,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, theta, eta, CoherenceLength, H):
     
-    Amplitude = 1E-9*(16*np.pi*Temperature)/(e*Resistivity)
+    Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
     J_c = np.zeros_like(d_F, dtype='float')
     
@@ -136,7 +135,7 @@ plt.errorbar(
     label='Experimental data'
 )
 
-for H_test in [0.5,2,5]:
+for H_test in [0.5E2,2E2,5E2]:
     ytest = JC_DiffuseExchange(
         d,
         Temperature=Temperature,
@@ -149,5 +148,5 @@ for H_test in [0.5,2,5]:
 
 plt.legend()
 plt.yscale('log')
-plt.savefig("Diffuse.svg", format="svg")
+plt.savefig("BallisticSimplified.svg", format="svg")
 plt.show()
