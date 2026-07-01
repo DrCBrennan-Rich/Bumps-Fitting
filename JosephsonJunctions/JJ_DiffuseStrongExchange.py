@@ -145,11 +145,10 @@ for tau_test in [100E-15]: #0.00432
         Temperature=Temperature,
         Resistivity = Resistivity,
         CoherenceLength=0.3,
-        gamma_BNF = 0.5,
+        #gamma_BNF = 0.5,
         SpinScatterTime= tau_test,#0.109,
         H=0.01)
     plt.plot(d, ytest, label=f"eta={tau_test}")
-    
     
 plt.legend()
 plt.yscale('log')
