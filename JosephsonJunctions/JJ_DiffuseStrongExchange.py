@@ -21,7 +21,7 @@ MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 T_c = 8.5
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
-
+AR = 5.7*1E3 #Ohm nm^2
 FreqCutoff=50
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
