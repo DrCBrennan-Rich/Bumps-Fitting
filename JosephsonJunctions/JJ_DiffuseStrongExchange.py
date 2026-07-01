@@ -54,14 +54,18 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     #Initial value taken from exact solution when eta=0
     Roots = Solve_Quartic_Exact(gamma, Omega, theta)
     chi0 = Pick_Root(Roots,gamma,Omega,theta)
-
+    
+    EtaSteps = np.linspace(0,eta,10)
     Guess = [chi0.real, chi0.imag]
-    #Relax eta=0 condition
-    Solution = fsolve(
-        Trancendental_Quartic,
-        x0=Guess,
-        args=(gamma, Omega, eta, theta)
-    )
+    
+    for EtaIntermediate in EtaSteps:
+        #Relax eta=0 condition
+        Solution = fsolve(
+            Trancendental_Quartic,
+            x0=Guess,
+            args=(gamma, Omega, EtaIntermediate, theta)
+        )
+        Guess = [Solution[0], Solution[1]]
 
     return Solution[0] + 1j*Solution[1]
 
