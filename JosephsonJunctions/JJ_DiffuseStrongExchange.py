@@ -66,7 +66,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_BNF):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -76,12 +76,13 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    
+    gamma_BNF = AR/(CoherenceLength*Resistivity)
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
         
         theta = np.arctan(SC_gap/(k_B*T_c*w))
+        
         Chi = solve_chi_continuation(gamma_BNF, w, theta, eta)
 
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
@@ -100,11 +101,11 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-Model.CoherenceLength.range(1E-3,10)
+#Model.CoherenceLength.range(1E-3,10)
 Model.H.range(1E-6,5E-3)
 #Model.Temperature.range(1,10)
 Model.SpinScatterTime.range(1E-14,1E-8)
-Model.gamma_BNF.range(0.01,100)
+Model.Resistivity.range(10,1000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -115,11 +116,11 @@ Model.gamma_BNF.range(0.01,100)
 
 #Initial values
 
-Model.CoherenceLength.value = 1.3
+Model.CoherenceLength.value = CoherenceLength
 Model.H.value = 1.5E-3
 Model.Temperature.value = 4.2
 Model.SpinScatterTime.value = 100E-15
-Model.gamma_BNF.value = 100E-15
+Model.Resistivity.value = 62
 
 problem = bmp.FitProblem(Model)
 
