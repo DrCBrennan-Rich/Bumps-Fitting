@@ -13,18 +13,15 @@ from scipy.optimize import fsolve
 k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
-CoherenceLength = 3.0 #nm
+
 Resistivity = 16.8 #ohm nm
-e = 1#1.6021766E-19 #Coulombs
 hbar = 6.582E-16 #eV*s
-FermiVelocity = 3.3E5 #m/s
+FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
-
-
-
-n=1
-T = 4.2
+DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 T_c = 8.5
+CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
+
 FreqCutoff=50
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
