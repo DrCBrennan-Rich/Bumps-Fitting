@@ -73,7 +73,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
     J_c = np.zeros_like(d_F, dtype='float')
     
     N_list = np.arange(FreqCutoff)
-    Omega_list = (T/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
+    Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
     
@@ -96,8 +96,7 @@ Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
     Temperature=Temperature,
-    Resistivity = Resistivity,
-    H=H)
+    Resistivity = Resistivity)
 
 ### Limits of fitting values ###
 
