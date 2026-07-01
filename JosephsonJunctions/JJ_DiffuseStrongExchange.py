@@ -55,7 +55,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     Roots = Solve_Quartic_Exact(gamma, Omega, theta)
     chi0 = Pick_Root(Roots,gamma,Omega,theta)
     
-    EtaSteps = np.linspace(0,eta,10)
+    EtaSteps = np.linspace(0,eta,5)
     Guess = [chi0.real, chi0.imag]
     
     for EtaIntermediate in EtaSteps:
@@ -68,6 +68,31 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
         Guess = [Solution[0], Solution[1]]
 
     return Solution[0] + 1j*Solution[1]
+
+def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
+    
+    Difference = theta_NS-theta_S
+    
+    Term1 = (Omega*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
+    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+    
+    theta_NF = Term1 + Term2 + theta_NS
+    return theta_NF
+
+def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
+    
+    U = 2*gamma_NF*gamma_BSN*Chi*np.sqrt(Omega+eta*(1-Chi*Chi))
+    V = (Omega*d_N*gamma_BSN/xi_N) + np.cos(theta_S)
+    
+    a = (V*V)/(np.sin(theta_S)*np.sin(theta_S)) + 1
+    b = 2*U*V/(np.sin(theta_S)*np.sin(theta_S)) 
+    c = (U*U)/(np.sin(theta_S)*np.sin(theta_S)) - 1
+    
+    coeffs = [a,b,c]
+
+    theta_NS = np.roots(coeffs)
+    
+    return theta_NS
 
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
@@ -85,9 +110,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
     
     for gamma, w in zip(gamma_list, Omega_list):
         
-        theta = np.arctan(SC_gap/(k_B*T_c*w))
+        theta_S = np.arctan(SC_gap/(k_B*T_c*w))
         
-        Chi = solve_chi_continuation(gamma_BNF, w, theta, eta)
+        Chi = solve_chi_continuation(gamma_BNF, w, theta_S, eta)
 
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
@@ -108,8 +133,8 @@ Model = bmp.Curve(
 #Model.CoherenceLength.range(1E-3,10)
 Model.H.range(1E-6,5E-3)
 #Model.Temperature.range(1,10)
-Model.SpinScatterTime.range(1E-14,1E-8)
-Model.Resistivity.range(10,1000)
+Model.SpinScatterTime.range(1E-14,1E-6)
+Model.Resistivity.range(10,2000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
