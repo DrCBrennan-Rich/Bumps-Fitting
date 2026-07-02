@@ -24,6 +24,12 @@ CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 AR = 5.7*1E3 #Ohm nm^2
 FreqCutoff=50
 
+
+d_N = 1
+xi_N = 5
+gamma_BSN = 1
+gamma_NF = 1
+
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
@@ -105,6 +111,25 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     
     return theta_NS
 
+def Angle_Equations(theta_guess, d_N, xi_N, gamma_NF, gamma_BNF, Omega,
+                    eta, Chi, theta_S):
+    
+    theta_NF = theta_guess[0]
+    theta_NS = theta_guess[1]
+    #Equation 22:
+    S = np.sin(theta_NF)
+    u = np.sqrt(Omega+eta*(1-Chi*Chi))
+    Residual1 = Chi**4+(2*gamma_BNF*u*S)*Chi**3+((gamma_BNF*u)**2-1)*Chi**2-(gamma_BNF*u*S)*Chi+0.25*S*S
+    
+    #Equation A5
+    Difference = theta_NS-theta_S
+    
+    Term1 = (Omega*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
+    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+    Residual2 = Term1 + Term2 + theta_NS - theta_NF
+    
+    return [Residual1, Residual2]
+
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
     
@@ -123,8 +148,26 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
         
         theta_S = np.arctan(SC_gap/(k_B*T_c*w))
         
-        Chi = solve_chi_continuation(gamma_BNF, w, theta_S, eta)
+        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
+        
+        theta_NF_initial= Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        
+        Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
+        
+        Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
+        
+        
+        
+        
+        
+        
+        
+        theta_S = np.arctan(SC_gap/(k_B*T_c*w))
+        #theta_NS = Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, w, eta, Chi, theta_S)
 
+        #theta_NF = Find_Theta_NF(d_N, w, xi_N, theta_NS, gamma_BSN, theta_S)
+        Chi = solve_chi_continuation(gamma_BNF, w, theta_S, eta)
+        
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
         J_c += Term
          
