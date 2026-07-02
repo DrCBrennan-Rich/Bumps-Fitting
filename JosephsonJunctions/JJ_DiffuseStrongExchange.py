@@ -25,10 +25,22 @@ AR = 5.7*1E3 #Ohm nm^2
 FreqCutoff=50
 
 
-d_N = 1
+d_N = 0.4
 xi_N = 5
 gamma_BSN = 1
-gamma_NF = 1
+gamma_NF = 0.01
+
+
+
+
+T_c = 9.2
+SpinScatterTime = np.inf
+#gamma_NF = 0.01
+h = 30
+xi_N = 1
+d_N = 0.4
+gamma_BNF = 0.001
+gamma_BSN = 0.001/0.01
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
@@ -147,7 +159,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     
     S = np.sin(theta_NF)
     u = np.sqrt(Omega + eta*(1 - Chi**2))
-    diff = theta_NS - theta_S
+    Difference = theta_NS - theta_S
 
     #Equation 22, complex
     eq22= (
@@ -160,16 +172,16 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     
     #Equation A5
     eqA5 = theta_NF - (
-        (Omega*d_N**2*np.sin(theta_NS)) / (2*xi_N**2)
-        + (d_N*np.sin(diff)) / (gamma_BSN*xi_N)
+        (np.real(Omega)*d_N**2*np.sin(theta_NS)) / (2*xi_N**2)
+        + (d_N*np.sin(Difference)) / (gamma_BSN*xi_N)
         + theta_NS
     )
     
     #Equation A8
     eqA8 = (
-        -2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1 - Chi**2))*Chi
-        - (Omega*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
-        - np.sin(diff)
+        -2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1-Chi**2))*Chi
+        - (np.real(Omega)*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
+        - np.sin(Difference)
     )
     
     eq22_real = np.real(eq22)
@@ -186,7 +198,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
             eqA8_real, eqA8_imaginary]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -282,25 +294,31 @@ problem = bmp.FitProblem(Model)
 problem.show()
 
 #Run some test values to see how they affect the final plot
+'''
 plt.errorbar(
     d, y, yerr=dy,
     fmt='H',
     capsize=3,
     label='Experimental data'
 )
+'''
+X_axis = np.linspace(0.1, 1.5, 100)
 
-for tau_test in [100E-15]: #0.00432
+
+for gamma_NF_test in [1, 0.1, 0.01]: #0.00432
     ytest = JC_DiffuseExchange(
-        d,
-        Temperature=Temperature,
+        X_axis,
+        Temperature=T_c/2,
         Resistivity = Resistivity,
-        CoherenceLength=0.3,
-        #gamma_BNF = 0.5,
-        SpinScatterTime= tau_test,#0.109,
-        H=0.01)
-    plt.plot(d, ytest, label=f"eta={tau_test}")
+        CoherenceLength=1,
+        SpinScatterTime= SpinScatterTime,
+        H=h*np.pi*k_B*T_c,
+        gamma_NF = gamma_NF_test)
+    plt.plot(X_axis, ytest, label=f"gamma_NF={gamma_NF_test}")
     
 plt.legend()
 plt.yscale('log')
-plt.savefig("DiffuseStrongExchange.svg", format="svg")
+plt.savefig("Changing_gamma_NF.svg", format="svg")
 plt.show()
+
+#JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H)
