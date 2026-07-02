@@ -96,7 +96,7 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
 
 
 def Find_Theta_NS2(d_N, Omega, xi_N, gamma_BSN, theta_S):
-    
+    #If eta and gamma_NF = 0 then this function will find theta_NS
     A = (Omega*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
     B = (A+np.cot(theta_S))*(A+np.cot(theta_S))
     C = np.sqrt(1/(B+1))
