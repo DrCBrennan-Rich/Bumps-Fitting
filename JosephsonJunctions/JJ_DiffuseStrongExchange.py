@@ -95,6 +95,17 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
     return theta_NS
 
 
+def Find_Theta_NS2(d_N, Omega, xi_N, gamma_BSN, theta_S):
+    
+    A = (Omega*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
+    B = (A+np.cot(theta_S))*(A+np.cot(theta_S))
+    C = np.sqrt(1/(B+1))
+    
+    theta_NS = np.arcsin(C)   
+    
+    return theta_NS
+
+
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
