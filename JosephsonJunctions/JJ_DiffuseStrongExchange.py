@@ -68,7 +68,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
         #Relax eta=0 condition
         Solution = fsolve(
             Trancendental_Quartic,
-            x0=Guess,
+            Guess,
             args=(gamma, Omega, EtaIntermediate, theta)
         )
         Guess = [Solution[0], Solution[1]]
@@ -130,12 +130,67 @@ def Angle_Equations(theta_guess, d_N, xi_N, gamma_NF, gamma_BNF, Omega,
     
     return [Residual1, Residual2]
 
+def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
+           d_N, xi_N, theta_S):
+
+    ChiReal = ChiAndAngles[0]
+    ChiImaginary = ChiAndAngles[1]
+    Chi = ChiReal + 1j*ChiImaginary
+    
+    theta_NS_Real = ChiAndAngles[2]
+    theta_NS_Imaginary = ChiAndAngles[3]
+    theta_NS = theta_NS_Real + 1j*theta_NS_Imaginary
+    
+    theta_NF_Real = ChiAndAngles[4]
+    theta_NF_Imaginary = ChiAndAngles[5]
+    theta_NF = theta_NF_Real + theta_NF_Imaginary
+    
+    S = np.sin(theta_NF)
+    u = np.sqrt(Omega + eta*(1 - Chi**2))
+    diff = theta_NS - theta_S
+
+    #Equation 22, complex
+    eq22= (
+        Chi**4
+        + (2*gamma_BNF*u*S)*Chi**3
+        + ((gamma_BNF*u)**2 - 1)*Chi**2
+        - (gamma_BNF*u*S)*Chi
+        + 0.25*S**2
+    )
+    
+    #Equation A5
+    eqA5 = theta_NF - (
+        (Omega*d_N**2*np.sin(theta_NS)) / (2*xi_N**2)
+        + (d_N*np.sin(diff)) / (gamma_BSN*xi_N)
+        + theta_NS
+    )
+    
+    #Equation A8
+    eqA8 = (
+        -2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1 - Chi**2))*Chi
+        - (Omega*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
+        - np.sin(diff)
+    )
+    
+    eq22_real = np.real(eq22)
+    eq22_imaginary = np.imag(eq22)
+   
+    eqA5_real = np.real(eqA5)
+    eqA5_imaginary = np.real(eqA5)
+    
+    eqA8_real = np.real(eqA8)
+    eqA8_imaginary = np.real(eqA8)
+
+    return [eq22_real, eq22_imaginary, 
+            eqA5_real, eqA5_imaginary,
+            eqA8_real, eqA8_imaginary]
+
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
-    J_c = np.zeros_like(d_F, dtype='float')
+    J_c = np.zeros_like(d_F, dtype=np.complex128)
     
     N_list = np.arange(FreqCutoff)
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
@@ -145,33 +200,49 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
+        #Define theta_S
+        theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
+        #print("LOOK LOOK LOOK", theta_S)
+        #Find the intial angles taking gamma_NF and eta = 0
+        theta_NS_initial = np.real(Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S))
+        theta_NF_initial = np.real(Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S))
         
-        theta_S = np.arctan(SC_gap/(k_B*T_c*w))
-        
-        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
-        
-        theta_NF_initial= Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
-        
+        #Exact solution of the quartic and then selecting the real root
         Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
-        
         Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
         
+        Guess = [np.real(Chi_initial), np.imag(Chi_initial),
+                 np.real(theta_NS_initial), np.imag(theta_NS_initial), 
+                 np.real(theta_NF_initial), np.imag(theta_NF_initial)]
+              
+        gamma_NF_Steps = np.linspace(0,gamma_NF,1)
+        EtaSteps = np.linspace(0,eta,1)
         
+        for gammaIntermediate in gamma_NF_Steps:
+            #Relax the gamma_NF = 0 condition
+            Solution = fsolve(All_Equations,
+                Guess, args=(w, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
+                      d_N, xi_N, theta_S))
+            Guess = [Solution[0], Solution[1], 
+                     Solution[2], Solution[3],
+                     Solution[4], Solution[5]]
         
+        for EtaIntermediate in EtaSteps:
+            #Relax eta=0 condition
+            Solution = fsolve(All_Equations,
+                Guess,
+                args=(w, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
+                      d_N, xi_N, theta_S))
+            Guess = [Solution[0], Solution[1], 
+                     Solution[2], Solution[3],
+                     Solution[4], Solution[5]]
         
+        Chi = Solution[0] + 1j*Solution[1]
         
-        
-        
-        theta_S = np.arctan(SC_gap/(k_B*T_c*w))
-        #theta_NS = Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, w, eta, Chi, theta_S)
-
-        #theta_NF = Find_Theta_NF(d_N, w, xi_N, theta_NS, gamma_BSN, theta_S)
-        Chi = solve_chi_continuation(gamma_BNF, w, theta_S, eta)
-        
-        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi*Chi)
+        Term = gamma*np.exp(-gamma*d_F)*Chi*Chi
         J_c += Term
          
-    return Amplitude*np.abs(J_c)
+    return Amplitude*np.abs(np.real(J_c))
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
