@@ -41,6 +41,7 @@ xi_N = 1
 d_N = 0.4
 gamma_BNF = 0.001
 gamma_BSN = 0.001/0.01 #0.001/0.01
+gamma_BSF = 1
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
@@ -198,7 +199,8 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
             eqA8_real, eqA8_imaginary]
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, 
+                       CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N):
     
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity)
     
@@ -249,9 +251,27 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
                      Solution[2], Solution[3],
                      Solution[4], Solution[5]]
         
-        Chi = Solution[0] + 1j*Solution[1]
+        Chi1 = Solution[0] + 1j*Solution[1]
         
-        Term = gamma*np.exp(-gamma*d_F)*Chi*Chi
+        Roots2 = Solve_Quartic_Exact(gamma_BSF, w, theta_S)
+        
+        Chi2_Initial = Pick_Root(Roots2, gamma_BSF, w, theta_S)
+        
+        EtaSteps = np.linspace(0,eta,5)
+        Guess = [Chi2_Initial.real, Chi2_Initial.imag]
+        
+        for EtaIntermediate in EtaSteps:
+            #Relax eta=0 condition
+            Solution = fsolve(
+                Trancendental_Quartic,
+                Guess,
+                args=(gamma_BSF, w, EtaIntermediate, theta_S)
+            )
+            Guess = [Solution[0], Solution[1]]
+         
+        Chi2 = Solution[0] + 1j*Solution[1]
+        
+        Term = gamma*np.exp(-gamma*d_F)*Chi1*Chi2
         J_c += Term
          
     return Amplitude*np.abs(np.real(J_c))
@@ -303,7 +323,7 @@ plt.errorbar(
 )
 '''
 X_axis = np.linspace(0.1, 1.5, 100)
-
+J_0 = np.pi*k_B*T_c/(Resistivity*CoherenceLength)
 
 for gamma_NF_test in [0.01,0.1,1]: #0.00432
     ytest = JC_DiffuseExchange(
@@ -312,9 +332,12 @@ for gamma_NF_test in [0.01,0.1,1]: #0.00432
         Resistivity = Resistivity,
         CoherenceLength=1,
         SpinScatterTime= SpinScatterTime,
-        H=h*np.pi*k_B*T_c,
-        gamma_NF = gamma_NF_test)
-    plt.plot(X_axis, ytest, label=f"gamma_NF={gamma_NF_test}")
+        H=0.6*h*np.pi*k_B*T_c,
+        gamma_NF = gamma_NF_test,
+        gamma_BSN=0.001/gamma_NF_test,
+        d_N=0.4*xi_N,
+        xi_N=0.2/0.4)
+    plt.plot(X_axis, ytest/J_0, label=f"gamma_NF={gamma_NF_test}")
     
 plt.legend()
 plt.yscale('log')
