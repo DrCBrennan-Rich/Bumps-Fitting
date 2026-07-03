@@ -40,7 +40,7 @@ h = 30
 xi_N = 1
 d_N = 0.4
 gamma_BNF = 0.001
-gamma_BSN = 0.001/0.01
+gamma_BSN = 0.001/0.01 #0.001/0.01
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
@@ -155,7 +155,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     
     theta_NF_Real = ChiAndAngles[4]
     theta_NF_Imaginary = ChiAndAngles[5]
-    theta_NF = theta_NF_Real + theta_NF_Imaginary
+    theta_NF = theta_NF_Real + 1j*theta_NF_Imaginary
     
     S = np.sin(theta_NF)
     u = np.sqrt(Omega + eta*(1 - Chi**2))
@@ -188,10 +188,10 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     eq22_imaginary = np.imag(eq22)
    
     eqA5_real = np.real(eqA5)
-    eqA5_imaginary = np.real(eqA5)
+    eqA5_imaginary = np.imag(eqA5)
     
     eqA8_real = np.real(eqA8)
-    eqA8_imaginary = np.real(eqA8)
+    eqA8_imaginary = np.imag(eqA8)
 
     return [eq22_real, eq22_imaginary, 
             eqA5_real, eqA5_imaginary,
@@ -227,8 +227,8 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, Coherence
                  np.real(theta_NS_initial), np.imag(theta_NS_initial), 
                  np.real(theta_NF_initial), np.imag(theta_NF_initial)]
               
-        gamma_NF_Steps = np.linspace(0,gamma_NF,1)
-        EtaSteps = np.linspace(0,eta,1)
+        gamma_NF_Steps = np.linspace(0,gamma_NF,10)
+        EtaSteps = np.linspace(0,eta,10)
         
         for gammaIntermediate in gamma_NF_Steps:
             #Relax the gamma_NF = 0 condition
@@ -305,7 +305,7 @@ plt.errorbar(
 X_axis = np.linspace(0.1, 1.5, 100)
 
 
-for gamma_NF_test in [1, 0.1, 0.01]: #0.00432
+for gamma_NF_test in [0.01,0.1,1]: #0.00432
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=T_c/2,
