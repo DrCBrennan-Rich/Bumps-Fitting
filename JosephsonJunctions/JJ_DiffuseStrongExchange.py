@@ -36,7 +36,7 @@ h = 30
 xi_N = 1
 d_N = 0.4
 gamma_BNF = 0.001
-gamma_BSN = 0.001/0.01 #0.001/0.01
+gamma_BSN = 0.001/0.01
 gamma_BSF = 1
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
@@ -88,7 +88,7 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     
     Difference = theta_NS-theta_S
     
-    Term1 = (Omega*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
+    Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
     Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
     
     theta_NF = Term1 + Term2 + theta_NS
@@ -330,7 +330,7 @@ for gamma_NF_test in [0.01,0.1,1]: #0.00432
         SpinScatterTime= SpinScatterTime,
         H=0.6*h*np.pi*k_B*T_c,
         gamma_NF = gamma_NF_test,
-        gamma_BSN=0.001/gamma_NF_test,
+        gamma_BSN=100/gamma_NF_test,#0.001/gamma_NF_test,
         d_N=0.4*xi_N,
         xi_N=0.2/0.4)
     plt.plot(X_axis, ytest/J_0, label=f"gamma_NF={gamma_NF_test}")
