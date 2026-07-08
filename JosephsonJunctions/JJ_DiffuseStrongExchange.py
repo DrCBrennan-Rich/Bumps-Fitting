@@ -24,14 +24,10 @@ CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 AR = 5.7*1E3 #Ohm nm^2
 FreqCutoff=50
 
-
 d_N = 0.4
 xi_N = 5
 gamma_BSN = 1
 gamma_NF = 0.01
-
-
-
 
 T_c = 9.2
 SpinScatterTime = np.inf
