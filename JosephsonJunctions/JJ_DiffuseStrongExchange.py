@@ -41,12 +41,15 @@ gamma_BSF = 1
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
+
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     Chi = Chi_vec[0]+1j*Chi_vec[1]
     S = np.sin(theta)
     u = np.sqrt(Omega+eta*(1-Chi*Chi))
     Residual = Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+0.25*S*S
     return [np.real(Residual), np.imag(Residual)]
+
+
 
 def Solve_Quartic_Exact(gamma,Omega,theta):
     S = np.sin(theta)
@@ -95,7 +98,7 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     return theta_NF
 
 def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
-    
+    #Impliments equation A8
     U = 2*gamma_NF*gamma_BSN*Chi*np.sqrt(Omega+eta*(1-Chi*Chi))
     V = (Omega*d_N*gamma_BSN/xi_N) + np.cos(theta_S)
     
@@ -105,7 +108,7 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
     
     coeffs = [a,b,c]
 
-    theta_NS = np.roots(coeffs)
+    theta_NS = np.arcsin(np.roots(coeffs))
     
     return theta_NS
 
@@ -120,24 +123,14 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     
     return theta_NS
 
-def Angle_Equations(theta_guess, d_N, xi_N, gamma_NF, gamma_BNF, Omega,
-                    eta, Chi, theta_S):
+def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
+    #If eta and gamma_NF = 0 then this function will find theta_NS
+    A = gamma_BSN*Omega*d_N/xi_N
+    Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
     
-    theta_NF = theta_guess[0]
-    theta_NS = theta_guess[1]
-    #Equation 22:
-    S = np.sin(theta_NF)
-    u = np.sqrt(Omega+eta*(1-Chi*Chi))
-    Residual1 = Chi**4+(2*gamma_BNF*u*S)*Chi**3+((gamma_BNF*u)**2-1)*Chi**2-(gamma_BNF*u*S)*Chi+0.25*S*S
+    theta_NS = np.arcsin(np.sin(theta_S)/Lambda)   
     
-    #Equation A5
-    Difference = theta_NS-theta_S
-    
-    Term1 = (Omega*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
-    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
-    Residual2 = Term1 + Term2 + theta_NS - theta_NF
-    
-    return [Residual1, Residual2]
+    return theta_NS
 
 def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
            d_N, xi_N, theta_S):
@@ -214,7 +207,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
         theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
         #print("LOOK LOOK LOOK", theta_S)
         #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = np.real(Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S))
+        theta_NS_initial = np.real(Find_Theta_NS_Initial2(d_N, w, xi_N, gamma_BSN, theta_S))
         theta_NF_initial = np.real(Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S))
         
         #Exact solution of the quartic and then selecting the real root
@@ -269,7 +262,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
         
         Term = gamma*np.exp(-gamma*d_F)*Chi1*Chi2
         J_c += Term
-         
+           
     return Amplitude*np.abs(np.real(J_c))
 
 #Load the data from the file Data.txt
@@ -334,6 +327,8 @@ for gamma_NF_test in [0.01,0.1,1]: #0.00432
         d_N=0.4*xi_N,
         xi_N=0.2/0.4)
     plt.plot(X_axis, ytest/J_0, label=f"gamma_NF={gamma_NF_test}")
+    
+    
     
 plt.legend()
 plt.yscale('log')
