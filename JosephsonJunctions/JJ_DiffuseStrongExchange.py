@@ -120,7 +120,7 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
 
 
 def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
-    #If eta and gamma_NF = 0 then this function will find theta_NS
+    #If eta and gamma_NF = 0 then this function will find theta_NS from equation A8
     A = (Omega*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
     B = (A+(1/np.tan(theta_S)))*(A+(1/np.tan(theta_S)))
     C = np.sqrt(1/(B+1))
@@ -130,7 +130,7 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     return theta_NS
 
 def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
-    #If eta and gamma_NF = 0 then this function will find theta_NS
+    #If eta and gamma_NF = 0 then this function will find theta_NS, based off equation A10/11
     A = gamma_BSN*Omega*d_N/xi_N
     Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
     
