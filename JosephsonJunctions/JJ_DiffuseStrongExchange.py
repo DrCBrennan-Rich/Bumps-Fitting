@@ -65,6 +65,7 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     return Roots
 
 def Pick_Root(Roots,gamma,Omega,theta):
+    #Four roots exist, selects the correct one using equation 19 or 21
     
     LHS = 2*gamma*np.sqrt(Omega)*Roots
     RHS = np.sin(theta-2*np.arcsin(Roots))
