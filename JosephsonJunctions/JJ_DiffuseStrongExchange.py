@@ -138,6 +138,20 @@ def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
     
     return theta_NS
 
+def Find_Theta_NS_Initial3(d_N, Omega, xi_N, gamma_BSN, theta_S):
+    #If eta and gamma_NF = 0 then this function will find theta_NS
+    U = Omega*d_N*gamma_BSN/xi_N
+    A = (U+np.cos(theta_S))*(U+np.cos(theta_S))/(np.sin(theta_S)*np.sin(theta_S))
+    B = 1
+    C = -1
+
+    coeffs = [A,B,C]
+    theta_NS = np.arcsin(np.roots(coeffs))
+    
+    theta_NS = np.arcsin(C)   
+    
+    return theta_NS
+
 def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
            d_N, xi_N, theta_S):
 
