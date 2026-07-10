@@ -54,6 +54,8 @@ def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
 
 
 def Solve_Quartic_Exact(gamma,Omega,theta):
+    #Solve equation 20 or 22 if eta = 0
+    
     S = np.sin(theta)
     u = np.sqrt(Omega)
 
