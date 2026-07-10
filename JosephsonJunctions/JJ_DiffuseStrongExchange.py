@@ -93,6 +93,7 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
     return Solution[0] + 1j*Solution[1]
 
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
+    #Equation A5
     
     Difference = theta_NS-theta_S
     
