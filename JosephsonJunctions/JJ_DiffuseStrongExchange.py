@@ -43,6 +43,8 @@ Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
+    #Equation 20 and 22
+    
     Chi = Chi_vec[0]+1j*Chi_vec[1]
     S = np.sin(theta)
     u = np.sqrt(Omega+eta*(1-Chi*Chi))
