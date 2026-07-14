@@ -14,12 +14,12 @@ k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 
+T_c = 9.2
 Resistivity = 16.8 #ohm nm
 hbar = 6.582E-16 #eV*s
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
-T_c = 8.5
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 AR = 5.7*1E3 #Ohm nm^2
 FreqCutoff=50
@@ -29,17 +29,16 @@ xi_N = 5
 gamma_BSN = 1
 gamma_NF = 0.01
 
-T_c = 9.2
 SpinScatterTime = np.inf
 #gamma_NF = 0.01
 h = 30
 xi_N = 1
 d_N = 0.4
 gamma_BNF = 0.001
-gamma_BSN = 0.001/0.01
 gamma_BSF = 1
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
+
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     #Equation 20 and 22
@@ -197,18 +196,18 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
     J_c = np.zeros_like(d_F, dtype=np.complex128)
     
     N_list = np.arange(FreqCutoff)
+    #"Omega" in this work will refer to Omega-tilda in the original paper
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    gamma_BNF = AR/(CoherenceLength*Resistivity)
+    gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
-        #Define theta_S
+        #Define theta_S from equation 5
         theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
-        #print("LOOK LOOK LOOK", theta_S)
         #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = np.real(Find_Theta_NS_Initial2(d_N, w, xi_N, gamma_BSN, theta_S))
+        theta_NS_initial = np.real(Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S))
         theta_NF_initial = np.real(Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S))
         
         #Exact solution of the quartic and then selecting the real root
@@ -300,7 +299,7 @@ Model.Resistivity.value = 62
 problem = bmp.FitProblem(Model)
 
 #This line is not strictly required, but allows you to run this py file check the initial parameters.
-problem.show()
+#problem.show()
 
 #Run some test values to see how they affect the final plot
 '''
@@ -311,24 +310,27 @@ plt.errorbar(
     label='Experimental data'
 )
 '''
-X_axis = np.linspace(0.1, 1.5, 100)
-J_0 = np.pi*k_B*T_c/(Resistivity*CoherenceLength)
+CoherenceLength = 1
+X_axis = np.linspace(0.1, 1.5, 1000)
+J_0 = Area*np.pi*k_B*T_c/(Resistivity*CoherenceLength)
 
 for gamma_NF_test in [0.01,0.1,1]: #0.00432
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=T_c/2,
         Resistivity = Resistivity,
-        CoherenceLength=1,
+        CoherenceLength=CoherenceLength,
         SpinScatterTime= SpinScatterTime,
         H=0.6*h*np.pi*k_B*T_c,
         gamma_NF = gamma_NF_test,
-        gamma_BSN=100/gamma_NF_test,#0.001/gamma_NF_test,
+        gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
         d_N=0.4*xi_N,
         xi_N=0.2/0.4)
-    plt.plot(X_axis, ytest/J_0, label=f"gamma_NF={gamma_NF_test}")
-        
-plt.legend()
+    plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
+    
+plt.legend(fontsize = 25)
 plt.yscale('log')
-plt.savefig("Changing_gamma_NF.svg", format="svg")
-plt.show()
+#plt.savefig("Changing_gamma_NF.svg", format="svg")
+#plt.show()
+
+JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
