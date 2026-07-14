@@ -10,13 +10,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 
-hbar = 6.582E-16 #eV*s
 k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 
 T_c = 9.2
 Resistivity = 16.8 #ohm nm
+hbar = 6.582E-16 #eV*s
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
@@ -147,31 +147,26 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     theta_NF = theta_NF_Real + 1j*theta_NF_Imaginary
     
     S = np.sin(theta_NF)
-    u = np.sqrt(Omega + eta*(1-Chi**2))
+    u = np.sqrt(Omega + eta*(1-Chi*Chi))
     Difference = theta_NS - theta_S
 
     #Equation 22, complex
-    eq22= (
-        Chi**4
-        + (2*gamma_BNF*u*S)*Chi**3
-        + ((gamma_BNF*u)**2 - 1)*Chi**2
+    eq22= (Chi*Chi*Chi*Chi
+        + (2*gamma_BNF*u*S)*Chi*Chi*Chi
+        + ((gamma_BNF*u)*(gamma_BNF*u)-1)*Chi*Chi
         - (gamma_BNF*u*S)*Chi
-        + 0.25*S**2
-    )
+        + 0.25*S*S)
     
     #Equation A5
     eqA5 = theta_NF - (
-        (np.real(Omega)*d_N**2*np.sin(theta_NS)) / (2*xi_N**2)
-        + (d_N*np.sin(Difference)) / (gamma_BSN*xi_N)
-        + theta_NS
-    )
+        (np.real(Omega)*d_N*d_N*np.sin(theta_NS))/(2*xi_N*xi_N)
+        + (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+        + theta_NS)
     
     #Equation A8
-    eqA8 = (
-        -2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1-Chi**2))*Chi
+    eqA8 = (-2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1-Chi**2))*Chi
         - (np.real(Omega)*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
-        - np.sin(Difference)
-    )
+        - np.sin(Difference))
     
     eq22_real = np.real(eq22)
     eq22_imaginary = np.imag(eq22)
