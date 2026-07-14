@@ -10,13 +10,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 
+hbar = 6.582E-16 #eV*s
 k_B = 8.617333262E-5 #eV/K
 SC_gap = 1.5E-3 #eV
 Temperature = 4.2 #K
 
 T_c = 9.2
 Resistivity = 16.8 #ohm nm
-hbar = 6.582E-16 #eV*s
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
