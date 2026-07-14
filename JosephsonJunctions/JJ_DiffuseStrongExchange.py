@@ -313,19 +313,21 @@ CoherenceLength = 1
 X_axis = np.linspace(0.1, 1.5, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity*CoherenceLength)
 
-for gamma_NF_test in [0.01,0.1,1]: #0.00432
-    ytest = JC_DiffuseExchange(
-        X_axis,
-        Temperature=T_c/2,
-        Resistivity = Resistivity,
-        CoherenceLength=CoherenceLength,
-        SpinScatterTime= SpinScatterTime,
-        H=0.6*h*np.pi*k_B*T_c,
-        gamma_NF = gamma_NF_test,
-        gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
-        d_N=0.4*xi_N,
-        xi_N=1)
-    plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
+for dN_test in [0.1, 0.2, 0.3, 0.4, 1]:
+    for gamma_NF_test in [0.01,0.1,1]: #0.00432
+        ytest = JC_DiffuseExchange(
+            X_axis,
+            Temperature=T_c/2,
+            Resistivity = Resistivity,
+            CoherenceLength=CoherenceLength,
+            SpinScatterTime= SpinScatterTime,
+            H=0.6*h*np.pi*k_B*T_c,
+            gamma_NF = gamma_NF_test,
+            gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
+            d_N=dN_test,
+            xi_N=1)
+        plt.figure()
+        plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
     
 plt.legend(fontsize = 25)
 plt.yscale('log')
