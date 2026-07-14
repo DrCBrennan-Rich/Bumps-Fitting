@@ -340,5 +340,3 @@ plt.legend()
 plt.yscale('log')
 plt.savefig("Changing_gamma_NF.svg", format="svg")
 plt.show()
-
-#JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H)
