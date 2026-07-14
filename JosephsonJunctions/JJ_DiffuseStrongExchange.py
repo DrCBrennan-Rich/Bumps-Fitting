@@ -300,6 +300,29 @@ problem = bmp.FitProblem(Model)
 #problem.show()
 
 #Run some test values to see how they affect the final plot
+
+CoherenceLength = 1
+X_axis = np.linspace(0.1, 1.5, 1000)
+J_0 = Area*np.pi*k_B*T_c/(Resistivity*CoherenceLength)
+
+for gamma_NF_test in [0.01,0.1,1]: #0.00432
+    ytest = JC_DiffuseExchange(
+        X_axis,
+        Temperature=T_c/2,
+        Resistivity = Resistivity,
+        CoherenceLength=CoherenceLength,
+        SpinScatterTime= SpinScatterTime,
+        H=0.6*h*np.pi*k_B*T_c,
+        gamma_NF = gamma_NF_test,
+        gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
+        d_N=0.4,
+        xi_N=1)
+    
+    plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
+    
+plt.legend(fontsize = 25)
+plt.yscale('log')
+
 '''
 plt.errorbar(
     d, y, yerr=dy,
@@ -312,23 +335,38 @@ CoherenceLength = 1
 X_axis = np.linspace(0.1, 1.5, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity*CoherenceLength)
 
-for dN_test in [0.1, 0.2, 0.3, 0.4, 1]:
-    for gamma_NF_test in [0.01,0.1,1]: #0.00432
+for gamma_NF_test in [0.01, 0.1, 1]:
+
+    plt.figure(figsize=(8,6))
+
+    for dN_test in [5,10]:
+
         ytest = JC_DiffuseExchange(
             X_axis,
             Temperature=T_c/2,
-            Resistivity = Resistivity,
+            Resistivity=Resistivity,
             CoherenceLength=CoherenceLength,
-            SpinScatterTime= SpinScatterTime,
+            SpinScatterTime=SpinScatterTime,
             H=0.6*h*np.pi*k_B*T_c,
-            gamma_NF = gamma_NF_test,
-            gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
+            gamma_NF=gamma_NF_test,
+            gamma_BSN=0.001/gamma_NF_test,
             d_N=dN_test,
-            xi_N=1)
-        
-        plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"d_N is {dN_test} and gamma_NF={gamma_NF_test}", linewidth = 5)
-    
-plt.legend(fontsize = 25)
-plt.yscale('log')
+            xi_N=30
+        )
+
+        plt.plot(
+            X_axis / CoherenceLength,
+            ytest / J_0,
+            linewidth=3,
+            label=rf"$d_N={dN_test}\,\mathrm{{nm}}$"
+        )
+
+    plt.title(rf"$\gamma_{{NF}}={gamma_NF_test}$", fontsize=20)
+    plt.xlabel(r"$d_F/\xi_F$", fontsize=16)
+    plt.ylabel(r"$J_c/J_0$", fontsize=16)
+    plt.yscale("log")
+    plt.legend(fontsize=14)
+    plt.tight_layout()
+    plt.show()
 #plt.savefig("Changing_gamma_NF.svg", format="svg")
 #plt.show()
