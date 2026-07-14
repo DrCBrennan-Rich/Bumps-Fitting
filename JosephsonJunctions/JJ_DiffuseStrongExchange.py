@@ -41,7 +41,6 @@ gamma_BSF = 1
 
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm
 
-
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     #Equation 20 and 22
     
@@ -50,8 +49,6 @@ def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     u = np.sqrt(Omega+eta*(1-Chi*Chi))
     Residual = Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+0.25*S*S
     return [np.real(Residual), np.imag(Residual)]
-
-
 
 def Solve_Quartic_Exact(gamma,Omega,theta):
     #Solve equation 20 or 22 if eta = 0
@@ -117,7 +114,6 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
     theta_NS = np.arcsin(np.roots(coeffs))
     
     return theta_NS
-
 
 def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     #If eta and gamma_NF = 0 then this function will find theta_NS from equation A8
@@ -192,7 +188,6 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     return [eq22_real, eq22_imaginary, 
             eqA5_real, eqA5_imaginary,
             eqA8_real, eqA8_imaginary]
-
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, 
                        CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N):
@@ -294,7 +289,6 @@ Model.Resistivity.range(10,2000)
 #Model.Resistance.dev(std=0.1, mean=0.16, limits=None)
 
 #######
-
 #Initial values
 
 Model.CoherenceLength.value = CoherenceLength
