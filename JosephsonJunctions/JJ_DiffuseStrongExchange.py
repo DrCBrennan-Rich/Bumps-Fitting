@@ -90,13 +90,12 @@ def solve_chi_continuation(gamma, Omega, theta, eta):
 
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     #Equation A5
-    
     Difference = theta_NS-theta_S
     
     Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
     Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
-    
     theta_NF = Term1 + Term2 + theta_NS
+    
     return theta_NF
 
 def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
@@ -116,7 +115,7 @@ def Find_Theta_NS(d_N, xi_N, gamma_NF, gamma_BSN, Omega, eta, Chi, theta_S):
 
 def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     #If eta and gamma_NF = 0 then this function will find theta_NS from equation A8
-    A = (Omega*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
+    A = (np.real(Omega)*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
     B = (A+(1/np.tan(theta_S)))*(A+(1/np.tan(theta_S)))
     C = np.sqrt(1/(B+1))
     
@@ -126,7 +125,7 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
 
 def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
     #If eta and gamma_NF = 0 then this function will find theta_NS, based off equation A10/11
-    A = gamma_BSN*Omega*d_N/xi_N
+    A = gamma_BSN*np.real(Omega)*d_N/xi_N
     Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
     
     theta_NS = np.arcsin(np.sin(theta_S)/Lambda)   
@@ -149,7 +148,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     theta_NF = theta_NF_Real + 1j*theta_NF_Imaginary
     
     S = np.sin(theta_NF)
-    u = np.sqrt(Omega + eta*(1 - Chi**2))
+    u = np.sqrt(Omega + eta*(1-Chi**2))
     Difference = theta_NS - theta_S
 
     #Equation 22, complex
@@ -207,10 +206,10 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
         #Define theta_S from equation 5
         theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
         #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = np.real(Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S))
-        theta_NF_initial = np.real(Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S))
+        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
+        theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
         
-        #Exact solution of the quartic and then selecting the real root
+        #Exact solution of the quartic equation 20/22 and then selecting the real root
         Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
         Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
         
@@ -246,7 +245,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
         
         Chi2_Initial = Pick_Root(Roots2, gamma_BSF, w, theta_S)
         
-        EtaSteps = np.linspace(0,eta,5)
+        EtaSteps = np.linspace(0,eta,10)
         Guess = [Chi2_Initial.real, Chi2_Initial.imag]
         
         for EtaIntermediate in EtaSteps:
@@ -260,10 +259,10 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime,
          
         Chi2 = Solution[0] + 1j*Solution[1]
         
-        Term = gamma*np.exp(-gamma*d_F)*Chi1*Chi2
+        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
         J_c += Term
            
-    return Amplitude*np.abs(np.real(J_c))
+    return Amplitude*np.abs(J_c)
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
@@ -325,12 +324,10 @@ for gamma_NF_test in [0.01,0.1,1]: #0.00432
         gamma_NF = gamma_NF_test,
         gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
         d_N=0.4*xi_N,
-        xi_N=0.2/0.4)
+        xi_N=1)
     plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
     
 plt.legend(fontsize = 25)
 plt.yscale('log')
 #plt.savefig("Changing_gamma_NF.svg", format="svg")
 #plt.show()
-
-JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
