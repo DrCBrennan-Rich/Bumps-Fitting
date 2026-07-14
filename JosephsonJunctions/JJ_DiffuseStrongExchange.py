@@ -333,9 +333,7 @@ for gamma_NF_test in [0.01,0.1,1]: #0.00432
         d_N=0.4*xi_N,
         xi_N=0.2/0.4)
     plt.plot(X_axis, ytest/J_0, label=f"gamma_NF={gamma_NF_test}")
-    
-    
-    
+        
 plt.legend()
 plt.yscale('log')
 plt.savefig("Changing_gamma_NF.svg", format="svg")
