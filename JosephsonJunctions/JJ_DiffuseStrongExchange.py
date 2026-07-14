@@ -326,8 +326,8 @@ for dN_test in [0.1, 0.2, 0.3, 0.4, 1]:
             gamma_BSN=0.001/gamma_NF_test,#0.001/gamma_NF_test,
             d_N=dN_test,
             xi_N=1)
-        plt.figure()
-        plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"gamma_NF={gamma_NF_test}", linewidth = 5)
+        
+        plt.plot(X_axis/CoherenceLength, ytest/J_0, label=f"d_N is {dN_test} and gamma_NF={gamma_NF_test}", linewidth = 5)
     
 plt.legend(fontsize = 25)
 plt.yscale('log')
