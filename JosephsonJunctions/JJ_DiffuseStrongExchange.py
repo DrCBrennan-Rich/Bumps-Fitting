@@ -233,9 +233,6 @@ d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/1.9E-3
-dy = dy/1.9E-3
-
 Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
