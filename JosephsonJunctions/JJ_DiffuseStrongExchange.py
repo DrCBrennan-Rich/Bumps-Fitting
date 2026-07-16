@@ -64,25 +64,6 @@ def Pick_Root(Roots,gamma,Omega,theta):
     i = np.argmin(np.abs(RHS-LHS))
     return Roots[i]
 
-def solve_chi_continuation(gamma, Omega, theta, eta):
-    #Initial value taken from exact solution when eta=0
-    Roots = Solve_Quartic_Exact(gamma, Omega, theta)
-    chi0 = Pick_Root(Roots,gamma,Omega,theta)
-    
-    EtaSteps = np.linspace(0,eta,5)
-    Guess = [chi0.real, chi0.imag]
-    
-    for EtaIntermediate in EtaSteps:
-        #Relax eta=0 condition
-        Solution = fsolve(
-            Trancendental_Quartic,
-            Guess,
-            args=(gamma, Omega, EtaIntermediate, theta)
-        )
-        Guess = [Solution[0], Solution[1]]
-
-    return Solution[0] + 1j*Solution[1]
-
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     #Equation A5
     Difference = theta_NS-theta_S
@@ -188,6 +169,8 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
         theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
         
         #Exact solution of the quartic equation 20/22 and then selecting the real root
+        
+        #####  For solving SNF boundary  #######
         Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
         Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
         
@@ -237,7 +220,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
          
         Chi2 = Solution[0] + 1j*Solution[1]
         
-        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi1)
+        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
         J_c += Term
            
     return Amplitude*np.abs(J_c)
