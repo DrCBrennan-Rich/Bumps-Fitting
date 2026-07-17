@@ -38,7 +38,6 @@ xi_N=30
 SC_gap = 1.5E-3 #eV
 Area = np.pi*(1.5E3)*(1.5E3)
 
-SpinScatterTime = np.inf
 gamma_BNF = 0.001
 gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
@@ -213,7 +212,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
                        xi_N, SC_gap, Area):
     
     Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
-    Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity_F)
+    Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity_F) #Area in nm^2
     
     J_c = np.zeros_like(d_F, dtype=np.complex128)
     
@@ -249,7 +248,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
       
         J_c += Term
         
-    return Amplitude*np.abs(J_c)
+    return Amplitude*np.abs(J_c) #Return the current in amps
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
@@ -365,7 +364,7 @@ J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 # #plt.savefig("Changing_gamma_NF.svg", format="svg")
 # #plt.show()
 
-for test in [0.0234461]:
+for test in [0.0134675, 1E-11]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
@@ -373,7 +372,7 @@ for test in [0.0234461]:
         CoherenceLength=2.087, #nm
         SpinScatterTime=0.0134675,
         H=0.679,
-        gamma_NF=test,
+        gamma_NF=0.0234461,
         gamma_BSN=1.92,
         d_N=5,
         d_N2=10,
@@ -381,7 +380,7 @@ for test in [0.0234461]:
         SC_gap = 1.5E-3, #eV
         Area = np.pi*(1.5E3)*(1.5E3)
     )
-    plt.plot(X_axis, ytest, label=f"TestVariable={test}", linewidth=3)
+    plt.plot(X_axis, 1E3*ytest, label=f"TestVariable={test}", linewidth=3)
 plt.yscale('log')
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
