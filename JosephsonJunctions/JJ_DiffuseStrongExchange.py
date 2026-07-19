@@ -290,7 +290,7 @@ Model = bmp.Curve(
 #Model.CoherenceLength.range(1E-3,10)
 Model.H.range(0.1,2)
 #Model.Temperature.range(1,10)
-#Model.SpinScatterTime.range(1E-16,1E-11)
+Model.SpinScatterTime.range(1E-16,1E-5)
 Model.gamma_NF.range(0.001,0.5)
 Model.Resistivity_F.range(600,3000)
 
@@ -371,16 +371,16 @@ J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 # #plt.savefig("Changing_gamma_NF.svg", format="svg")
 # #plt.show()
 
-for test in [1E12,1E-2,1E-11]:
+for test in [1,2,3]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
         Resistivity_N= 87,#ohm nm,
-        Resistivity_F=  688.858,#ohm nm,
+        Resistivity_F=689.09,#ohm nm,
         CoherenceLength=2.087, #nm
-        SpinScatterTime=test,
-        H=0.520939,
-        gamma_NF= 0.0336992,
+        SpinScatterTime=1.26489e-06,
+        H=0.520934,
+        gamma_NF= 0.0336929,
         gamma_BSN=1.92,
         d_N=5,
         d_N2=10,
