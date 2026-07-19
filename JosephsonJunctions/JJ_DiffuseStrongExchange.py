@@ -22,7 +22,6 @@ MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
-
 AR = 5.7*1E3 #Ohm nm^2
 
 Temperature=4.2 #K
@@ -57,7 +56,6 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     
     S = np.sin(theta)
     u = np.sqrt(Omega)
-
     coeffs = [1,2*gamma*u*S,(gamma*u)**2-1,-(gamma*u*S),0.25*S*S]
 
     Roots = np.roots(coeffs)
@@ -75,7 +73,6 @@ def Pick_Root(Roots,gamma,Omega,theta):
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     #Equation A5
     Difference = theta_NS-theta_S
-    
     Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
     Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
     theta_NF = Term1 + Term2 + theta_NS
