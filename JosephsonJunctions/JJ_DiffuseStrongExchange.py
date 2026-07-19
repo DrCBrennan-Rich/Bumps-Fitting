@@ -13,9 +13,9 @@ from scipy.optimize import fsolve
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
 
-FreqCutoff=500
+FreqCutoff=50
+StepNumber = 5
 T_c = 9.2
-
 
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
@@ -26,7 +26,8 @@ CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 AR = 5.7*1E3 #Ohm nm^2
 
 Temperature=4.2 #K
-Resistivity_N= 87#ohm nm,
+Resistivity_N = 87#ohm nm, 
+Resistivity_F = 87#ohm nm
 CoherenceLength=2.087 #nm
 SpinScatterTime=0.0134675
 H=0.679
@@ -115,14 +116,18 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     theta_NF_Imaginary = ChiAndAngles[5]
     theta_NF = theta_NF_Real + 1j*theta_NF_Imaginary
     
+    Chi2 = Chi*Chi
+    Chi3 = Chi*Chi*Chi
+    Chi4 = Chi*Chi*Chi*Chi
+    
     S = np.sin(theta_NF)
-    u = np.sqrt(Omega + eta*(1-Chi*Chi))
+    u = np.sqrt(Omega + eta*(1-Chi2))
     Difference = theta_NS - theta_S
 
     #Equation 22, complex
-    eq22= (Chi*Chi*Chi*Chi
-        + (2*gamma_BNF*u*S)*Chi*Chi*Chi
-        + ((gamma_BNF*u)*(gamma_BNF*u)-1)*Chi*Chi
+    eq22= (Chi4
+        + (2*gamma_BNF*u*S)*Chi3
+        + ((gamma_BNF*u)*(gamma_BNF*u)-1)*Chi2
         - (gamma_BNF*u*S)*Chi
         + 0.25*S*S)
     
@@ -133,7 +138,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
         + theta_NS)
     
     #Equation A8
-    eqA8 = (-2*gamma_NF*gamma_BSN*np.sqrt(Omega + eta*(1-Chi**2))*Chi
+    eqA8 = (-2*gamma_NF*gamma_BSN*u*Chi
         - (np.real(Omega)*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
         - np.sin(Difference))
     
@@ -155,7 +160,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta):
     
     Chi2_Initial = Pick_Root(Roots, gamma_BSF, w, theta_S)
     
-    EtaSteps = np.linspace(0,eta,10)
+    EtaSteps = np.linspace(0,eta,StepNumber)
     Guess = [Chi2_Initial.real, Chi2_Initial.imag]
     
     for EtaIntermediate in EtaSteps:
@@ -172,7 +177,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta):
     return Chi_SF
 
 def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial, 
-                          eta, theta_S, ):
+                          eta, theta_S, gamma_NF):
     Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
     Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
     
@@ -180,8 +185,8 @@ def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial,
              np.real(theta_NS_initial), np.imag(theta_NS_initial), 
              np.real(theta_NF_initial), np.imag(theta_NF_initial)]
           
-    gamma_NF_Steps = np.linspace(0,gamma_NF,10)
-    EtaSteps = np.linspace(0,eta,10)
+    gamma_NF_Steps = np.linspace(0,gamma_NF,StepNumber)
+    EtaSteps = np.linspace(0,eta,StepNumber)
     
     for gammaIntermediate in gamma_NF_Steps:
         #Relax the gamma_NF = 0 condition
@@ -207,11 +212,12 @@ def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial,
     return Chi_SNF
 
 
-def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime, 
+def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, SpinScatterTime, 
                        CoherenceLength, H, gamma_NF, gamma_BSN, d_N, d_N2, 
                        xi_N, SC_gap, Area):
     
-    Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+    #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+    
     Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity_F) #Area in nm^2
     
     J_c = np.zeros_like(d_F, dtype=np.complex128)
@@ -221,7 +227,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
+    #gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
@@ -237,10 +243,12 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
         #Exact solution of the quartic equation 20/22 and then selecting the real root
             
         Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
-                                     theta_NS_initial, eta, theta_S)
+                                     theta_NS_initial, eta, theta_S, 
+                                     gamma_NF)
         
         Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
-                                     theta_NS_initial2, eta, theta_S)
+                                     theta_NS_initial2, eta, theta_S,
+                                     gamma_NF)
                
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
         
@@ -248,7 +256,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, SpinScatterTime,
       
         J_c += Term
         
-    return Amplitude*np.abs(J_c) #Return the current in amps
+    return 1E3*Amplitude*np.abs(J_c) #Return the current in milliamps
 
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
@@ -270,6 +278,7 @@ Model = bmp.Curve(
     d, y, dy,
     Temperature=Temperature,
     Resistivity_N = 87,#Ohm nm
+    Resistivity_F = Resistivity_F,
     gamma_NF=gamma_NF,
     gamma_BSN=gamma_BSN,
     d_N=d_N,
@@ -284,9 +293,9 @@ Model = bmp.Curve(
 #Model.CoherenceLength.range(1E-3,10)
 #Model.H.range(1E-5,3E-3)
 #Model.Temperature.range(1,10)
-Model.SpinScatterTime.range(1E-16,1E-11)
-Model.gamma_NF.range(0.0002,0.2)
-Model.Area.range(1E8,1E12)
+#Model.SpinScatterTime.range(1E-16,1E-11)
+Model.gamma_NF.range(0.0002,20)
+Model.Resistivity_F.range(600,6000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -299,15 +308,16 @@ Model.Area.range(1E8,1E12)
 Model.CoherenceLength.value = 2.087 #nm
 Model.H.value = 0.679
 Model.Temperature.value = 4.2
-Model.SpinScatterTime.value = 0.004
+Model.SpinScatterTime.value = 1E-11
 Model.Resistivity_N.value = 87 #Ohm nm
+Model.Resistivity_F.value = 87 #Ohm nm
 Model.gamma_NF.value = 0.02
 Model.SC_gap.value = 1.5E-3 #eV
 Model.xi_N.value = 30 #nm
 Model.d_N.value = 5 #nm
 Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = 1.92
-Model.Area.value = 1E9
+Model.Area.value = np.pi*(1.5E3)*(1.5E3)
 
 #JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
 
@@ -364,15 +374,16 @@ J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 # #plt.savefig("Changing_gamma_NF.svg", format="svg")
 # #plt.show()
 
-for test in [0.0134675, 1E-11]:
+for test in [1E6,1E-2]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
         Resistivity_N= 87,#ohm nm,
+        Resistivity_F= 600,#ohm nm,
         CoherenceLength=2.087, #nm
-        SpinScatterTime=0.0134675,
+        SpinScatterTime=1E-11,
         H=0.679,
-        gamma_NF=0.0234461,
+        gamma_NF= 0.0425857,
         gamma_BSN=1.92,
         d_N=5,
         d_N2=10,
@@ -380,8 +391,8 @@ for test in [0.0134675, 1E-11]:
         SC_gap = 1.5E-3, #eV
         Area = np.pi*(1.5E3)*(1.5E3)
     )
-    plt.plot(X_axis, 1E3*ytest, label=f"TestVariable={test}", linewidth=3)
-plt.yscale('log')
+    plt.plot(X_axis, ytest, label=f"TestVariable={test}", linewidth=3)
+plt.yscale("linear")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
 plt.xlabel("Thickness (nm)", fontsize=34)
