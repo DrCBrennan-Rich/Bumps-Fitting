@@ -23,7 +23,6 @@ DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
 AR = 5.7*1E3 #Ohm nm^2
-
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
@@ -56,6 +55,7 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     
     S = np.sin(theta)
     u = np.sqrt(Omega)
+
     coeffs = [1,2*gamma*u*S,(gamma*u)**2-1,-(gamma*u*S),0.25*S*S]
 
     Roots = np.roots(coeffs)
@@ -73,6 +73,7 @@ def Pick_Root(Roots,gamma,Omega,theta):
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     #Equation A5
     Difference = theta_NS-theta_S
+    
     Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
     Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
     theta_NF = Term1 + Term2 + theta_NS
@@ -208,10 +209,9 @@ def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial,
     
     return Chi_SNF
 
-
-def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, SpinScatterTime, 
-                       CoherenceLength, H, gamma_NF, gamma_BSN, d_N, d_N2, 
-                       xi_N, SC_gap, Area):
+def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
+                       SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, 
+                       d_N, d_N2, xi_N, SC_gap, Area):
     
     #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
     
@@ -288,11 +288,11 @@ Model = bmp.Curve(
 ### Limits of fitting values ###
 
 #Model.CoherenceLength.range(1E-3,10)
-#Model.H.range(1E-5,3E-3)
+Model.H.range(0.1,2)
 #Model.Temperature.range(1,10)
 #Model.SpinScatterTime.range(1E-16,1E-11)
-Model.gamma_NF.range(0.0002,20)
-Model.Resistivity_F.range(600,6000)
+Model.gamma_NF.range(0.001,0.5)
+Model.Resistivity_F.range(600,3000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -303,12 +303,12 @@ Model.Resistivity_F.range(600,6000)
 #Initial values
 
 Model.CoherenceLength.value = 2.087 #nm
-Model.H.value = 0.679
+Model.H.value = 0.621795
 Model.Temperature.value = 4.2
 Model.SpinScatterTime.value = 1E-11
 Model.Resistivity_N.value = 87 #Ohm nm
-Model.Resistivity_F.value = 87 #Ohm nm
-Model.gamma_NF.value = 0.02
+Model.Resistivity_F.value =  1264.34 #Ohm nm
+Model.gamma_NF.value = 0.0125857
 Model.SC_gap.value = 1.5E-3 #eV
 Model.xi_N.value = 30 #nm
 Model.d_N.value = 5 #nm
@@ -371,16 +371,16 @@ J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 # #plt.savefig("Changing_gamma_NF.svg", format="svg")
 # #plt.show()
 
-for test in [1E6,1E-2]:
+for test in [1E12,1E-2,1E-11]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
         Resistivity_N= 87,#ohm nm,
-        Resistivity_F= 600,#ohm nm,
+        Resistivity_F=  688.858,#ohm nm,
         CoherenceLength=2.087, #nm
-        SpinScatterTime=1E-11,
-        H=0.679,
-        gamma_NF= 0.0425857,
+        SpinScatterTime=test,
+        H=0.520939,
+        gamma_NF= 0.0336992,
         gamma_BSN=1.92,
         d_N=5,
         d_N2=10,
@@ -389,7 +389,7 @@ for test in [1E6,1E-2]:
         Area = np.pi*(1.5E3)*(1.5E3)
     )
     plt.plot(X_axis, ytest, label=f"TestVariable={test}", linewidth=3)
-plt.yscale("linear")
+plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
 plt.xlabel("Thickness (nm)", fontsize=34)
