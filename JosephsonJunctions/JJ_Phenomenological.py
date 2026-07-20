@@ -59,15 +59,26 @@ problem = bmp.FitProblem(Model)
 problem.show()
 
 #Run some test values to see how they affect the final plot
-for d_0pi_test in [0.2,0.5,1,2,3]:
+
+
+plt.errorbar(
+    d_F, y, yerr=dy,
+    fmt='H',
+    capsize=3,
+    label='Experimental data')
+
+X_axis = np.linspace(0.1, 2, 1000)
+
+for d_0pi_test in [0.361235 ]:
     ytest = JC_model(
-        d_F,
-        Amplitude=10000, 
-        CoherenceLength_F1=1.0, 
-        CoherenceLength_F2=1.0, 
+        X_axis,
+        Amplitude=45.5866, 
+        CoherenceLength_F1=0.311265, 
+        CoherenceLength_F2=0.163469, 
         d_0pi=d_0pi_test, 
     )
-    plt.plot(d_F, ytest, label=f"d_0pi={d_0pi_test}")
-
+    plt.plot(X_axis, ytest, label=f"d_0pi={d_0pi_test}")
+    
+plt.yscale("log")
 plt.legend()
 plt.show()
