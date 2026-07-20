@@ -20,7 +20,12 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
 
 #Load the data from the file Data.txt
-d_F,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T 
+d_F,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T
+
+OrderingIndex = np.argsort(d_F)
+d_F = d_F[OrderingIndex]
+y = y[OrderingIndex]
+dy = dy[OrderingIndex]
 
 Model = bmp.Curve(
     JC_model,
