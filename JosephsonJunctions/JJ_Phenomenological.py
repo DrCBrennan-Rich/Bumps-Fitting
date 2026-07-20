@@ -86,5 +86,7 @@ for d_0pi_test in [0.361235 ]:
     plt.plot(X_axis, ytest, label=f"d_0pi={d_0pi_test}")
     
 plt.yscale("log")
+plt.xlabel("Thickness (nm)")
+plt.ylabel("Current (mA)")
 plt.legend()
 plt.show()
