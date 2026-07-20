@@ -8,6 +8,7 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 40})
 
 #Coherence lengths
 CoherenceLength_F1=0.3 #nm
