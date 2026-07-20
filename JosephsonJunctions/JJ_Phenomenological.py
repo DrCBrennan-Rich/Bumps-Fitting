@@ -39,10 +39,7 @@ Model = bmp.Curve(
 ### Limits of fitting values ###
 
 Model.Amplitude.range(20,120)
-#Model.CoherenceLength_F1.dev(std=0.1, mean=0.3, limits=None)
-
 Model.d_0pi.range(0.0,0.9*np.pi*CoherenceLength_F2) #Due to the periodicity of d_0pi, this will be the paramter range
-
 Model.CoherenceLength_F1.range(0.1,0.3)
 Model.CoherenceLength_F2.range(0.1,0.2)
 
