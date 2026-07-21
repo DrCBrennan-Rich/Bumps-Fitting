@@ -290,7 +290,7 @@ Model = bmp.Curve(
 #Model.CoherenceLength.range(0.2,5)
 #Model.H.range(0.1,2)
 #Model.Temperature.range(1,10)
-Model.SpinScatterTime.range(1E-16,1E-5)
+#Model.SpinScatterTime.range(1E-16,1E-5)
 Model.gamma_NF.range(0.001,1.5)
 Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(1.8, 2.5)
@@ -342,15 +342,15 @@ for test in [30]:
         X_axis,
         Temperature=4.2,
         Resistivity_N= 87,#ohm nm,
-        Resistivity_F=799.999,#ohm nm,
-        CoherenceLength= 1.98,#1.59664, #nm
-        SpinScatterTime=1.99994e-06,
+        Resistivity_F=1970.3,#ohm nm,
+        CoherenceLength= 1.99,#1.59664, #nm
+        SpinScatterTime=8.08219e-06,
         H=0.67,#1.54468,#0.520934,
-        gamma_NF= 0.0174178,
-        gamma_BSN=1.8,
+        gamma_NF= 0.0136812,
+        gamma_BSN=1.86494,
         d_N=5,
         d_N2=10,
-        xi_N=15.2493,
+        xi_N=44.47,
         SC_gap = 1.5E-3, #eV
         Area = np.pi*(1.5E3)*(1.5E3)
     )
