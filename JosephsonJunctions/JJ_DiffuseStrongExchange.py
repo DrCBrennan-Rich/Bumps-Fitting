@@ -263,10 +263,6 @@ d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/1.9E-3
-dy = dy/1.9E-3
-
-
 d_0pi = 0.274
 CoherenceLength_F1 = 0.48
 CoherenceLength_F2 = 0.16
