@@ -258,10 +258,32 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
 #Load the data from the file Data.txt
 d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 1.3, 0.25, 0.3001, 0.35, 0.75, 0.85]) #
+y = np.array([np.float64(48.448125000000005), np.float64(17.4225), np.float64(50.02250000000001), np.float64(46.6725), np.float64(46.004000000000005), np.float64(24.02396782574869), np.float64(14.340761412452247), np.float64(20.429403866900394), np.float64(13.615138543432565), np.float64(9.873633936623177), np.float64(7.175099341806733), np.float64(2.3887141453269383), np.float64(4.076677231690765), np.float64(1.4360971319527034), np.float64(26.757749999999998), np.float64(22.880000000000003), np.float64(47.69868888888889), np.float64(11.033598167685819), np.float64(20.58825)]) #
+dy = np.array([np.float64(1.6157083779259178), np.float64(1.3225000000000013), np.float64(4.012499999999998), np.float64(7.14), np.float64(2.1280019188587853), np.float64(1.0283281702182476), np.float64(1.52946186871952), np.float64(0.9927739590451741), np.float64(0.9765977782694855), np.float64(0.751572092727746), 0.0868632663427917, np.float64(0.29119788270540087), 0.10592942269344922, np.float64(0.21291291723839048), np.float64(0.4897499999999972), np.float64(0.3199999999999985), np.float64(4.377182207782015), np.float64(0.3490574302442736), np.float64(1.0583323715874893)]) #
+
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
+
+y = y/1.9E-3
+dy = dy/1.9E-3
+
+
+d_0pi = 0.274
+CoherenceLength_F1 = 0.48
+CoherenceLength_F2 = 0.16
+Amplitude = 206
+d_F = np.linspace(0.1,2,100)
+d = d_F
+SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
+    
+y = Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
+dy = 0.01*y
+
+y = y/1.9E-3
+dy = dy/1.9E-3
 
 Model = bmp.Curve(
     JC_DiffuseExchange,
@@ -280,11 +302,11 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-#Model.CoherenceLength.range(0.2,5)
-#Model.H.range(0.1,2)
-#Model.Temperature.range(1,10)
-#Model.SpinScatterTime.range(1E-16,1E-5)
-Model.gamma_NF.range(0.001,1.5)
+Model.CoherenceLength.range(1.6,1.7)
+Model.H.range(0.6,0.7)
+Model.Temperature.range(1,10)
+Model.SpinScatterTime.range(1E-16,1E-5)
+Model.gamma_NF.range(0.01,0.1)
 Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(1.8, 2.5)
 Model.xi_N.range(5,60)
@@ -297,18 +319,18 @@ Model.xi_N.range(5,60)
 #######
 #Initial values
 
-Model.CoherenceLength.value = 1.98 #nm
-Model.H.value = 0.67 #1.54468#0.621795
+Model.CoherenceLength.value = 1.9 #nm
+Model.H.value = 0.679 #1.54468#0.621795
 Model.Temperature.value = 4.2
 Model.SpinScatterTime.value = 1E-11
 Model.Resistivity_N.value = 87 #Ohm nm
-Model.Resistivity_F.value =  500 #Ohm nm
-Model.gamma_NF.value = 0.0125857
+Model.Resistivity_F.value =  70 #Ohm nm
+Model.gamma_NF.value = 0.01
 Model.SC_gap.value = 1.5E-3 #eV
 Model.xi_N.value = 30 #nm
 Model.d_N.value = 5 #nm
 Model.d_N2.value = 10 #nm
-Model.gamma_BSN.value = 1.92
+Model.gamma_BSN.value = 0.186
 Model.Area.value = np.pi*(1.5E3)*(1.5E3)
 
 #JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
@@ -327,23 +349,23 @@ plt.errorbar(
     label='Experimental data')
 
 Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
-X_axis = np.linspace(0.1, 2, 1000)
+X_axis = np.linspace(0.19, 2, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
-for test in [30]:
+for test in [0.1]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
-        Resistivity_N= 87,#ohm nm,
-        Resistivity_F=1970.3,#ohm nm,
-        CoherenceLength= 1.99,#1.59664, #nm
-        SpinScatterTime=8.08219e-06,
-        H=0.67,#1.54468,#0.520934,
-        gamma_NF= 0.0136812,
-        gamma_BSN=1.86494,
+        Resistivity_N= 157,#ohm nm,
+        Resistivity_F=200,#ohm nm,
+        CoherenceLength= 1.7,#1.59664, #nm
+        SpinScatterTime=1e-11,
+        H=0.679,#1.54468,#0.520934,
+        gamma_NF= 0.01,
+        gamma_BSN=0.186,
         d_N=5,
         d_N2=10,
-        xi_N=44.47,
+        xi_N=41,
         SC_gap = 1.5E-3, #eV
         Area = np.pi*(1.5E3)*(1.5E3)
     )
