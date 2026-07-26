@@ -22,7 +22,384 @@ MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
+AR = 5.7*1E3 #Ohm nm^2# -*- coding: utf-8 -*-
+"""
+@author: pycbr
+"""
+#Equation (18) from https://doi.org/10.1088/1367-2630/17/11/113022
+#Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_DiffuseStrongExchange.py
+
+import bumps.names as bmp
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+
+k_B = 8.617333262E-5 #eV/K
+hbar = 6.582E-16 #eV*s
+
+FreqCutoff=50
+StepNumber = 5
+T_c = 9.2
+
+FermiVelocity = 3.3E5*1E9 #nm/s
+MeanFreePath = 0.283496 #nm
+DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
+CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
+
 AR = 5.7*1E3 #Ohm nm^2
+Temperature=4.2 #K
+Resistivity_N = 87#ohm nm, 
+Resistivity_F = 87#ohm nm
+CoherenceLength=2.087 #nm
+SpinScatterTime=0.0134675
+H=0.679
+gamma_NF=0.0234461
+gamma_BSN=1.92
+d_N=5
+d_N2=10
+xi_N=30
+SC_gap = 1.5E-3 #eV
+Area = np.pi*(1.5E3)*(1.5E3)
+
+gamma_BNF = 0.001
+gamma_BSF = 1
+Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
+
+def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
+    #Equation 20 and 22
+    
+    Chi = Chi_vec[0]+1j*Chi_vec[1]
+    S = np.sin(theta)
+    u = np.sqrt(Omega+eta*(1-Chi*Chi))
+    Residual = Chi**4+(2*gamma*u*S)*Chi**3+((gamma*u)**2-1)*Chi**2-(gamma*u*S)*Chi+0.25*S*S
+    return [np.real(Residual), np.imag(Residual)]
+
+def Solve_Quartic_Exact(gamma,Omega,theta):
+    #Solve equation 20 or 22 if eta = 0
+    
+    S = np.sin(theta)
+    u = np.sqrt(Omega)
+
+    coeffs = [1,2*gamma*u*S,(gamma*u)**2-1,-(gamma*u*S),0.25*S*S]
+
+    Roots = np.roots(coeffs)
+    return Roots
+
+def Pick_Root(Roots,gamma,Omega,theta):
+    #Four roots exist, selects the correct one using equation 19 or 21
+    
+    LHS = 2*gamma*np.sqrt(Omega)*Roots
+    RHS = np.sin(theta-2*np.arcsin(Roots))
+    
+    i = np.argmin(np.abs(RHS-LHS))
+    return Roots[i]
+
+def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
+    #Equation A5
+    Difference = theta_NS-theta_S
+    
+    Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
+    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+    theta_NF = Term1 + Term2 + theta_NS
+    
+    return theta_NF
+
+def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
+    #If eta and gamma_NF = 0 then this function will find theta_NS from equation A8
+    A = (np.real(Omega)*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
+    B = (A+(1/np.tan(theta_S)))*(A+(1/np.tan(theta_S)))
+    C = np.sqrt(1/(B+1))
+    
+    theta_NS = np.arcsin(C)   
+    
+    return theta_NS
+
+def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
+    #If eta and gamma_NF = 0 then this function will find theta_NS, based off equation A10/11
+    A = gamma_BSN*np.real(Omega)*d_N/xi_N
+    Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
+    
+    theta_NS = np.arcsin(np.sin(theta_S)/Lambda)   
+    
+    return theta_NS
+
+def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
+           d_N, xi_N, theta_S):
+
+    ChiReal = ChiAndAngles[0]
+    ChiImaginary = ChiAndAngles[1]
+    Chi = ChiReal + 1j*ChiImaginary
+    
+    theta_NS_Real = ChiAndAngles[2]
+    theta_NS_Imaginary = ChiAndAngles[3]
+    theta_NS = theta_NS_Real + 1j*theta_NS_Imaginary
+    
+    theta_NF_Real = ChiAndAngles[4]
+    theta_NF_Imaginary = ChiAndAngles[5]
+    theta_NF = theta_NF_Real + 1j*theta_NF_Imaginary
+    
+    Chi2 = Chi*Chi
+    Chi3 = Chi*Chi*Chi
+    Chi4 = Chi*Chi*Chi*Chi
+    
+    S = np.sin(theta_NF)
+    u = np.sqrt(Omega + eta*(1-Chi2))
+    Difference = theta_NS - theta_S
+
+    #Equation 22, complex
+    eq22= (Chi4
+        + (2*gamma_BNF*u*S)*Chi3
+        + ((gamma_BNF*u)*(gamma_BNF*u)-1)*Chi2
+        - (gamma_BNF*u*S)*Chi
+        + 0.25*S*S)
+    
+    #Equation A5
+    eqA5 = theta_NF - (
+        (np.real(Omega)*d_N*d_N*np.sin(theta_NS))/(2*xi_N*xi_N)
+        + (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+        + theta_NS)
+    
+    #Equation A8
+    eqA8 = (-2*gamma_NF*gamma_BSN*u*Chi
+        - (np.real(Omega)*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
+        - np.sin(Difference))
+    
+    eq22_real = np.real(eq22)
+    eq22_imaginary = np.imag(eq22)
+   
+    eqA5_real = np.real(eqA5)
+    eqA5_imaginary = np.imag(eqA5)
+    
+    eqA8_real = np.real(eqA8)
+    eqA8_imaginary = np.imag(eqA8)
+
+    return [eq22_real, eq22_imaginary, 
+            eqA5_real, eqA5_imaginary,
+            eqA8_real, eqA8_imaginary]
+
+def Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta):
+    Roots = Solve_Quartic_Exact(gamma_BSF, w, theta_S)
+    
+    Chi2_Initial = Pick_Root(Roots, gamma_BSF, w, theta_S)
+    
+    EtaSteps = np.linspace(0,eta,StepNumber)
+    Guess = [Chi2_Initial.real, Chi2_Initial.imag]
+    
+    for EtaIntermediate in EtaSteps:
+        #Relax eta=0 condition
+        Solution = fsolve(
+            Trancendental_Quartic,
+            Guess,
+            args=(gamma_BSF, w, EtaIntermediate, theta_S)
+        )
+        Guess = [Solution[0], Solution[1]]
+     
+    Chi_SF = Solution[0] + 1j*Solution[1]
+    
+    return Chi_SF
+
+def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial, 
+                          eta, theta_S, gamma_NF):
+    Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
+    Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
+    
+    Guess = [np.real(Chi_initial), np.imag(Chi_initial),
+             np.real(theta_NS_initial), np.imag(theta_NS_initial), 
+             np.real(theta_NF_initial), np.imag(theta_NF_initial)]
+          
+    gamma_NF_Steps = np.linspace(0,gamma_NF,StepNumber)
+    EtaSteps = np.linspace(0,eta,StepNumber)
+    
+    for gammaIntermediate in gamma_NF_Steps:
+        #Relax the gamma_NF = 0 condition
+        Solution = fsolve(All_Equations,
+            Guess, args=(w, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
+                  d_N, xi_N, theta_S))
+        Guess = [Solution[0], Solution[1], 
+                 Solution[2], Solution[3],
+                 Solution[4], Solution[5]]
+    
+    for EtaIntermediate in EtaSteps:
+        #Relax eta=0 condition
+        Solution = fsolve(All_Equations,
+            Guess,
+            args=(w, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
+                  d_N, xi_N, theta_S))
+        Guess = [Solution[0], Solution[1], 
+                 Solution[2], Solution[3],
+                 Solution[4], Solution[5]]
+    
+    Chi_SNF = Solution[0] + 1j*Solution[1]
+    
+    return Chi_SNF
+
+def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
+                       eta, CoherenceLength, H, gamma_NF, gamma_BSN, 
+                       d_N, d_N2, xi_N, SC_gap, Area):
+    
+    #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+    
+    Amplitude = Area*(16*np.pi*k_B*Temperature)/(Resistivity_F) #Area in nm^2
+    
+    J_c = np.zeros_like(d_F, dtype=np.complex128)
+    
+    N_list = np.arange(FreqCutoff)
+    #"Omega" in this work will refer to Omega-tilda in the original paper
+    Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
+
+    #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
+    #gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
+    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
+    
+    for gamma, w in zip(gamma_list, Omega_list):
+        #Define theta_S from equation 5
+        theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
+        #Find the intial angles taking gamma_NF and eta = 0
+        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
+        theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        
+        theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
+        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        
+        #Exact solution of the quartic equation 20/22 and then selecting the real root
+            
+        Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
+                                     theta_NS_initial, eta, theta_S, 
+                                     gamma_NF)
+        
+        Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
+                                     theta_NS_initial2, eta, theta_S,
+                                     gamma_NF)
+               
+        #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
+        
+        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
+      
+        J_c += Term
+        
+    return 1E3*Amplitude*np.abs(J_c) #Return the current in milliamps
+
+#Load the data from the file Data.txt
+d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 1.3, 0.25, 0.3001, 0.35, 0.75, 0.85]) #
+y = np.array([np.float64(48.448125000000005), np.float64(17.4225), np.float64(50.02250000000001), np.float64(46.6725), np.float64(46.004000000000005), np.float64(24.02396782574869), np.float64(14.340761412452247), np.float64(20.429403866900394), np.float64(13.615138543432565), np.float64(9.873633936623177), np.float64(7.175099341806733), np.float64(2.3887141453269383), np.float64(4.076677231690765), np.float64(1.4360971319527034), np.float64(26.757749999999998), np.float64(22.880000000000003), np.float64(47.69868888888889), np.float64(11.033598167685819), np.float64(20.58825)]) #
+dy = np.array([np.float64(1.6157083779259178), np.float64(1.3225000000000013), np.float64(4.012499999999998), np.float64(7.14), np.float64(2.1280019188587853), np.float64(1.0283281702182476), np.float64(1.52946186871952), np.float64(0.9927739590451741), np.float64(0.9765977782694855), np.float64(0.751572092727746), 0.0868632663427917, np.float64(0.29119788270540087), 0.10592942269344922, np.float64(0.21291291723839048), np.float64(0.4897499999999972), np.float64(0.3199999999999985), np.float64(4.377182207782015), np.float64(0.3490574302442736), np.float64(1.0583323715874893)]) #
+
+OrderingIndex = np.argsort(d)
+d = d[OrderingIndex]
+y = y[OrderingIndex]
+dy = dy[OrderingIndex]
+
+y = y/1.9E-3
+dy = dy/1.9E-3
+
+
+d_0pi = 0.274
+CoherenceLength_F1 = 0.48
+CoherenceLength_F2 = 0.16
+Amplitude = 206
+d_F = np.linspace(0.15,2,100)
+d = d_F
+SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
+    
+y = Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
+dy = 0.01*y
+
+y = y/1.9E-3
+dy = dy/1.9E-3
+
+Model = bmp.Curve(
+    JC_DiffuseExchange,
+    d, y, dy,
+    Temperature=Temperature,
+    Resistivity_N = 87,#Ohm nm
+    Resistivity_F = Resistivity_F,
+    gamma_NF=gamma_NF,
+    gamma_BSN=gamma_BSN,
+    d_N=d_N,
+    d_N2=d_N2,
+    xi_N=xi_N,
+    SC_gap=SC_gap,
+    CoherenceLength=CoherenceLength,
+    Area = Area)
+
+### Limits of fitting values ###
+
+Model.CoherenceLength.range(1.6,1.7)
+Model.H.range(0.6,0.7)
+Model.Temperature.range(1,10)
+Model.eta.range(1/1E-5,1/1E-16)
+Model.gamma_NF.range(0.01,0.1)
+Model.Resistivity_F.range(30,2000)
+Model.gamma_BSN.range(1.8, 2.5)
+Model.xi_N.range(5,60)
+
+#Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
+#Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
+#Model.Temperature.dev(std=0.1, mean=0.16, limits=None)
+#Model.Resistance.dev(std=0.1, mean=0.16, limits=None)
+
+#######
+#Initial values
+
+Model.CoherenceLength.value = 1.9 #nm
+Model.H.value = 0.679 #1.54468#0.621795
+Model.Temperature.value = 4.2
+Model.eta.value = 1/1E-11
+Model.Resistivity_N.value = 87 #Ohm nm
+Model.Resistivity_F.value =  70 #Ohm nm
+Model.gamma_NF.value = 0.01
+Model.SC_gap.value = 1.5E-3 #eV
+Model.xi_N.value = 30 #nm
+Model.d_N.value = 5 #nm
+Model.d_N2.value = 10 #nm
+Model.gamma_BSN.value = 0.186
+Model.Area.value = np.pi*(1.5E3)*(1.5E3)
+
+#JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
+
+problem = bmp.FitProblem(Model)
+
+#This line is not strictly required, but allows you to run this py file check the initial parameters.
+problem.show()
+
+#Run some test values to see how they affect the final plot
+
+plt.errorbar(
+    d, y, yerr=dy,
+    fmt='H',
+    capsize=3,
+    label='Experimental data')
+
+Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+X_axis = np.linspace(0.25, 2, 1000)
+J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
+
+for test in [1.07e-18,1.1e-18,1.12e-18]:
+    ytest = JC_DiffuseExchange(
+        X_axis,
+        Temperature=4.2,
+        Resistivity_N= 157,#ohm nm,
+        Resistivity_F=100,#ohm nm,
+        CoherenceLength= 1.7,#1.59664, #nm
+        eta=1e-11,
+        H=0.679,#1.54468,#0.520934,
+        gamma_NF= 0.01,
+        gamma_BSN=test,#0.186,
+        d_N=5,
+        d_N2=10,
+        xi_N=41,
+        SC_gap = 1.5E-3, #eV
+        Area = np.pi*(1.5E3)*(1.5E3)
+    )
+    plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
+plt.yscale("linear")
+plt.tick_params(axis='both', which='major', labelsize=34)
+plt.legend(fontsize=34)
+plt.xlabel("Thickness (nm)", fontsize=34)
+plt.ylabel("Current (mA)", fontsize=34)
+plt.show()
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
