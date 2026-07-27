@@ -259,7 +259,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
         
         theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
-        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial2, gamma_BSN, theta_S)
         
         #Exact solution of the quartic equation 20/22 and then selecting the real root
             
