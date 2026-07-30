@@ -266,21 +266,6 @@ dy = dy[OrderingIndex]
 y = y/1.9E-3
 dy = dy/1.9E-3
 
-
-# d_0pi = 0.274
-# CoherenceLength_F1 = 0.48
-# CoherenceLength_F2 = 0.16
-# Amplitude = 206
-# d_F = np.linspace(0.15,2,100)
-# d = d_F
-# SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
-    
-# y = Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
-# dy = 0.01*y
-
-# y = y/1.9E-3
-# dy = dy/1.9E-3
-
 Model = bmp.Curve(
     JC_DiffuseExchange,
     d, y, dy,
