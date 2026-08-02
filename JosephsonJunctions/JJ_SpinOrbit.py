@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
-
-FreqCutoff=50
 T_c = 9.2
+FreqCutoff=50
 
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
@@ -26,6 +25,7 @@ tau_SO = 1E-14
 h = 0.8
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
+
 
 def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
     
