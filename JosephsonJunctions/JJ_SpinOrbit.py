@@ -20,8 +20,8 @@ MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
-N = 1
-D = 1
+N = 1000
+D = 1000
 tau_SO = 1
 h = 100
 SC_gap = 1.5E-3 #Superconducting gap in eV
