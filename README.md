@@ -15,6 +15,7 @@ Still under development, the critical current through a Josephson junction as a 
 5. Ballistic regime - JJ_Ballistic.py
 6. Diffuse regime - JJ_Diffuse.py
 7. Phenomenological intermediate regime - JJ_Phenomenological.py
+8. Diffuse regime with strong ferromagnetic link - JJ_DiffuseStrongExchange.py
 
 The enviroment file can be found in: requirements.txt
 
