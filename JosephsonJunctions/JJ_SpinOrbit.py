@@ -19,10 +19,10 @@ MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
-N = 1000
-D = DiffusionCoeff
+N = 1E-11
+D = 3E13 #nm^2/s
 tau_SO = 1E-14
-h = 0.8
+h = 0.8/hbar
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 
@@ -32,7 +32,7 @@ def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
     
     Amplitude = 2*np.pi*N*D*T_c*SC_gap*SC_gap
     
-    Alpha = 1/(tau_SO*(np.sqrt(h*h-1/(tau_SO*tau_SO)-h)))
+    Alpha = 1/(tau_SO*(np.sqrt(h*h-1/(tau_SO*tau_SO))-h))
                
     RealComponent = 4/(D*tau_SO)
     ImaginaryComponent = 1j*4*np.sqrt(h*h-1/(tau_SO*tau_SO))/D
@@ -55,7 +55,7 @@ def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
         
         J_c += TotalTerm 
         
-    return Amplitude*J_c #Return the current in milliamps
+    return Amplitude*np.abs(J_c) #Return the current in milliamps
 
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
