@@ -8,7 +8,6 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import fsolve
 
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
