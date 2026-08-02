@@ -106,12 +106,10 @@ Model.N.range(1.5,1.9)
 Model.SC_gap.range(30,2000)
 #Model.Temperature.range(1.8, 2.5)
 
-
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
 #Model.Temperature.dev(std=0.1, mean=0.16, limits=None)
 #Model.Resistance.dev(std=0.1, mean=0.16, limits=None)
-
 
 #######
 #Initial values
@@ -130,7 +128,6 @@ problem = bmp.FitProblem(Model)
 problem.show()
 
 #Run some test values to see how they affect the final plot
-
 plt.errorbar(
     d, y, yerr=dy,
     fmt='H',
