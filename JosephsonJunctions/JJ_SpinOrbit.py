@@ -21,9 +21,9 @@ DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
 CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
 N = 1000
-D = 1000
-tau_SO = 1
-h = 100
+D = DiffusionCoeff
+tau_SO = 1E-14
+h = 0.8
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 
@@ -38,8 +38,8 @@ def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
     RealComponent = 4/(D*tau_SO)
     ImaginaryComponent = 1j*4*np.sqrt(h*h-1/(tau_SO*tau_SO))/D
     
-    k_M = RealComponent + ImaginaryComponent
-    k_M_dag = RealComponent - ImaginaryComponent
+    k_M = np.sqrt(RealComponent + ImaginaryComponent)
+    k_M_dag = np.sqrt(RealComponent - ImaginaryComponent)
     
     BracketTerm1 = k_M/np.sinh(k_M*d_F) + k_M_dag/np.sinh(k_M_dag*d_F)
     BracketTerm2 = k_M/np.sinh(k_M*d_F) - k_M_dag/np.sinh(k_M_dag*d_F)
@@ -52,7 +52,7 @@ def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
     
     for w in Omega_list:
         
-        TotalTerm = (1/w*w)*(BracketTerm1 + (2*1j*Alpha)/(1-Alpha*Alpha)*BracketTerm2)
+        TotalTerm = (1/(w*w))*(BracketTerm1 + (2*1j*Alpha)/(1-Alpha*Alpha)*BracketTerm2)
         
         J_c += TotalTerm 
         
