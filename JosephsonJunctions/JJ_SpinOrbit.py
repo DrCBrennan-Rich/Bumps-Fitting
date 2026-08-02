@@ -22,7 +22,7 @@ CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 N = 1E-11
 D = 3E13 #nm^2/s
 tau_SO = 1E-14 #Spin orbit scatter time in s 
-h = 0.8/hbar #Units of s^-1
+h = 0.8/hbar #Exchange interaction energy in s^-1
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 
