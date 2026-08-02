@@ -26,7 +26,6 @@ h = 0.8
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 
-
 def JC_DiffuseExchange(d_F,N,D,T_c,tau_SO,h,SC_gap,Temperature):
     
     #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
