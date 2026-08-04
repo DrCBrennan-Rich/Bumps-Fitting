@@ -102,7 +102,6 @@ Model.d0.range(0,0.5)
 
 #######
 #Initial values
-
 Model.N.value = N
 Model.D.value = D 
 Model.T_c.value =T_c
