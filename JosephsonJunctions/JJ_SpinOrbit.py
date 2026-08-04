@@ -180,8 +180,7 @@ for test in [1.18363e-12]:
         ExchangeEnergy= ExchangeEnergy,
         SC_gap = SC_gap,
         Temperature = Temperature,
-        d0 = d0
-    )
+        d0 = d0)
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
 
 plt.yscale("log")
