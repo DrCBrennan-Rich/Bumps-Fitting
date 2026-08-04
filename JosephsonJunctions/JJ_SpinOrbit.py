@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
 T_c = 9.2
-FreqCutoff=50
+FreqCutoff=50 #Cut off number for the Matsurbara frequencies 
 JunctionResistance = 1.32E-3 #Ohms
 
 FermiVelocity = 3.3E5*1E9 #nm/s
