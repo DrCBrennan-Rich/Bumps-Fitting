@@ -59,8 +59,8 @@ def JC_DiffuseExchange(Thickness,N,D,T_c,tau_SO,ExchangeEnergy,SC_gap,Temperatur
         
     return Amplitude*np.abs(J_c) #Return the current in milliamps
 
-#Load the data from the file Data.txt
-#d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+Load the data from the file Data.txt
+d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
 d = np.array([
     2.418, 2.438, 2.29, 2.251, 2.231, 2.123, 2.103, 2.083, 1.955, 1.936,
