@@ -68,8 +68,8 @@ d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/1.32E-3
-dy = dy/1.32E-3
+y = y/JunctionResistance
+dy = dy/JunctionResistance
 
 #d = d + 0.37
 
