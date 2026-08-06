@@ -8,6 +8,7 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 15})
 
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
@@ -19,29 +20,32 @@ T_c = 9.2
 FermiVelocity = 3.3E5*1E9 #nm/s
 MeanFreePath = 0.283496 #nm
 DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
-CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
+#CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 
 Temperature=4.2 #K
-H = 0.3
-alpha = 0.1
+H = 0.3  #Exchange energy in eV
+alpha = 1
 SC_gap = 1.5E-3 #eV
+CoherenceLength = 0.5
 
-def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha):
+def JC_MagneticScattering(Thickness, Temperature, T_c, H, SC_gap,
+                          alpha, CoherenceLength):
     
-    h = H/hbar
+    d_F = Thickness/CoherenceLength
+    h = H/hbar #s^-1
     Amplitude = 64*np.pi*Temperature/3
     
     J_c = np.zeros_like(d_F, dtype=np.complex128)
     
-    N_list = np.arange(FreqCutoff)
+    N_list = np.arange(FreqCutoff) #List of integers
     
-    Omega_list = (2*N_list +1)*np.pi*k_B*Temperature/hbar
+    Omega_list = (2*N_list +1)*np.pi*k_B*Temperature/hbar #Matsurbara frequences, s^-1
 
-    q_list = np.sqrt(2j+2*alpha+2*Omega_list/h)
+    q_list = np.sqrt(2j+2*alpha+2*Omega_list/h) 
 
-    OMEGA_list = np.sqrt(Omega_list*Omega_list+SC_gap*SC_gap)
+    OMEGA_list = np.sqrt(Omega_list*Omega_list+SC_gap*SC_gap/(hbar*hbar))
 
-    Phi_list = SC_gap*SC_gap/((OMEGA_list+Omega_list)*(OMEGA_list+Omega_list))
+    Phi_list = SC_gap*SC_gap/(hbar*hbar*(OMEGA_list+Omega_list)*(OMEGA_list+Omega_list))
     
     eta_list = np.sqrt(alpha/(alpha+1j+Omega_list/h))
      
@@ -120,15 +124,17 @@ Model = bmp.Curve(
     T_c = T_c, 
     H = H, 
     SC_gap = SC_gap,
-    alpha = alpha)
+    alpha = alpha,
+    CoherenceLength = CoherenceLength)
 
 ### Limits of fitting values ###
 
 #Model.Temperature.range(0.9*Temperature, 1.1*Temperature)
 #Model.T_c.range(0.5*T_c,1.5*T_c)
-Model.H.range(0.1*H, 10*H)
+Model.H.range(0.1*H, 100*H)
 #Model.SC_gap.range(0.5*SC_gap, 1.5*SC_gap)
-Model.alpha.range(0.1*alpha, 10*alpha)
+Model.alpha.range(0.1*alpha, 100*alpha)
+Model.CoherenceLength.range(CoherenceLength*0.1, 10*CoherenceLength)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -143,6 +149,7 @@ Model.T_c.value = T_c
 Model.H.value = H
 Model.SC_gap.value = SC_gap
 Model.alpha.value = alpha
+Model.CoherenceLength.value = CoherenceLength
 
 #JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
 
@@ -168,7 +175,8 @@ for test in [30]:
         T_c = T_c, 
         H = H, 
         SC_gap = SC_gap, 
-        alpha = alpha)
+        alpha = alpha,
+        CoherenceLength = CoherenceLength)
     
 plt.plot(X_axis, ytest, label=f"Fitted", linewidth=3)
 plt.yscale("log")
