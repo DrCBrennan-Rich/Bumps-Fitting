@@ -3,7 +3,7 @@
 @author: pycbr
 """
 #Equation (A10) from https://link.aps.org/doi/10.1103/RevModPhys.77.935
-#Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_DiffuseStrongExchange.py
+#Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_DiffuseMagneticScattering.py
 
 import bumps.names as bmp
 import numpy as np
