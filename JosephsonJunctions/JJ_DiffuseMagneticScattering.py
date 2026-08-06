@@ -2,7 +2,7 @@
 """
 @author: pycbr
 """
-#Equation (18) from https://doi.org/10.1088/1367-2630/17/11/113022
+#Equation (A10) from https://link.aps.org/doi/10.1103/RevModPhys.77.935
 #Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_DiffuseStrongExchange.py
 
 import bumps.names as bmp
