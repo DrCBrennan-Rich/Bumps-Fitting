@@ -17,11 +17,6 @@ FreqCutoff=50
 StepNumber = 5
 T_c = 9.2
 
-FermiVelocity = 3.3E5*1E9 #nm/s
-MeanFreePath = 0.283496 #nm
-DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
-#CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
-
 Temperature=4.2 #K
 H = 0.4  #Exchange energy in eV
 alpha =  1.03595
