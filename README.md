@@ -13,10 +13,11 @@ Currently the specific .py files exist for:
 Still under development, the critical current through a Josephson junction as a function of junction thickness
 
 5. Ballistic regime - JJ_Ballistic.py
-6. Diffuse regime - JJ_Diffuse.py
-7. Phenomenological intermediate regime - JJ_Phenomenological.py
-8. Diffuse regime with strong ferromagnetic link - JJ_DiffuseStrongExchange.py
-9. Diffuse regime with spin orbit interaction - JJ_SpinOrbit.py
+6. A simplified Ballistic model - JJ_Ballistic_simplified.py
+7. Diffuse regime - JJ_Diffuse.py
+8. Phenomenological intermediate regime - JJ_Phenomenological.py
+9. Diffuse regime with strong ferromagnetic link - JJ_DiffuseStrongExchange.py
+10. Diffuse regime with spin orbit interaction - JJ_SpinOrbit.py
 
 The enviroment file can be found in: requirements.txt
 
