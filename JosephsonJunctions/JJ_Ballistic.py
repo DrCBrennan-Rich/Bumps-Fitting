@@ -30,10 +30,7 @@ alpha = 1
 y_max = 10*alpha
 
 Resistance = 1.4E-3 #ohms
-
-
 T = 5 #K
-
 
 Beta = 1/(k_B*T)
 
