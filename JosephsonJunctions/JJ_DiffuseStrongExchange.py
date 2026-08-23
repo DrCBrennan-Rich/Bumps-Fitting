@@ -12,7 +12,7 @@ from scipy.optimize import fsolve
 from scipy import constants
 
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
-hbar = 6.582E-16 #eV*s
+hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
 FreqCutoff=50
 StepNumber = 20
