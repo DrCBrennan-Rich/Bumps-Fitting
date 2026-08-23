@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapezoid
 from scipy import constants
 
+k_B = constants.Boltzmann
+e = constants.e
 k_B = 1.38E-23
 e = 1.6E-19
 
