@@ -26,21 +26,30 @@ AR = 5.7*1E3 #Ohm nm^2
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
-CoherenceLength=2.087 #nm
+
 SpinScatterTime=0.0134675
-H=0.679
+
 gamma_NF=0.0234461
-gamma_BSN=1.92
-d_N=5
-d_N2=10
+
+
 xi_N=30
-SC_gap = 1.5E-3 #eV
+
 Area = np.pi*(1.5E3)*(1.5E3)
 
 gamma_BNF = 0.001
 gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
+
+Amplitude = 1777.83
+H=0.679 #eV
+CoherenceLength=1.87 #2.087 #nm
+gamma_BSN = 0.186 
+SC_gap = 1.5E-3 #eV
+d_N = 5
+d_N2 = 10
+
+gamma_NF = 0.185096
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     #Equation 20 and 22
@@ -256,23 +265,90 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         
     return 1E3*Amplitude*np.abs(J_c) #Return the current in milliamps
 
+
+#Fit with a variable amplitude
+def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF, 
+                        gamma_BSN, d_N, d_N2, xi_N, SC_gap, Amplitude):
+    
+    J_c = np.zeros_like(d_F, dtype=np.complex128)
+    
+    N_list = np.arange(FreqCutoff)
+    #"Omega" in this work will refer to Omega-tilda in the original paper
+    Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
+
+    #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
+    #gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
+    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
+    
+    for gamma, w in zip(gamma_list, Omega_list):
+        #Define theta_S from equation 5
+        theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
+        #Find the intial angles taking gamma_NF and eta = 0
+        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
+        theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        
+        theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
+        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial2, gamma_BSN, theta_S)
+        
+        #Exact solution of the quartic equation 20/22 and then selecting the real root
+            
+        Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
+                                     theta_NS_initial, eta, theta_S, 
+                                     gamma_NF)
+        
+        Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
+                                     theta_NS_initial2, eta, theta_S,
+                                     gamma_NF)
+               
+        #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
+        
+        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
+      
+        J_c += Term
+        
+    return Amplitude*np.abs(J_c) #Return the current in milliamps
+
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+
+d = np.array([0.2   , 0.25  , 0.3   , 0.3001, 
+              0.35  , 0.4   , 0.5   , 0.6   ,
+       0.65  , 0.7   , 0.75  , 0.8   
+       , 0.85  , 0.9   , 1.    , 1.2   ,
+         1.4      , 1.8   
+       ,  2.9   , 3.05  , 3.35  ,
+       3.5   , 3.95  , 4.1   ])
+
+y = np.array([ 5.82676311e+01,  1.98857464e+01,  1.82044113e+01,  1.20986269e+01,
+        4.21737136e+01,  4.53325880e+01,  5.52219962e+01,  3.40636207e+01,
+        3.98201025e+01,  1.99314475e+01,  5.78951272e+00,  9.05918155e+00,
+        1.40965072e+01,  1.40840179e+01,  9.32348301e+00,  5.76009565e+00,
+         3.03582577e+00,   2.98477930e+00,
+         3.18558573e-01,  3.54810986e-01,  2.14422998e-02,
+        3.26788902e+00,  4.46595321e-01,  4.05815270e-01])
+
+dy = np.array([ 3.48369676e+00,  5.83645236e-01,  5.51737524e-01,  1.50676018e+00,
+        4.47801704e+00,  2.49750734e+00,  1.36701097e+00,  8.18598920e-01,
+        4.87499261e+00,  1.27909285e+00,  1.83156247e-01,  5.80389244e-01,
+        9.57995335e-01,  2.42281732e-01,  5.20201799e-01,  5.12059068e-01,
+         1.03083058e-01,   1.97271341e-01,
+         4.53807754e-02,  2.74412148e-02,  9.08452470e-04,
+        3.12400432e-01,  2.12279413e-02,  6.69057013e-02])
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/JunctionResistance
-dy = dy/JunctionResistance
+#y = y/JunctionResistance
+#dy = dy/JunctionResistance
 
 Model = bmp.Curve(
-    JC_DiffuseExchange,
+    JC_DiffuseExchange2,
     d, y, dy,
     Temperature=Temperature,
-    Resistivity_N = 87,#Ohm nm
-    Resistivity_F = Resistivity_F,
+    #Resistivity_N = 87,#Ohm nm
+    #Resistivity_F = Resistivity_F,
     gamma_NF=gamma_NF,
     gamma_BSN=gamma_BSN,
     d_N=d_N,
@@ -280,18 +356,23 @@ Model = bmp.Curve(
     xi_N=xi_N,
     SC_gap=SC_gap,
     CoherenceLength=CoherenceLength,
-    Area = Area)
+    Amplitude = 100
+    
+    #Area = Area
+    )
 
 ### Limits of fitting values ###
 
-Model.CoherenceLength.range(1.5,1.9)
+#Model.CoherenceLength.range(1.75,2.5)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
-#Model.eta.range(1,500)
-#Model.gamma_NF.range(0.01,0.1)
-Model.Resistivity_F.range(30,2000)
+#Model.eta.range(0,500)
+Model.gamma_NF.range(0.1,0.65)
+#Model.Resistivity_F.range(30,2000)
 #Model.gamma_BSN.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
+
+Model.Amplitude.range(900,6000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -301,20 +382,21 @@ Model.Resistivity_F.range(30,2000)
 #######
 #Initial values
 
-Model.CoherenceLength.value = 1.7 #nm
+Model.CoherenceLength.value = CoherenceLength #nm
 Model.H.value = 0.679 #1.54468#0.621795
 Model.Temperature.value = 4.2
-Model.eta.value = 50
-Model.Resistivity_F.value =  70 #Ohm nm
+Model.eta.value = 6
+#Model.Resistivity_F.value =  70 #Ohm nm
 Model.gamma_NF.value = 0.01
 Model.SC_gap.value = 1.5E-3 #eV
 Model.xi_N.value = 41 #nm
 Model.d_N.value = 5 #nm
 Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = 0.186
-Model.Area.value = np.pi*(1.5E3)*(1.5E3)
 
-#JC_DiffuseExchange(d_F, Temperature, Resistivity, SpinScatterTime, CoherenceLength, H, gamma_NF, gamma_BSN, d_N, xi_N)
+#Model.Area.value = np.pi*(1.5E3)*(1.5E3)
+
+Model.Amplitude.value = 100
 
 problem = bmp.FitProblem(Model)
 
@@ -330,28 +412,30 @@ plt.errorbar(
     label='Experimental data')
 
 Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
-X_axis = np.linspace(0.25, 2, 1000)
+X_axis = np.linspace(0.1, 2, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
 for test in [0.679]:
-    ytest = JC_DiffuseExchange(
+    ytest = JC_DiffuseExchange2(
         X_axis,
         Temperature=4.2,
-        Resistivity_N= 157,#ohm nm,
-        Resistivity_F=100,#ohm nm,
-        CoherenceLength= 1.67,#1.59664, #nm
-        eta=0,
-        H=test,#0.6,#1.54468,#0.520934,
-        gamma_NF= 0.01,
-        gamma_BSN=0.186,#0.186,
+        #Resistivity_N= 157,#ohm nm,
+        #Resistivity_F=100,#ohm nm,
+        CoherenceLength= CoherenceLength,#1.67,#1.59664, #nm
+        eta=6,
+        H=H,#0.6,#1.54468,#0.520934,
+        gamma_NF= gamma_NF,
+        gamma_BSN = gamma_BSN,#0.186,
         d_N=5,
         d_N2=10,
         xi_N=41,
         SC_gap = 1.5E-3, #eV
-        Area = np.pi*(1.5E3)*(1.5E3)
+        
+        Amplitude = Amplitude
+        #Area = np.pi*(1.5E3)*(1.5E3)
     )
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
-plt.yscale("linear")
+plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
 plt.xlabel("Thickness (nm)", fontsize=34)
