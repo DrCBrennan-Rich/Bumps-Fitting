@@ -39,7 +39,7 @@ Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
 
 Amplitude = 1777.83
-H=0.679 #eV
+H = 0.679 #Exchange energy in the ferromagnet in eV
 CoherenceLength=1.87 #2.087 #nm
 gamma_BSN = 0.186 
 SC_gap = 1.5E-3 #eV
