@@ -8,7 +8,7 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 40})
 
 k_B = 8.617333262E-5 #eV/K
 hbar = 6.582E-16 #eV*s
