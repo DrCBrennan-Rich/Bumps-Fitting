@@ -1,0 +1,159 @@
+# -*- coding: utf-8 -*-
+"""
+@author: pycbr
+"""
+#Equation (6) from https://doi.org/10.1063/5.0195229
+#### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=ExportFolder --session=JJSession.h5 JJ_Phenomenological_Triplet.py
+
+import bumps.names as bmp
+import numpy as np
+import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 40})
+
+
+k_B = 8.617333262E-5 #eV/K
+JunctionResistance = 1.55E-3 #Ohms
+
+#Coherence lengths
+Amplitude = 260.452 #Current amplitude
+CriticalTemperature = 9.2 #K
+CoherenceLength= 0.332117 #nm
+SC_gap = 1.5E-3 #eV
+
+def JC_Dirty_Limit(d_F, SC_gap, CriticalTemperature, CoherenceLength):
+    
+    x = d_F/CoherenceLength
+    
+    Numerator = np.cos(x)*np.sinh(x) + np.sin(x)*np.cosh(x)
+    
+    Denominator = np.cosh(2*x) - np.cos(2*x)
+    
+    Amplitude = 2*np.pi*SC_gap*SC_gap/(4*k_B*CriticalTemperature)
+    
+    IcRn = Amplitude*x*np.abs(Numerator/Denominator)
+    
+    return IcRn
+
+#In the limit of large x and Temperature ~ CriticalTemperature
+def JC_Dirty_Limit_Simplified(d_F, SC_gap, CriticalTemperature, CoherenceLength):
+    
+    x = d_F/CoherenceLength
+    
+    SinTerm = np.sin(x + np.pi/4)
+    
+    Amplitude = np.sqrt(2)*SC_gap*SC_gap/(4*k_B*CriticalTemperature)
+    
+    IcRn = Amplitude*x*np.exp(-x)*np.abs(SinTerm)
+    
+    return IcRn
+
+#Load the data from the file Data.txt
+#d_F,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T
+
+d_F = np.array([
+    2.418, 2.438, 2.29, 2.251, 2.231, 2.123, 2.103, 2.083, 1.955, 1.936,
+    1.916, 1.847, 1.827, 1.788, 1.749, 1.64, 1.621, 1.552, 1.532, 1.512,
+    1.453, 1.345, 1.404, 1.384, 1.158, 1.109, 1.089, 1.069, 1.05, 1.03,
+    1.01, 0.961, 0.922, 0.774, 0.735, 0.715, 0.627, 0.607, 0.568, 0.459,
+    0.44, 0.42, 0.479, 0.371, 0.351, 0.331, 0.272
+]
+)
+
+y = np.array([
+    0.00699425, 0.0078925, 0.013320000000000002, 0.014122499999999998,
+    0.025375, 0.10813610571578758, 0.12869791639745418, 0.12872074116519092,
+    0.1576875, 0.19116130513139204, 0.2794563049095635, 0.16480457130267517,
+    0.22519604251290912, 0.2147201206749916, 0.29277927044068863,
+    0.10372115678110677, 0.10148694224915314, 0.015675129846466566,
+    0.05681675965155805, 0.04702147096391103, 0.1311, 0.2783342892188305,
+    0.575868126049855, 0.5854827027222074, 1.5882281427913232,
+    2.0508648451755738, 3.4725234237693314, 4.093075134553839,
+    4.114645659311062, 4.01905617358874, 4.636714834438517,
+    8.06676028826663, 9.37677621440921, 15.296359148827252, 16.7295,
+    18.21934959116588, 14.409216666666666, 14.910333333333334,
+    9.78056007112751, 1.8367327942466058, 5.964761752065373,
+    6.514800423728491, 1.8710824247921065, 13.332891880340954,
+    13.9206875, 14.946451056265937, 34.849999999999994
+]
+)
+
+dy = np.array([
+    0.009696086439899347, 0.009132366889257133, 0.002327573844156186,
+    0.0010838011810290656, 0.005411330705103877, 0.0018541940391505435,
+    0.0012732532397040698, 0.0010827887503948638, 0.0029892515785728065,
+    0.022509418754522274, 0.013406533112136592, 0.004314025115285019,
+    0.004232886017248341, 0.020450251732958894, 0.025948621075078376,
+    0.00621581930372137, 0.006945663211863579, 0.0011761830555589625,
+    0.0010460182649376032, 0.002794379735734216, 0.010121264743104002,
+    0.0009475615515951662, 0.003535997110096228, 0.006370438899523077,
+    0.021277803185625884, 0.034404666730416006, 0.008178965051041997,
+    0.014781311592187553, 0.021628692560245775, 0.02348659112691888,
+    0.016374045211460568, 0.05387639673842677, 0.12203944272943992,
+    0.31898692745103996, 0.3704999999999998, 0.79934959116588,
+    1.199686673098902, 0.2896666666666663, 0.4354436646959341,
+    0.4689634154068645, 0.02114035317899629, 0.5337258517802882,
+    0.16824712452052695, 2.7333575623258035, 5.937062499999999,
+    2.047282020666608, 3.703501721344273
+]
+)
+
+OrderingIndex = np.argsort(d_F)
+d_F = d_F[OrderingIndex]
+y = y[OrderingIndex]
+dy = dy[OrderingIndex]
+
+#y = y/JunctionResistance
+#dy = dy/JunctionResistance
+
+Model = bmp.Curve(
+    JC_Dirty_Limit,
+    d_F, y, dy,
+    SC_gap = SC_gap, 
+    CriticalTemperature = CriticalTemperature, 
+    CoherenceLength = CoherenceLength)
+
+### Limits of fitting values ###
+
+Model.SC_gap.range(1.4E-3,1.6E-3)
+Model.CriticalTemperature.range(9.0,9.3)
+Model.CoherenceLength.range(0.1,1.5)
+
+#Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
+
+#######
+#Initial values
+
+Model.CriticalTemperature.value = CriticalTemperature
+Model.SC_gap.value = SC_gap
+Model.CoherenceLength.value = CoherenceLength
+
+
+problem = bmp.FitProblem(Model)
+
+#This line is not strictly required, but allows you to run this py file check the initial parameters.
+problem.show()
+
+#Run some test values to see how they affect the final plot
+
+plt.errorbar(
+    d_F, y, yerr=dy,
+    fmt='H',
+    capsize=3,
+    label='Experimental data')
+
+X_axis = np.linspace(0.1, 2.5, 1000)
+
+for CoherenceLength_test in [0.361262]:
+    ytest = JC_Dirty_Limit(
+        X_axis,
+        SC_gap = SC_gap, 
+        CriticalTemperature = CriticalTemperature, 
+        CoherenceLength = CoherenceLength)
+    
+    plt.plot(X_axis, ytest, label=f"Fitted Curve Simplifed", linewidth=3)
+    
+plt.yscale("log")
+plt.xlabel("Thickness (nm)")
+plt.ylabel("Current (mA)")
+plt.legend()
+plt.show()
