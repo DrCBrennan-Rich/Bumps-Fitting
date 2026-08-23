@@ -22,9 +22,7 @@ from scipy.integrate import trapezoid
 from scipy import constants
 
 k_B = constants.Boltzmann
-e = constants.e
-k_B = 1.38E-23
-e = 1.6E-19
+e = constants.e 
 
 T = 5 #Temperature in K
 T_c = 10 #Critical temperature in K
