@@ -19,6 +19,7 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import trapezoid
+from scipy import constants
 
 
 T = 5 #Temperature in K
