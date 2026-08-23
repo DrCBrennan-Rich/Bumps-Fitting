@@ -30,8 +30,6 @@ Resistivity_F = 87#ohm nm
 SpinScatterTime=0.0134675
 
 gamma_NF=0.0234461
-
-
 xi_N=30
 
 Area = np.pi*(1.5E3)*(1.5E3)
