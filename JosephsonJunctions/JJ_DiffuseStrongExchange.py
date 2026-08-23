@@ -28,9 +28,7 @@ Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
 
-gamma_NF=0.0234461
 xi_N=30
-
 #Area of the junction
 Area = np.pi*(1.5E3)*(1.5E3)
 
