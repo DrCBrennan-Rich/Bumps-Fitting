@@ -8,7 +8,7 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 10})
+plt.rcParams.update({'font.size': 40})
 
 JunctionResistance = 1.55E-3 #Ohms
 
