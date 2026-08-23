@@ -28,8 +28,6 @@ Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
 
-SpinScatterTime=0.0134675
-
 gamma_NF=0.0234461
 xi_N=30
 
