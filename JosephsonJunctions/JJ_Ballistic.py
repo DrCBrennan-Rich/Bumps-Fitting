@@ -21,8 +21,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapezoid
 from scipy import constants
 
-k_B = constants.Boltzmann
-e = constants.e 
+k_B = constants.Boltzmann  #J/K
+e = constants.e  #Coulombs
 
 T = 5 #Temperature in K
 T_c = 10 #Critical temperature in K
