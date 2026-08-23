@@ -10,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 40})
 
-
 k_B = 8.617333262E-5 #eV/K
 JunctionResistance = 1.55E-3 #Ohms
 
