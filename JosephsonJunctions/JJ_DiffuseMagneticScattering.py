@@ -13,8 +13,6 @@ plt.rcParams.update({'font.size': 40})
 
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
-k_B = 8.617333262E-5 #eV/K
-hbar = 6.582E-16 #eV*s
 
 FreqCutoff=50
 StepNumber = 5
