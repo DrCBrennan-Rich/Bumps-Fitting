@@ -11,13 +11,16 @@ import matplotlib.pyplot as plt
 from scipy import constants
 plt.rcParams.update({'font.size': 40})
 
+#Physical constants
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
+#Function parameters
 FreqCutoff=50
 StepNumber = 5
-T_c = 9.2
 
+#Potential fitting values
+T_c = 9.2
 Temperature=4.2 #K
 H = 0.4  #Exchange energy in eV
 alpha =  1.03595
