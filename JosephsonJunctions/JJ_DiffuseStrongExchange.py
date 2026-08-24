@@ -57,7 +57,33 @@ def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     return [np.real(Residual), np.imag(Residual)]
 
 def Solve_Quartic_Exact(gamma,Omega,theta):
-    #Solve equation 20 or 22 if eta = 0
+    """Solve a quartic equation for the exact roots.
+
+    Solves a quartic equation corresponding to Eq. 20 (or Eq. 22) 
+    when eta = 0 using NumPy's polynomial root solver.
+
+    Args:
+        gamma (float): Dimensionless parameter controlling the strength
+            of the quartic terms.
+        Omega (float): Frequency or energy-like parameter. Must be
+            non-negative.
+        theta (float): Angle, in radians.
+
+    Returns:
+        numpy.ndarray: Array containing the four (possibly complex)
+            roots of the quartic equation.
+
+    Notes:
+        The polynomial solved is
+
+            x^4 + 2*gamma*sqrt(Omega)*sin(theta)*x^3
+            + (gamma^2*Omega - 1)*x^2
+            - gamma*sqrt(Omega)*sin(theta)*x
+            + sin(theta)^2/4 = 0.
+
+        The roots are calculated using ``numpy.roots`` and are not
+        guaranteed to be returned in any particular order.
+    """
     
     S = np.sin(theta)
     u = np.sqrt(Omega)
