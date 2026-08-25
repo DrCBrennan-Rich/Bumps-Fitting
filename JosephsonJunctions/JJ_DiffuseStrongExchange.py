@@ -109,7 +109,7 @@ def Pick_Root(Roots,gamma,Omega,theta):
         theta (float): Angle, in radians.
 
     Returns:
-        complex: Physicalluy correct root
+        complex: Physically correct root
 
     Notes:
         The equation being solved is
