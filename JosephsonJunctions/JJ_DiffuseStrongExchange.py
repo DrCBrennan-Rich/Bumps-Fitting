@@ -128,7 +128,7 @@ def Pick_Root(Roots,gamma,Omega,theta):
     return Roots[i]
 
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
-    """Calculate the suppresion paramter between the normal and ferromagnetic
+    """Calculate the suppresion parameter between the normal and ferromagnetic
     boundary: theta_NF.
 
     Calculates theta_NF from the known theta_NS and theta_S values according to
