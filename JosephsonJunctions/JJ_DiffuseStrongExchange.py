@@ -148,7 +148,7 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
         float: Pairing angle between normal and ferromagnetic materials 
 
     Notes:
-        The equation being solved is
+        The equation being solved is:
 
            theta_NF = Omega*d_N^2*Sin(theta_NS)/(2*xi_N^2) + 
                        d_N*Sin(theta_NS-theta_S)/(gamma_BSN*xi_N) + theta_NS
@@ -162,7 +162,34 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     return theta_NF
 
 def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
-    #If eta and gamma_NF = 0 then this function will find theta_NS from equation A8
+    """Calculate the suppresion parameter between the normal and 
+    superconducting boundary: theta_NS, for eta, gamma_NF = 0
+
+    Calculates the initial theta_NS value for the exactly solvable situation 
+    where the scattering parameter and normal-ferromagnetic suppresion 
+    parameter (eta and gamma_NF) are both 0, using equation A8. This value can
+    then be used as a starting point to solve the trancendental equation for 
+    eta, gamma_NF =/= 0.
+
+    Args:
+        d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+        junction.
+        Omega (complex): Dimensionless Matsurbara frequency.
+        xi_N (float): Coherence length in the normal metal.
+        theta_NS (float): Pairing angle, in radians.
+        gamma_BSN (float): Boundary suppresion parameter between superconductor
+        and normal metal.
+        theta_S (float): Superconducting pairing angle.
+
+    Returns:
+        float: Pairing angle between normal and superconducting materials 
+
+    Notes:
+        The equation being solved is:
+            
+           0 = Real[Omega]*d_N*gamma_BSN*Sin(theta_NS) + Sin(theta_NS-theta_S)
+    """
+
     A = (np.real(Omega)*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
     B = (A+(1/np.tan(theta_S)))*(A+(1/np.tan(theta_S)))
     C = np.sqrt(1/(B+1))
@@ -172,7 +199,37 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     return theta_NS
 
 def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
-    #If eta and gamma_NF = 0 then this function will find theta_NS, based off equation A10/11
+    """Calculate the suppresion parameter between the normal and 
+    superconducting boundary: theta_NS, for eta, gamma_NF = 0
+
+    Calculates the initial theta_NS value for the exactly solvable situation 
+    where the scattering parameter and normal-ferromagnetic suppresion 
+    parameter (eta and gamma_NF) are both 0, using equation A10 and A11. This 
+    value can then be used as a starting point to solve the trancendental 
+    equation for eta, gamma_NF =/= 0.
+
+    Args:
+        d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+        junction.
+        Omega (complex): Dimensionless Matsurbara frequency.
+        xi_N (float): Coherence length in the normal metal.
+        theta_NS (float): Pairing angle, in radians.
+        gamma_BSN (float): Boundary suppresion parameter between superconductor
+        and normal metal.
+        theta_S (float): Superconducting pairing angle.
+
+    Returns:
+        float: Pairing angle between normal and superconducting materials 
+
+    Notes:
+        The equations being solved are:
+            
+            Sin(theta_NS) = lambda*Sin(theta_S)
+            
+            1/(lambda^2) = 1 + 2*Cos(theta_S)*gamma_BSN*Real[Omega]*d_N/xi_N
+                            + gamma_BSN^2*Real[Omega]^2*d_N^2/xi_N^2
+    """
+
     A = gamma_BSN*np.real(Omega)*d_N/xi_N
     Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
     
@@ -374,10 +431,10 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
         
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
-      
+        #print(f'Chi1 is {Chi1} and Chi2 is {Chi2}')
         J_c += Term
         
-    return Amplitude*np.abs(J_c) #Return the current in milliamps
+    return JunctionResistance*Amplitude*np.abs(J_c) #Return IcRn in uV, Amplitude in uA*nm
 
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
@@ -411,8 +468,8 @@ d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/JunctionResistance
-dy = dy/JunctionResistance
+#y = y/JunctionResistance
+#dy = dy/JunctionResistance
 
 Model = bmp.Curve(
     JC_DiffuseExchange2,
@@ -482,7 +539,7 @@ plt.errorbar(
     capsize=3,
     label='Experimental data')
 
-Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+#Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
 X_axis = np.linspace(0.1, 2, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
