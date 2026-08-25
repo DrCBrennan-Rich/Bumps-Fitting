@@ -68,9 +68,9 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
 
     Args:
         gamma (float): Dimensionless parameter controlling the strength
-            of the quartic terms.
-        Omega (complex): Dimensionless Matsurbara frequency.
-        theta (float): Pairing angle, in radians.
+            of the quartic terms (unitless).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        theta (float): Pairing angle (radians).
 
     Returns:
         numpy.ndarray: Array containing the four (possibly complex)
@@ -104,20 +104,20 @@ def Pick_Root(Roots,gamma,Omega,theta):
     are calculated and compared with the value closest to 0 returned.
 
     Args:
-        Roots (numpy.ndarray): List of (complex) roots
+        Roots (numpy.ndarray): List of (complex) roots (unitless).
         gamma (float): Dimensionless parameter controlling the strength
-            of the quartic terms.
-        Omega (complex):  Dimensionless Matsurbara frequency.
-        theta (float): Pairing angle, in radians.
+            of the quartic terms (unitless).
+        Omega (complex):  Dimensionless Matsurbara frequency (unitless).
+        theta (float): Pairing angle (radians).
 
     Returns:
-        complex: Physically correct root
+        complex: Physically correct root (unitless).
 
     Notes:
         The equation being solved is
 
            2*gamma*sqrt[Omega]*Sin(theta/2) = Sin(theta_S-theta)
-           where we then define Root = Sin(theta/2)
+           where we then define Root = Sin(theta/2).
     """
     
     LHS = 2*gamma*np.sqrt(Omega)*Roots
@@ -136,16 +136,18 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
 
     Args:
         d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
-        junction.
-        Omega (float): Dimensionless Matsurbara frequency (real component).
-        xi_N (float): Coherence length in the normal metal.
-        theta_NS (float): Pairing angle, in radians.
+        junction (nm).
+        Omega (float): Dimensionless Matsurbara frequency (real component, 
+                                                           unitless).
+        xi_N (float): Coherence length in the normal metal (nm).
+        theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
-        and normal metal.
-        theta_S (float): Superconducting pairing angle.
+        and normal metal (unitless).
+        theta_S (float): Superconducting pairing angle (radians).
 
     Returns:
         float: Pairing angle between normal and ferromagnetic materials 
+        (radians).
 
     Notes:
         The equation being solved is:
@@ -173,16 +175,17 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
 
     Args:
         d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
-        junction.
-        Omega (complex): Dimensionless Matsurbara frequency.
-        xi_N (float): Coherence length in the normal metal.
-        theta_NS (float): Pairing angle, in radians.
+        junction (nm).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        xi_N (float): Coherence length in the normal metal (nm).
+        theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
-        and normal metal.
-        theta_S (float): Superconducting pairing angle.
+        and normal metal (unitless).
+        theta_S (float): Superconducting pairing angle (radians).
 
     Returns:
         float: Pairing angle between normal and superconducting materials 
+        (radians).
 
     Notes:
         The equation being solved is:
@@ -210,16 +213,17 @@ def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
 
     Args:
         d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
-        junction.
-        Omega (complex): Dimensionless Matsurbara frequency.
-        xi_N (float): Coherence length in the normal metal.
-        theta_NS (float): Pairing angle, in radians.
+        junction (nm).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        xi_N (float): Coherence length in the normal metal (nm).
+        theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
-        and normal metal.
-        theta_S (float): Superconducting pairing angle.
+        and normal metal (unitless).
+        theta_S (float): Superconducting pairing angle (unitless).
 
     Returns:
         float: Pairing angle between normal and superconducting materials 
+        (radians).
 
     Notes:
         The equations being solved are:
@@ -439,29 +443,13 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
-d = np.array([0.2   , 0.25  , 0.3   , 0.3001, 
-              0.35  , 0.4   , 0.5   , 0.6   ,
-       0.65  , 0.7   , 0.75  , 0.8   
-       , 0.85  , 0.9   , 1.    , 1.2   ,
-         1.4      , 1.8   
-       ,  2.9   , 3.05  , 3.35  ,
-       3.5   , 3.95  , 4.1   ])
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
 
-y = np.array([ 5.82676311e+01,  1.98857464e+01,  1.82044113e+01,  1.20986269e+01,
-        4.21737136e+01,  4.53325880e+01,  5.52219962e+01,  3.40636207e+01,
-        3.98201025e+01,  1.99314475e+01,  5.78951272e+00,  9.05918155e+00,
-        1.40965072e+01,  1.40840179e+01,  9.32348301e+00,  5.76009565e+00,
-         3.03582577e+00,   2.98477930e+00,
-         3.18558573e-01,  3.54810986e-01,  2.14422998e-02,
-        3.26788902e+00,  4.46595321e-01,  4.05815270e-01])
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815, 13.972562686109798, 10.008982510530531, 6.939496641380081, 2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 2.1937826740803543, 2.6960435520171293, 2.642885048481178, 26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811, 2.3257632595999977, 2.2332393553653582])
 
-dy = np.array([ 3.48369676e+00,  5.83645236e-01,  5.51737524e-01,  1.50676018e+00,
-        4.47801704e+00,  2.49750734e+00,  1.36701097e+00,  8.18598920e-01,
-        4.87499261e+00,  1.27909285e+00,  1.83156247e-01,  5.80389244e-01,
-        9.57995335e-01,  2.42281732e-01,  5.20201799e-01,  5.12059068e-01,
-         1.03083058e-01,   1.97271341e-01,
-         4.53807754e-02,  2.74412148e-02,  9.08452470e-04,
-        3.12400432e-01,  2.12279413e-02,  6.69057013e-02])
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 1.514830390212418, 0.9546742245394503, 1.624217115530211, 0.9081232687658485, 0.3261137420414092, 0.779596233884249, 0.8897751989591207, 0.23563425164791063, 0.28325155792176143, 0.4182558888900494, 0.26331238028429693, 0.21384513210250294, 0.3840692332507965, 0.204401721667579, 0.7852499999999994, 0.8842499999999979, 5.166759346614983, 5.5504418943199685, 0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
