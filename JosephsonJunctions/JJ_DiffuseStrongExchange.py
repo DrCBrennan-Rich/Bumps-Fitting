@@ -49,6 +49,8 @@ d_N2 = 10
 
 gamma_NF = 0.135015
 
+#Green function: F = exp(j*chi)*sin(theta)
+
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     #Equation 20 and 22
     
@@ -67,8 +69,8 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     Args:
         gamma (float): Dimensionless parameter controlling the strength
             of the quartic terms.
-        Omega (complex): Frequency or energy-like parameter.
-        theta (float): Angle, in radians.
+        Omega (complex): Dimensionless Matsurbara frequency.
+        theta (float): Pairing angle, in radians.
 
     Returns:
         numpy.ndarray: Array containing the four (possibly complex)
@@ -105,8 +107,8 @@ def Pick_Root(Roots,gamma,Omega,theta):
         Roots (numpy.ndarray): List of (complex) roots
         gamma (float): Dimensionless parameter controlling the strength
             of the quartic terms.
-        Omega (complex): Frequency or energy-like parameter.
-        theta (float): Angle, in radians.
+        Omega (complex):  Dimensionless Matsurbara frequency.
+        theta (float): Pairing angle, in radians.
 
     Returns:
         complex: Physically correct root
@@ -116,7 +118,6 @@ def Pick_Root(Roots,gamma,Omega,theta):
 
            2*gamma*sqrt[Omega]*Sin(theta/2) = Sin(theta_S-theta)
            where we then define Root = Sin(theta/2)
-           
     """
     
     LHS = 2*gamma*np.sqrt(Omega)*Roots
@@ -127,7 +128,31 @@ def Pick_Root(Roots,gamma,Omega,theta):
     return Roots[i]
 
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
-    
+    """Calculate the suppresion paramter between the normal and ferromagnetic
+    boundary: theta_NF.
+
+    Calculates the correct root from the four returned from the quartic by 
+    using Eq. 19 (or Eq. 21). The left hand side (LHS) and right hand side (RHS)
+    are calculated and compared with the value closest to 0 returned.
+
+    Args:
+        d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+        junction.
+        Omega (complex): Dimensionless Matsurbara frequency.
+        xi_N (float): Coherence length in the normal metal.
+        theta_NS (float): Pairing angle, in radians.
+        gamma (float): Dimensionless parameter controlling the strength
+            of the quartic terms.
+
+    Returns:
+        complex: Physically correct root
+
+    Notes:
+        The equation being solved is
+
+           2*gamma*sqrt[Omega]*Sin(theta/2) = Sin(theta_S-theta)
+           where we then define Root = Sin(theta/2)
+    """
     #Equation A5
     Difference = theta_NS-theta_S
     
