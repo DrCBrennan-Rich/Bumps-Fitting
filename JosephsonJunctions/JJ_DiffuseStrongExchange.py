@@ -28,8 +28,10 @@ Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 Resistivity_F = 87#ohm nm
 
+SpinScatterTime=0.0134675
+
 xi_N=30
-#Area of the junction
+
 Area = np.pi*(1.5E3)*(1.5E3)
 
 gamma_BNF = 0.001
@@ -37,15 +39,15 @@ gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
 
-Amplitude = 1777.83
-H = 0.679 #Exchange energy in the ferromagnet in eV
+Amplitude = 1052*1E3
+H=0.679 #eV
 CoherenceLength=1.87 #2.087 #nm
 gamma_BSN = 0.186 
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 
-gamma_NF = 0.185096
+gamma_NF = 0.135015
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     #Equation 20 and 22
@@ -65,8 +67,7 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     Args:
         gamma (float): Dimensionless parameter controlling the strength
             of the quartic terms.
-        Omega (float): Frequency or energy-like parameter. Must be
-            non-negative.
+        Omega (complex): Frequency or energy-like parameter.
         theta (float): Angle, in radians.
 
     Returns:
@@ -94,15 +95,39 @@ def Solve_Quartic_Exact(gamma,Omega,theta):
     return Roots
 
 def Pick_Root(Roots,gamma,Omega,theta):
-    #Four roots exist, selects the correct one using equation 19 or 21
+    """Select the correct root of the quartic equation.
+
+    Calculates the correct root from the four returned from the quartic by 
+    using Eq. 19 (or Eq. 21). The left hand side (LHS) and right hand side (RHS)
+    are calculated and compared with the value closest to 0 returned.
+
+    Args:
+        Roots (numpy.ndarray): List of (complex) roots
+        gamma (float): Dimensionless parameter controlling the strength
+            of the quartic terms.
+        Omega (complex): Frequency or energy-like parameter.
+        theta (float): Angle, in radians.
+
+    Returns:
+        complex: Physicalluy correct root
+
+    Notes:
+        The equation being solved is
+
+           2*gamma*sqrt[Omega]*Sin(theta/2) = Sin(theta_S-theta)
+           where we then define Root = Sin(theta/2)
+           
+    """
     
     LHS = 2*gamma*np.sqrt(Omega)*Roots
     RHS = np.sin(theta-2*np.arcsin(Roots))
     
+    #Find the index of the position where RHS most closely matches LHS
     i = np.argmin(np.abs(RHS-LHS))
     return Roots[i]
 
 def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
+    
     #Equation A5
     Difference = theta_NS-theta_S
     
@@ -362,8 +387,8 @@ d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-#y = y/JunctionResistance
-#dy = dy/JunctionResistance
+y = y/JunctionResistance
+dy = dy/JunctionResistance
 
 Model = bmp.Curve(
     JC_DiffuseExchange2,
