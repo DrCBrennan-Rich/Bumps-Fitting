@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 from scipy import constants
 
+#As a general rule of thumb throughout this script energies will be in 
+#electron-volts, lengths will be in nm, and electrical parameters will be in
+#their SI units (Volts, Ampere, Ohm, Coulomb).
+
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
@@ -39,7 +43,7 @@ gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
 
-Amplitude = 1052*1E3
+Amplitude = 827795
 H=0.679 #eV
 CoherenceLength=1.87 #2.087 #nm
 gamma_BSN = 0.186 
@@ -47,7 +51,8 @@ SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 
-gamma_NF = 0.135015
+gamma_NF = 0.13475
+
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -443,6 +448,29 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815,
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811,
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211,
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249,
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143,
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994,
+               0.8842499999999979, 5.166759346614983, 5.5504418943199685,
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
+
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
@@ -475,12 +503,12 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(0.1,0.65)
+Model.gamma_NF.range(0.0001,0.65)
 #Model.Resistivity_F.range(30,2000)
 #Model.gamma_BSN.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
 
-Model.Amplitude.range(900,6000)
+Model.Amplitude.range(15E3,15E8)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
