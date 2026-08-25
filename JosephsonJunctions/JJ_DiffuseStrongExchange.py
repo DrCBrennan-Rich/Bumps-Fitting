@@ -131,29 +131,28 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     """Calculate the suppresion paramter between the normal and ferromagnetic
     boundary: theta_NF.
 
-    Calculates the correct root from the four returned from the quartic by 
-    using Eq. 19 (or Eq. 21). The left hand side (LHS) and right hand side (RHS)
-    are calculated and compared with the value closest to 0 returned.
+    Calculates theta_NF from the known theta_NS and theta_S values according to
+    Eq. A5.
 
     Args:
         d_N (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
         junction.
-        Omega (complex): Dimensionless Matsurbara frequency.
+        Omega (float): Dimensionless Matsurbara frequency (real component).
         xi_N (float): Coherence length in the normal metal.
         theta_NS (float): Pairing angle, in radians.
-        gamma (float): Dimensionless parameter controlling the strength
-            of the quartic terms.
+        gamma_BSN (float): Boundary suppresion parameter between superconductor
+        and normal metal.
+        theta_S (float): Superconducting pairing angle.
 
     Returns:
-        complex: Physically correct root
+        float: Pairing angle between normal and ferromagnetic materials 
 
     Notes:
         The equation being solved is
 
-           2*gamma*sqrt[Omega]*Sin(theta/2) = Sin(theta_S-theta)
-           where we then define Root = Sin(theta/2)
+           theta_NF = Omega*d_N^2*Sin(theta_NS)/(2*xi_N^2) + 
+                       d_N*Sin(theta_NS-theta_S)/(gamma_BSN*xi_N) + theta_NS
     """
-    #Equation A5
     Difference = theta_NS-theta_S
     
     Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
