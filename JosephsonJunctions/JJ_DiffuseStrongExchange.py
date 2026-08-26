@@ -361,10 +361,37 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
             eqA5_real, eqA5_imaginary,
             eqA8_real, eqA8_imaginary]
 
-def Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta):
-    Roots = Solve_Quartic_Exact(gamma_BSF, w, theta_S)
+def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
+    """Calculate the boundary constant, Chi, between the superconducting and 
+    ferromagnet interface.
+
+    This function summons the required functions to first solve the boundary
+    constant for the exact solution when eta = 0; then selects the
+    correct root, and finally performs the stepping operation to progress from
+    the eta = 0 case to the desired eta. Fsolve is called at each step using
+    the previous solution as the initial search point for the next solution.
+
+    Args:
+        gamma_BSF (float): Boundary suppresion parameter between superconductor
+            and ferromagnet (unitless).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        theta_S (float): Superconducting pairing angle (unitless).
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+            where tau_m is the spin-flip scattering time (unitless).
+        StepNumber (int): Number of steps performed between 0 and eta.
+        
+
+    Returns:
+        Chi_SF (complex): Boundary constant between the superconducting and 
+            ferromagnet interface (unitless).
+
+    Notes:
+
+    """
     
-    Chi2_Initial = Pick_Root(Roots, gamma_BSF, w, theta_S)
+    Roots = Solve_Quartic_Exact(gamma_BSF, Omega, theta_S)
+    
+    Chi2_Initial = Pick_Root(Roots, gamma_BSF, Omega, theta_S)
     
     EtaSteps = np.linspace(0,eta,StepNumber)
     Guess = [Chi2_Initial.real, Chi2_Initial.imag]
@@ -374,8 +401,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta):
         Solution = fsolve(
             Trancendental_Quartic,
             Guess,
-            args=(gamma_BSF, w, EtaIntermediate, theta_S)
-        )
+            args=(gamma_BSF, Omega, EtaIntermediate, theta_S))
         Guess = [Solution[0], Solution[1]]
      
     Chi_SF = Solution[0] + 1j*Solution[1]
@@ -455,7 +481,8 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
                                      theta_NS_initial2, eta, theta_S,
                                      gamma_NF)
                
-        #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
+        #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta, 
+        #StepNumber = StepNumber)
         
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
       
@@ -509,6 +536,54 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
 
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+
+'''
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815,
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811,
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211,
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249,
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143,
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994,
+               0.8842499999999979, 5.166759346614983, 5.5504418943199685,
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
+'''
+
+d = np.array([0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
+              0.8, 0.85, 1.0,0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 0.15, 
+              1.5, 1.65, 1.8])
+
+y = np.array([25.485540677019983, 20.24388234661639, 9.229536446202395, 
+              2.3917306615253358, 5.332381933490123, 6.262335355328344, 
+              5.555634474421091, 7.14605149171436, 4.670040152958881, 
+              4.466469736108299, 4.402734073344201, 2.8669437006283083, 
+              2.198601946982659, 0.31666206152922616, 1.018208817810008, 
+              6.094153299948496, 6.307979995277196, 5.485744923060322, 
+              2.581500267199711, 0.3440655265061016, 1.3730251946938403,
+              0.951189258094282, 0.08461134762633567, 38.13333333333333, 
+              0.1905, 0.3, 0.12166666666666666])
+dy = np.array([1.1541353059558421, 1.3282852847429805, 0.43555339620836153, 
+               0.183136722622837, 0.32397334928648797, 0.16637832288545412, 
+               0.4313857996461637, 0.2067104216127845, 0.26935663136737165, 
+               0.11061774240230109, 0.5189157313556868, 0.13401844281653402,
+               0.1469797151953465, 0.051007687876081016, 0.08432750457227471, 
+               0.12104294939270999, 0.2824216946228165, 0.19224653742922326, 
+               0.03978367734086671, 0.018540196895687144, 0.20333691412042817,
+               0.0053777623606668535, 0.004048255991005446, 1.7975291683617007,
+               0.0035000000000000027, 0.04999999999999999, 0.010137937550497038])
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
