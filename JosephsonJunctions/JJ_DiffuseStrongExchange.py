@@ -409,7 +409,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
     return Chi_SF
 
 def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial, 
-                          eta, theta_S, gamma_NF):
+                          eta, theta_S, gamma_NF, StepNumber):
     """Calculate the boundary constant, Chi, between the superconducting/normal
     and ferromagnet interface.
 
@@ -424,10 +424,15 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         gamma_BNF (float): Boundary suppresion parameter between the normal 
             metal and ferromagnet (unitless).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        theta_S (float): Superconducting pairing angle (unitless).
+        theta_NF_initial
+        theta_NS_initial
+        
+        
         eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
+        theta_S (float): Superconducting pairing angle (unitless).
         StepNumber (int): Number of steps performed between 0 and eta.
+        gamma_NF: 
         
 
     Returns:
@@ -502,11 +507,11 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
             
         Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
                                      theta_NS_initial, eta, theta_S, 
-                                     gamma_NF)
+                                     gamma_NF, StepNumber)
         
         Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
                                      theta_NS_initial2, eta, theta_S,
-                                     gamma_NF)
+                                     gamma_NF, StepNumber)
                
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta, 
         #StepNumber = StepNumber)
@@ -547,11 +552,11 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
             
         Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
                                      theta_NS_initial, eta, theta_S, 
-                                     gamma_NF)
+                                     gamma_NF, StepNumber)
         
         Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
                                      theta_NS_initial2, eta, theta_S,
-                                     gamma_NF)
+                                     gamma_NF, StepNumber)
                
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
         
