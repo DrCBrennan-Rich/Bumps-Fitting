@@ -308,7 +308,8 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
                 S = Sin(theta_NF)
                 u = sqrt[Omega + eta*(1-Chi^2)]
     """
-
+    
+    #Seperate the real and imaginary equations
     ChiReal = ChiAndAngles[0]
     ChiImaginary = ChiAndAngles[1]
     Chi = ChiReal + 1j*ChiImaginary
