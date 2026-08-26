@@ -30,28 +30,32 @@ CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
 AR = 5.7*1E3 #Ohm nm^2
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
-Resistivity_F = 87#ohm nm
+
 
 SpinScatterTime=0.0134675
 
-xi_N=30
 
-Area = np.pi*(1.5E3)*(1.5E3)
 
-gamma_BNF = 0.001
+Area = np.pi*(1.5E3)*(1.5E3) #nm^2
+
+gamma_BNF = 1000
 gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
+InterfaceResistance = 5700 #Ohm nm^2
 
-Amplitude = 827795
+Amplitude = 250#90892.9#827795
 H=0.679 #eV
-CoherenceLength=1.87 #2.087 #nm
-gamma_BSN = 0.186 
+CoherenceLength= 2.76309 #1.87 #2.087 #nm
+gamma_BSN = 1.5372#0.186 
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
-
-gamma_NF = 0.13475
+xi_N = 30
+gamma_NF = 0.322035#0.00198402#0.0383814#0.13475
+Resistivity_F = 1367.83 #ohm nm
+Resistivity_N = 87
+eta = 0.596676
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -267,7 +271,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
         eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         gamma_BNF (float): Boundary suppresion parameter between the normal metal
-            and the superconductor (unitless).
+            and the ferromagnet (unitless).
         gamma_NF (float): Suppresion parameter between the normal metal
             and the superconductor (unitless).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
@@ -279,16 +283,30 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
         
 
     Returns:
-        float: Pairing angle between normal and superconducting materials 
-        (radians).
+        AllEquations (list): A six element list where the elements will be:
+            [0] - Real residual of equation 22 (unitless).
+            [1] - Imaginary residual of equation 22 (unitless).
+            [2] - Real residual of equation A5 (unitless).
+            [3] - Imaginary residual of equation A5 (unitless).
+            [4] - Real residual of equation A8 (unitless).
+            [5] - Imaginary residual of equation A8 (unitless).
 
     Notes:
         The equations being solved are:
             
-            Sin(theta_NS) = lambda*Sin(theta_S)
+            Eq22: 0 = Chi^4 + 2*gamma_BNF*u*S*Chi^3 + ((gamma_BNF*u)^2-1)*Chi^2 
+                - gamma_BNF*u*S*Chi + S*S/4
+                
+            EqA5: 0 = theta_NF - (Real[Omega]*d_N^2*Sin(theta_NS))/(2*xi_N^2)
+                + (d_N*np.sin(Difference))/(gamma_BSN*xi_N) + theta_NS
+                
+            EqA8: 0 = -2*gamma_NF*gamma_BSN*u*Chi - Sin(Difference)
+                - (Real[Omega]*d_N*gamma_BSN/xi_N)*Sin(theta_NS)
             
-            1/(lambda^2) = 1 + 2*Cos(theta_S)*gamma_BSN*Real[Omega]*d_N/xi_N
-                            + gamma_BSN^2*Real[Omega]^2*d_N^2/xi_N^2
+            Where:
+                Difference = theta_NS - theta_S
+                S = Sin(theta_NF)
+                u = sqrt[Omega + eta*(1-Chi^2)]
     """
 
     ChiReal = ChiAndAngles[0]
@@ -413,7 +431,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    #gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
+    gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
@@ -442,7 +460,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
       
         J_c += Term
         
-    return 1E3*Amplitude*np.abs(J_c) #Return the current in milliamps
+    return JunctionResistance*Amplitude*np.abs(J_c)*1E6 #Return the voltage in uV
 
 
 #Fit with a variable amplitude
@@ -456,7 +474,8 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    #gamma_BNF = 0.001#AR/(CoherenceLength*Resistivity) Defined as this value in the paper, needs to be fitted
+    gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
+    
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
@@ -490,6 +509,54 @@ def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF,
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
+'''
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815,
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811,
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211,
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249,
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143,
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994,
+               0.8842499999999979, 5.166759346614983, 5.5504418943199685,
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
+'''
+
+d = np.array([0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
+              0.8, 0.85, 1.0,0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 0.15, 
+              1.5, 1.65, 1.8])
+
+y = np.array([25.485540677019983, 20.24388234661639, 9.229536446202395, 
+              2.3917306615253358, 5.332381933490123, 6.262335355328344, 
+              5.555634474421091, 7.14605149171436, 4.670040152958881, 
+              4.466469736108299, 4.402734073344201, 2.8669437006283083, 
+              2.198601946982659, 0.31666206152922616, 1.018208817810008, 
+              6.094153299948496, 6.307979995277196, 5.485744923060322, 
+              2.581500267199711, 0.3440655265061016, 1.3730251946938403,
+              0.951189258094282, 0.08461134762633567, 38.13333333333333, 
+              0.1905, 0.3, 0.12166666666666666])
+dy = np.array([1.1541353059558421, 1.3282852847429805, 0.43555339620836153, 
+               0.183136722622837, 0.32397334928648797, 0.16637832288545412, 
+               0.4313857996461637, 0.2067104216127845, 0.26935663136737165, 
+               0.11061774240230109, 0.5189157313556868, 0.13401844281653402,
+               0.1469797151953465, 0.051007687876081016, 0.08432750457227471, 
+               0.12104294939270999, 0.2824216946228165, 0.19224653742922326, 
+               0.03978367734086671, 0.018540196895687144, 0.20333691412042817,
+               0.0053777623606668535, 0.004048255991005446, 1.7975291683617007,
+               0.0035000000000000027, 0.04999999999999999, 0.010137937550497038])
+
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
@@ -499,7 +566,7 @@ dy = dy[OrderingIndex]
 #dy = dy/JunctionResistance
 
 Model = bmp.Curve(
-    JC_DiffuseExchange2,
+    JC_DiffuseExchange,
     d, y, dy,
     Temperature=Temperature,
     #Resistivity_N = 87,#Ohm nm
@@ -511,23 +578,25 @@ Model = bmp.Curve(
     xi_N=xi_N,
     SC_gap=SC_gap,
     CoherenceLength=CoherenceLength,
-    Amplitude = 100
+    #Amplitude = 100
     
-    #Area = Area
+    Area = Area
     )
 
 ### Limits of fitting values ###
 
-#Model.CoherenceLength.range(1.75,2.5)
+Model.CoherenceLength.range(0.2,3.5)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
-#Model.eta.range(0,500)
-Model.gamma_NF.range(0.0001,0.65)
+Model.eta.range(0,500)
+Model.gamma_NF.range(0.0001,10)
 #Model.Resistivity_F.range(30,2000)
-#Model.gamma_BSN.range(1.8, 2.5)
+Model.gamma_BSN.range(1.5, 2.5)
+#Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
+Model.Resistivity_F.range(10,2000)
 
-Model.Amplitude.range(15E3,15E8)
+#Model.Amplitude.range(100,3000)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -541,17 +610,18 @@ Model.CoherenceLength.value = CoherenceLength #nm
 Model.H.value = 0.679 #1.54468#0.621795
 Model.Temperature.value = 4.2
 Model.eta.value = 6
-#Model.Resistivity_F.value =  70 #Ohm nm
+Model.Resistivity_F.value =  70 #Ohm nm
+Model.Resistivity_N.value =  87 #Ohm nm
 Model.gamma_NF.value = 0.01
 Model.SC_gap.value = 1.5E-3 #eV
-Model.xi_N.value = 41 #nm
+Model.xi_N.value = 30 #nm
 Model.d_N.value = 5 #nm
 Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = 0.186
 
-#Model.Area.value = np.pi*(1.5E3)*(1.5E3)
+Model.Area.value = Area
 
-Model.Amplitude.value = 100
+#Model.Amplitude.value = Amplitude
 
 problem = bmp.FitProblem(Model)
 
@@ -570,27 +640,27 @@ plt.errorbar(
 X_axis = np.linspace(0.1, 2, 1000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
-for test in [0.679]:
-    ytest = JC_DiffuseExchange2(
+for test in [1]:
+    ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
-        #Resistivity_N= 157,#ohm nm,
-        #Resistivity_F=100,#ohm nm,
+        Resistivity_N= Resistivity_N,#ohm nm,
+        Resistivity_F=Resistivity_F ,#ohm nm,
         CoherenceLength= CoherenceLength,#1.67,#1.59664, #nm
-        eta=6,
+        eta=eta,
         H=H,#0.6,#1.54468,#0.520934,
         gamma_NF= gamma_NF,
         gamma_BSN = gamma_BSN,#0.186,
         d_N=5,
         d_N2=10,
-        xi_N=41,
+        xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
         
-        Amplitude = Amplitude
-        #Area = np.pi*(1.5E3)*(1.5E3)
+        #Amplitude = Amplitude
+        Area = np.pi*(1.5E3)*(1.5E3)
     )
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
-plt.yscale("linear")
+plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
 plt.xlabel("Thickness (nm)", fontsize=34)
