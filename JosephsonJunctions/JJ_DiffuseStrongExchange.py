@@ -410,6 +410,32 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
 
 def Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, theta_NS_initial, 
                           eta, theta_S, gamma_NF):
+    """Calculate the boundary constant, Chi, between the superconducting/normal
+    and ferromagnet interface.
+
+    This function summons the required functions to first solve the boundary
+    constant for the exact solution when gamma_NF, eta = 0; then selects the
+    correct root; and finally performs the stepping operation to progress from
+    the gamma_NF = 0 case to the desired gamma_NF, and then . Fsolve is called at each step using
+    the previous solution as the initial search point for the next solution.
+
+    Args:
+        gamma_BSF (float): Boundary suppresion parameter between superconductor
+            and ferromagnet (unitless).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        theta_S (float): Superconducting pairing angle (unitless).
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+            where tau_m is the spin-flip scattering time (unitless).
+        StepNumber (int): Number of steps performed between 0 and eta.
+        
+
+    Returns:
+        Chi_SF (complex): Boundary constant between the superconducting and 
+            ferromagnet interface (unitless).
+
+    Notes:
+
+    """
     Roots = Solve_Quartic_Exact(gamma_BNF, w, theta_NF_initial)
     Chi_initial = Pick_Root(Roots, gamma_BNF, w, theta_NF_initial)     
     
