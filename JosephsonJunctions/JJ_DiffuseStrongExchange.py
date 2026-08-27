@@ -424,15 +424,16 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         gamma_BNF (float): Boundary suppresion parameter between the normal 
             metal and ferromagnet (unitless).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        theta_NF_initial
-        theta_NS_initial
-        
-        
+        theta_NF_initial (float): Pairing angle between normal and 
+            ferromagnetic materials (radians). 
+        theta_NS_initial (float): Pairing angle between normal and 
+            superconducting materials (radians). 
         eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         theta_S (float): Superconducting pairing angle (unitless).
+        gamma_NF (float): Suppresion parameter between the normal metal
+            and the superconductor (unitless).
         StepNumber (int): Number of steps performed between 0 and eta.
-        gamma_NF: 
         
 
     Returns:
