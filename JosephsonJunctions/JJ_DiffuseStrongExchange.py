@@ -31,7 +31,6 @@ AR = 5.7*1E3 #Ohm nm^2
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 
-
 SpinScatterTime=0.0134675
 gamma_BNF = 1000
 gamma_BSF = 1
@@ -41,16 +40,16 @@ InterfaceResistance = 5700 #Ohm nm^2
 
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
-CoherenceLength= 2.76309 #1.87 #2.087 #nm
-gamma_BSN = 1.5372#0.186 
+CoherenceLength= 1.99 #1.87 #2.087 #nm
+gamma_BSN =  1.92
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 xi_N = 30
-gamma_NF = 0.322035#0.00198402#0.0383814#0.13475
-Resistivity_F = 1367.83 #ohm nm
+gamma_NF = 0.01
+Resistivity_F = 2000 #987.303 #ohm nm
 Resistivity_N = 87
-eta = 0.596676
+eta = 0
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -413,7 +412,8 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
     Args:
         gamma_BNF (float): Boundary suppresion parameter between the normal 
-            metal and ferromagnet (unitless).
+        metal and ferromagnet (unitless).
+        
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         theta_NF_initial (float): Pairing angle between normal and 
             ferromagnetic materials (radians). 
@@ -469,11 +469,11 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength, H, gamma_NF, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area=None, Amplitude=None):
+                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
 
-    This function calculates the critical current as a function of 
+    This function calculates the critical voltage, IcRn, as a function of 
     ferromagnetic thickness of the weak link as presented in the Eq 18 of 
     the paper by Heim et al: https://doi.org/10.1088/1367-2630/17/11/113022.
     The main complexity is the calculation of the two boundary constants, Chi, 
@@ -499,6 +499,8 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         xi_N (float): Coherence length in the normal metal (nm).    
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
+        Amplitude (float): If provided, can be used to set an arbitrary scaled
+            amplitude for the output. 
         
 
     Returns:
@@ -552,52 +554,56 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         
     return IcRn*1E6 #Return the voltage in uV
 
-
-#Fit with a variable amplitude
-def JC_DiffuseExchange2(d_F, Temperature, eta, CoherenceLength, H, gamma_NF, 
-                        gamma_BSN, d_N, d_N2, xi_N, SC_gap, Amplitude):
-    
-    J_c = np.zeros_like(d_F, dtype=np.complex128)
-    
-    N_list = np.arange(FreqCutoff)
-    #"Omega" in this work will refer to Omega-tilda in the original paper
-    Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
-
-    #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
-    
-    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
-    
-    for gamma, w in zip(gamma_list, Omega_list):
-        #Define theta_S from equation 5
-        theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
-        #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
-        theta_NF_initial = Find_Theta_NF(d_N, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
-        
-        theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
-        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial2, gamma_BSN, theta_S)
-        
-        #Exact solution of the quartic equation 20/22 and then selecting the real root
-            
-        Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
-                                     theta_NS_initial, eta, theta_S, 
-                                     gamma_NF, StepNumber)
-        
-        Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
-                                     theta_NS_initial2, eta, theta_S,
-                                     gamma_NF, StepNumber)
-               
-        #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta)
-        
-        Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
-        #print(f'Chi1 is {Chi1} and Chi2 is {Chi2}')
-        J_c += Term
-        
-    return JunctionResistance*Amplitude*np.abs(J_c) #Return IcRn in uV, Amplitude in uA*nm
-
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+
+'''
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815,
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811,
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211,
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249,
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143,
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994,
+               0.8842499999999979, 5.166759346614983, 5.5504418943199685,
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
+'''
+
+d = np.array([0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75,
+              0.8, 0.85, 1.0,0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 0.15, 
+              1.5, 1.65, 1.8])
+
+y = np.array([25.485540677019983, 20.24388234661639, 9.229536446202395, 
+              2.3917306615253358, 5.332381933490123, 6.262335355328344, 
+              5.555634474421091, 7.14605149171436, 4.670040152958881, 
+              4.466469736108299, 4.402734073344201, 2.8669437006283083, 
+              2.198601946982659, 0.31666206152922616, 1.018208817810008, 
+              6.094153299948496, 6.307979995277196, 5.485744923060322, 
+              2.581500267199711, 0.3440655265061016, 1.3730251946938403,
+              0.951189258094282, 0.08461134762633567, 38.13333333333333, 
+              0.1905, 0.3, 0.12166666666666666])
+dy = np.array([1.1541353059558421, 1.3282852847429805, 0.43555339620836153, 
+               0.183136722622837, 0.32397334928648797, 0.16637832288545412, 
+               0.4313857996461637, 0.2067104216127845, 0.26935663136737165, 
+               0.11061774240230109, 0.5189157313556868, 0.13401844281653402,
+               0.1469797151953465, 0.051007687876081016, 0.08432750457227471, 
+               0.12104294939270999, 0.2824216946228165, 0.19224653742922326, 
+               0.03978367734086671, 0.018540196895687144, 0.20333691412042817,
+               0.0053777623606668535, 0.004048255991005446, 1.7975291683617007,
+               0.0035000000000000027, 0.04999999999999999, 0.010137937550497038])
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
@@ -627,10 +633,10 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-Model.CoherenceLength.range(0.2,3.5)
+#Model.CoherenceLength.range(0.2,3.5)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
-Model.eta.range(0,500)
+#Model.eta.range(0,500)
 Model.gamma_NF.range(0.0001,10)
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(1.5, 2.5)
@@ -649,17 +655,17 @@ Model.Resistivity_F.range(10,2000)
 #Initial values
 
 Model.CoherenceLength.value = CoherenceLength #nm
-Model.H.value = 0.679 #1.54468#0.621795
+Model.H.value = H
 Model.Temperature.value = 4.2
-Model.eta.value = 6
-Model.Resistivity_F.value =  70 #Ohm nm
-Model.Resistivity_N.value =  87 #Ohm nm
-Model.gamma_NF.value = 0.01
+Model.eta.value = eta
+Model.Resistivity_F.value =  Resistivity_F #Ohm nm
+Model.Resistivity_N.value =  Resistivity_N #Ohm nm
+Model.gamma_NF.value = gamma_NF
 Model.SC_gap.value = 1.5E-3 #eV
-Model.xi_N.value = 30 #nm
+Model.xi_N.value = xi_N #nm
 Model.d_N1.value = 5 #nm
 Model.d_N2.value = 10 #nm
-Model.gamma_BSN.value = 0.186
+Model.gamma_BSN.value = gamma_BSN
 
 Model.Area.value = Area
 
@@ -688,7 +694,7 @@ for test in [1]:
         Temperature=4.2,
         Resistivity_N= Resistivity_N,#ohm nm,
         Resistivity_F=Resistivity_F ,#ohm nm,
-        CoherenceLength= CoherenceLength,#1.67,#1.59664, #nm
+        CoherenceLength= CoherenceLength, #nm
         eta=eta,
         H=H,#0.6,#1.54468,#0.520934,
         gamma_NF= gamma_NF,
@@ -697,9 +703,8 @@ for test in [1]:
         d_N2=10,
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
-        
-        #Amplitude = Amplitude
-        Area = np.pi*(1.5E3)*(1.5E3)
+        Area = np.pi*(1.5E3)*(1.5E3),
+        #Amplitude = 0.001
     )
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
 plt.yscale("log")
