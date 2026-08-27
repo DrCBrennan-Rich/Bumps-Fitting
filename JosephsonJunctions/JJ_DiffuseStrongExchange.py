@@ -33,8 +33,6 @@ Resistivity_N = 87#ohm nm,
 
 
 SpinScatterTime=0.0134675
-Area = np.pi*(1.5E3)*(1.5E3) #nm^2
-
 gamma_BNF = 1000
 gamma_BSF = 1
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
