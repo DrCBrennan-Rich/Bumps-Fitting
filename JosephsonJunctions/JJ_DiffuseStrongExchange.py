@@ -31,11 +31,7 @@ AR = 5.7*1E3 #Ohm nm^2
 Temperature=4.2 #K
 Resistivity_N = 87#ohm nm, 
 
-
 SpinScatterTime=0.0134675
-
-
-
 Area = np.pi*(1.5E3)*(1.5E3) #nm^2
 
 gamma_BNF = 1000
