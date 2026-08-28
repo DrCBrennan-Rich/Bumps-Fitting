@@ -528,8 +528,13 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
         Amplitude (float): If provided, can be used to set an arbitrary scaled
-            amplitude for the output. 
-        
+            amplitude for the output.
+        gamma_BNF (float): If provided, sets the boundary suppresion parameter 
+            between the normal metal and the ferromagnet (unitless).
+        DeadLayer (float): Thickness of dead (non-magnetic) material in the 
+            ferromagnet. Negative values indicate increased effective 
+            ferromagnetic thickness due to proximity magnetisation in the 
+            normal metal.
 
     Returns:
         IcRn (float): Voltage across the Josephson junction (uV).
