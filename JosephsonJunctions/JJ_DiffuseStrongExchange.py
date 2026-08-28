@@ -41,16 +41,16 @@ InterfaceResistance = 5700 #Ohm nm^2
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
 CoherenceLength= 1.99 #1.87 #2.087 #nm
-gamma_BSN =  2.25878
+gamma_BSN =  0.1
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 xi_N = 30
-gamma_NF = 0.759512
-Resistivity_F = 1366.15 #987.303 #ohm nm
+gamma_NF = 0.001
+Resistivity_F = 1806.16 #987.303 #ohm nm
 Resistivity_N = 87
 eta = 0
-DeadLayer = 0.19908
+DeadLayer = 0# -0.333197
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -496,8 +496,8 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength, H, gamma_NF, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None,
-                       DeadLayer=0.0):
+                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None, 
+                       gamma_BNF=None, DeadLayer=0.0):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
 
@@ -551,7 +551,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
 
     #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
-    gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
+    if gamma_BNF is None:
+        gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
+    
     gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
     
     for gamma, w in zip(gamma_list, Omega_list):
@@ -667,14 +669,14 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(0.0001,10)
+Model.gamma_NF.range(0.001,10)
 #Model.Resistivity_F.range(30,2000)
-Model.gamma_BSN.range(1.5, 2.5)
+Model.gamma_BSN.range(0.001,10)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(10,2000)
+Model.Resistivity_F.range(1,2000)
 #Model.Amplitude.range(100,3000)
-Model.DeadLayer.range(-0.5,0.5)
+Model.DeadLayer.range(-1,0)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -686,7 +688,7 @@ Model.DeadLayer.range(-0.5,0.5)
 
 Model.CoherenceLength.value = CoherenceLength #nm
 Model.H.value = H
-Model.Temperature.value = 4.2
+Model.Temperature.value = Temperature
 Model.eta.value = eta
 Model.Resistivity_F.value =  Resistivity_F #Ohm nm
 Model.Resistivity_N.value =  Resistivity_N #Ohm nm
@@ -714,18 +716,18 @@ plt.errorbar(
     label='Experimental data')
 
 #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
-X_axis = np.linspace(0.1, 2, 1000)
+X_axis = np.linspace(0.1, 2, 100000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
-for test in [1]:
+for test in [0.7]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
         Resistivity_N= Resistivity_N,#ohm nm,
-        Resistivity_F=Resistivity_F ,#ohm nm,
+        Resistivity_F=Resistivity_F, #ohm nm,
         CoherenceLength= CoherenceLength, #nm
         eta=eta,
-        H=H,#0.6,#1.54468,#0.520934,
+        H=H, #0.6,#1.54468,#0.520934,
         gamma_NF= gamma_NF,
         gamma_BSN = gamma_BSN,#0.186,
         d_N1=5,
@@ -734,9 +736,10 @@ for test in [1]:
         SC_gap = 1.5E-3, #eV
         Area = Area,
         #Amplitude = 0.001
+        #gamma_BNF = 0.001,
         DeadLayer=DeadLayer
     )
-    plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
+    plt.plot(X_axis, ytest, label=f"gamma_NF {test}", linewidth=3)
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
