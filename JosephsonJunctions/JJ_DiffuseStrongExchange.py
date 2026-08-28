@@ -41,19 +41,46 @@ InterfaceResistance = 5700 #Ohm nm^2
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
 CoherenceLength= 1.99 #1.87 #2.087 #nm
-gamma_BSN =  1.92
+gamma_BSN =  2.25878
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 xi_N = 30
-gamma_NF = 0.01
-Resistivity_F = 2000 #987.303 #ohm nm
+gamma_NF = 0.759512
+Resistivity_F = 1366.15 #987.303 #ohm nm
 Resistivity_N = 87
 eta = 0
+DeadLayer = 0.19908
 
 #Green function: F = exp(j*chi)*sin(theta)
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
+    """Define the residual (f(x) = 0) for the trancendental quartic.
+
+    Solves a quartic equation corresponding to Eq. 20 (or Eq. 22) 
+    when eta = 0 using NumPy's polynomial root solver.
+
+    Args:
+        gamma (float): Dimensionless parameter controlling the strength
+            of the quartic terms (unitless).
+        Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        theta (float): Pairing angle (radians).
+
+    Returns:
+        Roots (numpy.ndarray): Array containing the four (possibly complex)
+            roots of the quartic equation.
+
+    Notes:
+        The polynomial solved is
+
+            x^4 + 2*gamma*sqrt(Omega)*sin(theta)*x^3
+            + (gamma^2*Omega - 1)*x^2
+            - gamma*sqrt(Omega)*sin(theta)*x
+            + sin(theta)^2/4 = 0.
+
+        The roots are calculated using ``numpy.roots`` and are not
+        guaranteed to be returned in any particular order.
+    """
     #Equation 20 and 22
     
     Chi = Chi_vec[0]+1j*Chi_vec[1]
@@ -469,7 +496,8 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength, H, gamma_NF, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None):
+                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None,
+                       DeadLayer=0.0):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
 
@@ -513,7 +541,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     
     if Amplitude is None:
         Amplitude = Area*(16*np.pi*k_B*Temperature)/Resistivity_F #Area in nm^2
-     
+    
+    d_F = d_F - DeadLayer
+    
     J_c = np.zeros_like(d_F, dtype=np.complex128)
     
     N_list = np.arange(FreqCutoff)
@@ -627,8 +657,8 @@ Model = bmp.Curve(
     SC_gap=SC_gap,
     CoherenceLength=CoherenceLength,
     #Amplitude = 100
-    
-    Area = Area
+    Area = Area,
+    DeadLayer = DeadLayer
     )
 
 ### Limits of fitting values ###
@@ -643,8 +673,8 @@ Model.gamma_BSN.range(1.5, 2.5)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
 Model.Resistivity_F.range(10,2000)
-
 #Model.Amplitude.range(100,3000)
+Model.DeadLayer.range(-0.5,0.5)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -666,9 +696,8 @@ Model.xi_N.value = xi_N #nm
 Model.d_N1.value = 5 #nm
 Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = gamma_BSN
-
 Model.Area.value = Area
-
+Model.DeadLayer.value = DeadLayer
 #Model.Amplitude.value = Amplitude
 
 problem = bmp.FitProblem(Model)
@@ -703,8 +732,9 @@ for test in [1]:
         d_N2=10,
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
-        Area = np.pi*(1.5E3)*(1.5E3),
+        Area = Area,
         #Amplitude = 0.001
+        DeadLayer=DeadLayer
     )
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
 plt.yscale("log")
