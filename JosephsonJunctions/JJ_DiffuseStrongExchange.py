@@ -64,6 +64,8 @@ def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
         imaginary components of Chi (unitless).
         gamma (float): Suppression parameter at the boundary.
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+            where tau_m is the spin-flip scattering time (unitless).
         theta (float): Pairing angle (radians).
 
     Returns:
