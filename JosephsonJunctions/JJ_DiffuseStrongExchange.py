@@ -59,8 +59,8 @@ def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
     Defines the residual for the quaritc equation 20 (or 22) in
     order for it to be supplied to Fsolve.
 
-    Args:
-        gamma (float): Dimensionless parameter controlling the strength
+    Args:Chi_vec
+        Chi_vec (float): Dimensionless parameter controlling the strength
             of the quartic terms (unitless).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         theta (float): Pairing angle (radians).
