@@ -56,9 +56,8 @@ DeadLayer = 0# -0.333197
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     """Define the residual (f(x) = 0) for the trancendental quartic.
 
-    Defines the residual for the quaritc equation 20 (or 22) 
-    Solves a quartic equation corresponding to Eq. 20 (or Eq. 22) 
-    when eta = 0 using NumPy's polynomial root solver.
+    Defines the residual for the quaritc equation 20 (or 22) in
+    order for it to be supplied to Fsolve.
 
     Args:
         gamma (float): Dimensionless parameter controlling the strength
