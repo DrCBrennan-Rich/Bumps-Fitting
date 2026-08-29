@@ -60,8 +60,8 @@ def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
     order for it to be supplied to Fsolve.
 
     Args:Chi_vec
-        Chi_vec (float): Dimensionless parameter controlling the strength
-            of the quartic terms (unitless).
+        Chi_vec (np.array): 2 long array containing the real and 
+        imaginary components of Chi (unitless).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         theta (float): Pairing angle (radians).
 
