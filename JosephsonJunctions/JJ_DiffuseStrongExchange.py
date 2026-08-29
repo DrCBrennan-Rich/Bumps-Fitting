@@ -53,7 +53,6 @@ eta = 0
 DeadLayer = 0# -0.333197
 
 #Green function: F = exp(j*chi)*sin(theta)
-
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     """Define the residual (f(x) = 0) for the trancendental quartic.
 
