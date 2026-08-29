@@ -62,6 +62,7 @@ def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
     Args:Chi_vec
         Chi_vec (np.array): 2 long array containing the real and 
         imaginary components of Chi (unitless).
+        gamma (float): Suppression parameter at the boundary.
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         theta (float): Pairing angle (radians).
 
