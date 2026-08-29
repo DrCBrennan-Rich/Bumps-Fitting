@@ -40,28 +40,30 @@ InterfaceResistance = 5700 #Ohm nm^2
 
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
-CoherenceLength= 1.99 #1.87 #2.087 #nm
-gamma_BSN =  0.1
+CoherenceLength= 1.99 #nm
+gamma_BSN =   1.05173
 SC_gap = 1.5E-3 #eV
 d_N = 5
 d_N2 = 10
 xi_N = 30
-gamma_NF = 0.001
-Resistivity_F = 1806.16 #987.303 #ohm nm
+gamma_NF = 1E-4
+Resistivity_F =  7949.59 #ohm nm
 Resistivity_N = 87
 eta = 0
-DeadLayer = 0# -0.333197
+DeadLayer = -0.341119# -0.333197
 
 #Green function: F = exp(j*chi)*sin(theta)
-def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
+
+def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     """Define the residual (f(x) = 0) for the trancendental quartic.
 
     Defines the residual for the quaritc equation 20 (or 22) in
-    order for it to be supplied to Fsolve.
+    order for it to be supplied to Fsolve. To do this, the real and imaginary
+    residuals have to calculated seperately and returned as a 2x1 array.
 
     Args:Chi_vec
-        Chi_vec (np.array): 2 long array containing the real and 
-        imaginary components of Chi (unitless).
+        Chi_vec (numpy.ndarray): Two long array containing the real and 
+            imaginary components of Chi (unitless).
         gamma (float): Suppression parameter at the boundary.
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
@@ -69,19 +71,10 @@ def Trancendental_Quartic(Chi_vec, gamma, Omega, eta, theta):
         theta (float): Pairing angle (radians).
 
     Returns:
-        Roots (numpy.ndarray): Array containing the four (possibly complex)
-            roots of the quartic equation.
+        Residual (numpy.ndarray): Array containing the real and complex 
+        components of the residual.
 
     Notes:
-        The polynomial solved is
-
-            x^4 + 2*gamma*sqrt(Omega)*sin(theta)*x^3
-            + (gamma^2*Omega - 1)*x^2
-            - gamma*sqrt(Omega)*sin(theta)*x
-            + sin(theta)^2/4 = 0.
-
-        The roots are calculated using ``numpy.roots`` and are not
-        guaranteed to be returned in any particular order.
     """
     #Equation 20 and 22
     
@@ -676,14 +669,14 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(0.001,10)
+Model.gamma_NF.range(0.1*gamma_NF,10*gamma_NF)
 #Model.Resistivity_F.range(30,2000)
-Model.gamma_BSN.range(0.001,10)
+Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(1,2000)
+Model.Resistivity_F.range(1000,5000)
 #Model.Amplitude.range(100,3000)
-Model.DeadLayer.range(-1,0)
+Model.DeadLayer.range(-0.4,-0.2)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
