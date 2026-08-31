@@ -410,10 +410,20 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
     
     for EtaIntermediate in EtaSteps:
         #Relax eta=0 condition
-        Solution = fsolve(
+        Solution, Info, ErrorCheck, Message= fsolve(
             Trancendental_Quartic,
             Guess,
-            args=(gamma_BSF, Omega, EtaIntermediate, theta_S))
+            args=(gamma_BSF, Omega, EtaIntermediate, theta_S),
+            full_output=True)
+        
+        if ErrorCheck == 0:
+            raise RuntimeError(
+                f"fsolve failed: {Message}\n"
+                f"Omega={Omega}, eta={EtaIntermediate}, "
+                f"gamma_NF={gamma_NF}\n"
+                f"Guess={Guess}\n"
+                f"Solution={Solution}")
+            
         Guess = [Solution[0], Solution[1]]
      
     Chi_SF = Solution[0] + 1j*Solution[1]
@@ -669,7 +679,7 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(0.01*gamma_NF,10*gamma_NF)
+Model.gamma_NF.range(1E-7,0.001)
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
