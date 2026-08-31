@@ -467,6 +467,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
     """
     Roots = Solve_Quartic_Exact(gamma_BNF, Omega, theta_NF_initial)
+    
     Chi_initial = Pick_Root(Roots, gamma_BNF, Omega, theta_NF_initial)     
     
     Guess = [np.real(Chi_initial), np.imag(Chi_initial),
@@ -478,19 +479,39 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
     
     for gammaIntermediate in gamma_NF_Steps:
         #Relax the gamma_NF = 0 condition
-        Solution = fsolve(All_Equations,
+        Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess, args=(Omega, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
-                  d_N, xi_N, theta_S))
+                  d_N, xi_N, theta_S),
+            full_output=True)
+        
+        if ErrorCheck == 0:
+            raise RuntimeError(
+                f"fsolve failed: {Message}\n"
+                f"Omega={Omega}, gamma={gammaIntermediate}, "
+                f"eta={0}\n"
+                f"Guess={Guess}\n"
+                f"Solution={Solution}")
+        
         Guess = [Solution[0], Solution[1], 
                  Solution[2], Solution[3],
                  Solution[4], Solution[5]]
     
     for EtaIntermediate in EtaSteps:
         #Relax eta=0 condition
-        Solution = fsolve(All_Equations,
+        Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess,
             args=(Omega, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
-                  d_N, xi_N, theta_S))
+                  d_N, xi_N, theta_S), 
+            full_output=True)
+        
+        if ErrorCheck == 0:
+            raise RuntimeError(
+                f"fsolve failed: {Message}\n"
+                f"Omega={Omega}, eta={EtaIntermediate}, "
+                f"gamma_NF={gamma_NF}\n"
+                f"Guess={Guess}\n"
+                f"Solution={Solution}")
+        
         Guess = [Solution[0], Solution[1], 
                  Solution[2], Solution[3],
                  Solution[4], Solution[5]]
@@ -679,7 +700,7 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(1E-7,0.001)
+Model.gamma_NF.range(1E-8,1E-5)
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
