@@ -47,7 +47,7 @@ d_N = 5
 d_N2 = 10
 xi_N = 30
 gamma_NF = 1E-4
-Resistivity_F =  7949.59 #ohm nm
+Resistivity_F =  8949.59 #ohm nm
 Resistivity_N = 87
 eta = 0
 DeadLayer = -0.341119# -0.333197
@@ -560,7 +560,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         #Define theta_S from equation 5
         theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
         #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = Find_Theta_NS_Initial(d_N, w, xi_N, gamma_BSN, theta_S)
+        theta_NS_initial = Find_Theta_NS_Initial(d_N1, w, xi_N, gamma_BSN, theta_S)
         theta_NF_initial = Find_Theta_NF(d_N1, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
         
         theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
@@ -582,7 +582,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
       
         J_c += Term
         
-        IcRn = JunctionResistance*Amplitude*np.abs(J_c) #V
+    IcRn = JunctionResistance*Amplitude*np.abs(J_c) #V
         
     return IcRn*1E6 #Return the voltage in uV
 
@@ -669,14 +669,14 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(0.1*gamma_NF,10*gamma_NF)
+Model.gamma_NF.range(0.01*gamma_NF,10*gamma_NF)
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(1000,5000)
+Model.Resistivity_F.range(10000,100000)
 #Model.Amplitude.range(100,3000)
-Model.DeadLayer.range(-0.4,-0.2)
+Model.DeadLayer.range(-0.5,-0.2)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
