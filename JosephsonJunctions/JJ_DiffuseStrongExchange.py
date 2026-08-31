@@ -22,21 +22,13 @@ FreqCutoff=50
 StepNumber = 20
 T_c = 9.2
 
-FermiVelocity = 3.3E5*1E9 #nm/s
-MeanFreePath = 0.283496 #nm
-DiffusionCoeff = FermiVelocity*MeanFreePath/3 #nm^2/s
-CoherenceLength = np.sqrt(DiffusionCoeff*hbar/(2*np.pi*k_B*T_c))
-
-AR = 5.7*1E3 #Ohm nm^2
 Temperature=4.2 #K
-Resistivity_N = 87#ohm nm, 
-
-SpinScatterTime=0.0134675
-gamma_BNF = 1000
-gamma_BSF = 1
-Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 JunctionResistance = 1.55E-3 #Ohms
 InterfaceResistance = 5700 #Ohm nm^2
+Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
+
+gamma_BNF = 1000
+gamma_BSF = 1
 
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
@@ -48,7 +40,7 @@ d_N2 = 10
 xi_N = 30
 gamma_NF = 1E-4
 Resistivity_F =  8949.59 #ohm nm
-Resistivity_N = 87
+Resistivity_N = 87 #ohm nm
 eta = 0
 DeadLayer = -0.341119# -0.333197
 
