@@ -42,7 +42,7 @@ gamma_NF = 1E-4
 Resistivity_F =  8949.59 #ohm nm
 Resistivity_N = 87 #ohm nm
 eta = 0
-DeadLayer = -0.341119# -0.333197
+DeadLayer = -0.341119
 
 #Green function: F = exp(j*chi)*sin(theta)
 
