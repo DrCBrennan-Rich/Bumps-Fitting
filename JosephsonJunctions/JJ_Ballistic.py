@@ -26,7 +26,6 @@ k_B = constants.Boltzmann  #J/K
 e = constants.e  #Coulombs
 
 T = 5 #Temperature in K
-T_c = 10 #Critical temperature in K
 alpha = 1
 y_max = 10*alpha
 
