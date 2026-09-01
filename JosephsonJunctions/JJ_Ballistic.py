@@ -114,16 +114,3 @@ plt.ylabel(r"Critical current density $J_c$ (mA/m$^2$)")
 plt.legend()
 plt.savefig("CoherenceLengthComparison.svg", format="svg")
 plt.show()
-'''
-a = 10.5E-2
-for SC_gap_test in [1.5E-3,4E-3,8E-3,12E-3]:
-    ytest = JC_model(
-        d,
-        CoherenceLength=a,
-        SC_gap = SC_gap_test
-    )
-    plt.plot(d, ytest, label=f"Gap={SC_gap_test} and {a}")
-
-plt.legend()
-plt.show()
-'''
