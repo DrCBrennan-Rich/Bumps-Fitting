@@ -46,12 +46,10 @@ def JC_model(d_F, CoherenceLength, SC_gap, PhiIncriment):
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
             junction (nm).
-        SC_gap (float): Superconducting gap (eV).
-        CriticalTemperature (float): Critical temperature of the 
-            superconductor (K).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
-        Amplitude (float): If provided, can be used to set an arbitrary scaled
-            amplitude for the output.
+        SC_gap (float): Superconducting gap (eV).
+        PhiIncriment (int): Number of sub divisions of of 2*pi to be tested to 
+            find the maxium current.
 
     Returns:
         IcRn (float): Voltage across the Josephson junction (uV).
