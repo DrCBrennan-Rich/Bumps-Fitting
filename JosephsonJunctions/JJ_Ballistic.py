@@ -47,9 +47,11 @@ def JC_model(Thickness, CoherenceLength, SC_gap, PhiIncriment):
     
     for i,Alpha in enumerate (AlphaList):
         
+        #The upper limit of the integral either 10*lower limit or 5
         yMax = max(10*Alpha, 5)
-        Step = max(200, int(100*yMax))
-        yList = np.linspace(Alpha, yMax, Step)[None,:]
+        #Produce the step number with minimum value 200
+        StepNumber = max(200, int(100*yMax))
+        yList = np.linspace(Alpha, yMax, StepNumber)[None,:]
         
         SinMinus = np.sin(0.5*(PhiList-yList))
         SinPlus = np.sin(0.5*(PhiList+yList))
