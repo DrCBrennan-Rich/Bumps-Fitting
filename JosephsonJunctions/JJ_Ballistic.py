@@ -35,13 +35,36 @@ SC_gap = 1.5E-3 #eV
 
 Beta = 1/(k_B*T)
 
-def JC_model(Thickness, CoherenceLength, SC_gap, PhiIncriment):
+def JC_model(d_F, CoherenceLength, SC_gap, PhiIncriment):
+    """Calculate the critical voltage across the Josephson junction according
+    to a ballistic model.
+
+    This function calculates the critical voltage, IcRn, as a function of 
+    ferromagnetic thickness of the weak link as presented in the Eq. 1 of 
+    the paper by Birge and Satchell: https://doi.org/10.1063/5.0195229.
+
+    Args:
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+            junction (nm).
+        SC_gap (float): Superconducting gap (eV).
+        CriticalTemperature (float): Critical temperature of the 
+            superconductor (K).
+        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        Amplitude (float): If provided, can be used to set an arbitrary scaled
+            amplitude for the output.
+
+    Returns:
+        IcRn (float): Voltage across the Josephson junction (uV).
+
+    Notes:
+        Equation being solved is IcRn = pi*SC_gap^2*Sinc[d_F/CoherenceLength]/(4*T)
+    """
     
     #Produce a list of phase differences across the junction.
     PhiList = np.linspace(0, 2*np.pi, PhiIncriment, endpoint=False)[:,None]
     
     #Produces a list of alpha values with minumum value 1E-6
-    AlphaList = np.maximum(Thickness/CoherenceLength, 1E-6)
+    AlphaList = np.maximum(d_F/CoherenceLength, 1E-6)
     
     IcRn = np.zeros_like(AlphaList)
     
