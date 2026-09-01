@@ -17,7 +17,7 @@ Temperature = 4.2 #K
 CoherenceLength = 0.3 #nm
 JunctionResistance = 1.4E-3 #ohms
 
-def JC_model(d_F, Temperature, SC_gap, CoherenceLength, Amplitude):
+def JC_model(d_F, Temperature, SC_gap, CoherenceLength, Amplitude=None):
     """Calculate the critical voltage across the Josephson junction according
     to a simplifed ballistic model.
 
