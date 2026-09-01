@@ -29,13 +29,14 @@ T = 5 #Temperature in K
 alpha = 1
 y_max = 10*alpha
 
-Resistance = 1.4E-3 #ohms
+JunctionResistance = 1.4E-3 #ohms
 T = 5 #K
 
 Beta = 1/(k_B*T)
 
 def JC_model(Thickness, CoherenceLength, SC_gap):
     
+    #Produce a list of phase differences across the junction.
     PhiList = np.linspace(0,2*np.pi,60,endpoint=False)[:,None]
     
     AlphaList = np.maximum(Thickness/CoherenceLength, 1e-6)
