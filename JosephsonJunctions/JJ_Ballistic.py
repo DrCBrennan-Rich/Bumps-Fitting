@@ -45,15 +45,15 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
     
     for i,Alpha in enumerate (AlphaList):
         
-        yMax = max(10*Alpha,5)
-        Step = max(200,int(100*yMax))
-        yList = np.linspace(Alpha,yMax,Step)[None,:]
+        yMax = max(10*Alpha, 5)
+        Step = max(200, int(100*yMax))
+        yList = np.linspace(Alpha, yMax,Step)[None,:]
         
         SinMinus = np.sin(0.5*(PhiList-yList))
         SinPlus = np.sin(0.5*(PhiList+yList))
         
-        TanhMinus = np.tanh(0.5*Beta*SC_gap*np.cos(0.5*(PhiList-yList)))
-        TanhPlus = np.tanh(0.5*Beta*SC_gap*np.cos(0.5*(PhiList+yList)))
+        TanhMinus = np.tanh(0.5*Beta*SC_gap*np.cos(0.5*(PhiList - yList)))
+        TanhPlus = np.tanh(0.5*Beta*SC_gap*np.cos(0.5*(PhiList + yList)))
         
         Integrand = (1/(yList*yList*yList))*(SinMinus*TanhMinus+SinPlus*TanhPlus)
         
