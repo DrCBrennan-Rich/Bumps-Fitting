@@ -8,30 +8,55 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
-plt.rcParams.update({'font.size': 40})
+plt.rcParams.update({'font.size': 10})
 
 JunctionResistance = 1.55E-3 #Ohms
 
 #Coherence lengths
-Amplitude = 260.452 #Current amplitude
-CoherenceLength_F1= 0.332117 #nm
-CoherenceLength_F2= 0.16037 #nm
-d_0pi = 0.274396 #phase
+Amplitude = 215 #260.452 #Current amplitude
+CoherenceLength_F1= 0.339 #0.332117 #nm
+CoherenceLength_F2= 0.1589 #0.16037 #nm
+d_0pi = 0.2756 #0.274396 #phase
 
-TripletAmplitude =  7.98882
-TripletCoherenceLength = 3.31335 
+TripletAmplitude = 12.2 #7.98882
+TripletCoherenceLength = 1.79#3.31335 
 
-def JC_Triplet_Model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi,
-                     TripletAmplitude, TripletCoherenceLength):
+def JC_Triplet_Model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, 
+                     d_0pi, TripletAmplitude, TripletCoherenceLength):
     
     SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
     
-    TripletTerm = TripletAmplitude**np.exp(-d_F/TripletCoherenceLength)
+    TripletTerm = TripletAmplitude*np.exp(-d_F/TripletCoherenceLength)
     
-    return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm)) + TripletTerm
+    IcRn = Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm)) + TripletTerm
+    
+    return 1E-6*IcRn #Voltage in uV
 
 #Load the data from the file Data.txt
 #d_F,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T
+
+d_F = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 
+                1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35, 
+                3.5, 3.95, 4.1])
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333,
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815, 
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 18.771833333333337, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811, 
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211, 
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249, 
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143, 
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994, 
+               2.3378397495218644, 5.166759346614983, 5.5504418943199685, 
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
 
 OrderingIndex = np.argsort(d_F)
 d_F = d_F[OrderingIndex]
@@ -104,7 +129,7 @@ for d_0pi_test in [0.361262]:
     plt.plot(X_axis, ytest, label=f"Fitted Curve", linewidth=3)
     
 plt.yscale("log")
-plt.xlabel("Thickness (nm)")
-plt.ylabel("Current (mA)")
+plt.xlabel("Thickness (nm)", fontsize=34)
+plt.ylabel(r"$I_cR_N$ ($\mathrm{\mu V}$)", fontsize=34)
 plt.legend()
 plt.show()
