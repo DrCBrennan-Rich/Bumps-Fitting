@@ -22,8 +22,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import trapezoid
 from scipy import constants
 
-k_B = constants.Boltzmann  #J/K
-e = constants.e  #Coulombs
+k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 
 T = 5 #Temperature in K
 alpha = 1
@@ -48,7 +47,7 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
         
         yMax = max(10*Alpha, 5)
         Step = max(200, int(100*yMax))
-        yList = np.linspace(Alpha, yMax,Step)[None,:]
+        yList = np.linspace(Alpha, yMax, Step)[None,:]
         
         SinMinus = np.sin(0.5*(PhiList-yList))
         SinPlus = np.sin(0.5*(PhiList+yList))
