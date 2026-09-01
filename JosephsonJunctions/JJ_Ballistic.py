@@ -48,8 +48,8 @@ def JC_model(d_F, CoherenceLength, SC_gap, PhiIncriment):
             junction (nm).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
         SC_gap (float): Superconducting gap (eV).
-        PhiIncriment (int): Number of sub divisions of of 2*pi to be tested to 
-            find the maxium current (unitless).
+        PhiIncriment (int): Number of sub divisions of the 2*pi phase to be 
+            tested to find the maxium current (unitless).
 
     Returns:
         IcRn (float): Voltage across the Josephson junction (uV).
