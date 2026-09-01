@@ -136,8 +136,8 @@ for CoherenceLength_test in [5E-1]:
     ytest = JC_model(
         x_axis,
         CoherenceLength=CoherenceLength_test,
-        SC_gap = SC_gap 
-    )
+        SC_gap = SC_gap)
+    
     plt.plot(x_axis, ytest, label=f"Coherence Length={CoherenceLength_test}")
     plt.yscale('log')
 
