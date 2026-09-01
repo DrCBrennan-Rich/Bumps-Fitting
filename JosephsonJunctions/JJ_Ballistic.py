@@ -39,7 +39,8 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
     #Produce a list of phase differences across the junction.
     PhiList = np.linspace(0,2*np.pi,60,endpoint=False)[:,None]
     
-    AlphaList = np.maximum(Thickness/CoherenceLength, 1e-6)
+    #Produces a list of alpha values with minumum value 1E-6
+    AlphaList = np.maximum(Thickness/CoherenceLength, 1E-6)
     
     IcRn = np.zeros_like(AlphaList)
     
