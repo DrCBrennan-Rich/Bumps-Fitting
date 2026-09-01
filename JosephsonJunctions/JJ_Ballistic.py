@@ -27,6 +27,7 @@ k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 T = 5 #Temperature in K
 alpha = 1
 y_max = 10*alpha
+PhiIncriment = 60
 
 JunctionResistance = 1.4E-3 #ohms
 T = 5 #K
@@ -34,10 +35,10 @@ SC_gap = 1.5E-3 #eV
 
 Beta = 1/(k_B*T)
 
-def JC_model(Thickness, CoherenceLength, SC_gap):
+def JC_model(Thickness, CoherenceLength, SC_gap, PhiIncriment):
     
     #Produce a list of phase differences across the junction.
-    PhiList = np.linspace(0,2*np.pi,60,endpoint=False)[:,None]
+    PhiList = np.linspace(0, 2*np.pi, PhiIncriment, endpoint=False)[:,None]
     
     #Produces a list of alpha values with minumum value 1E-6
     AlphaList = np.maximum(Thickness/CoherenceLength, 1E-6)
