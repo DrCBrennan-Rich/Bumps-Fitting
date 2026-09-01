@@ -4,16 +4,17 @@
 """
 #Equation (1) from https://doi.org/10.1063/5.0195229
 #### Run with: bumps -b --fit=dream --burn=1000 --samples=10000 --init=random --export=Export --session=JJSession.h5 JJ_Ballistic.py
-
+'''
 #### WARNING ####
 
-#The function JC_model has been written to be fast and easily callable thousands
-#of times. This is at the cost of stability if the ferromagnetic coherence
-#length is smaller than 0.2 nm (see associated Figure on GitHub):
-#https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/Ballistic_CoherenceLengthComparison.pdf
-#And so this should be set as the lower fitting bound.
-#In situations where the coherence length is approaching this limit, it would be advisable to use:
-#https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/JJ_Ballistic_simplified.py
+The function JC_model has been written to be fast and easily callable thousands
+of times. This is at the cost of stability if the ferromagnetic coherence
+length is smaller than 0.2 nm (see associated Figure on GitHub):
+https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/Ballistic_CoherenceLengthComparison.pdf
+And so this should be set as the lower fitting bound.
+In situations where the coherence length is approaching this limit, it would be advisable to use:
+https://github.com/DrCBrennan-Rich/Bumps-Fitting/blob/main/JosephsonJunctions/JJ_Ballistic_simplified.py
+'''
 
 import bumps.names as bmp
 import numpy as np
