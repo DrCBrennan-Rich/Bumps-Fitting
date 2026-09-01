@@ -31,6 +31,7 @@ y_max = 10*alpha
 
 JunctionResistance = 1.4E-3 #ohms
 T = 5 #K
+SC_gap = 1.5E-3 #eV
 
 Beta = 1/(k_B*T)
 
@@ -102,7 +103,7 @@ for CoherenceLength_test in [8E-2, 20E-2, 5E-1, 1]:
     ytest = JC_model(
         x_axis,
         CoherenceLength=CoherenceLength_test,
-        SC_gap = 1.5E-3
+        SC_gap = SC_gap 
     )
     plt.plot(x_axis, ytest, label=f"Coherence Length={CoherenceLength_test}")
     plt.yscale('log')
