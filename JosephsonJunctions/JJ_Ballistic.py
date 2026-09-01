@@ -41,7 +41,7 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
     
     AlphaList = np.maximum(Thickness/CoherenceLength, 1e-6)
     
-    Ic = np.zeros_like(AlphaList)
+    IcRn = np.zeros_like(AlphaList)
     
     for i,Alpha in enumerate (AlphaList):
         
@@ -57,11 +57,11 @@ def JC_model(Thickness, CoherenceLength, SC_gap):
         
         Integrand = (1/(yList*yList*yList))*(SinMinus*TanhMinus+SinPlus*TanhPlus)
         
-        Iphi = (np.pi*SC_gap*Alpha*Alpha/(2*Resistance)*trapezoid(Integrand, x=yList, axis=1))
+        Iphi = (np.pi*SC_gap*Alpha*Alpha/(2)*trapezoid(Integrand, x=yList, axis=1))
         
-        Ic[i] = np.max(np.abs(Iphi))
+        IcRn[i] = np.max(np.abs(Iphi))
         
-    return Ic
+    return 1E-6*IcRn #Voltage in uV
         
 
 #Load the data from the file Data.txt
