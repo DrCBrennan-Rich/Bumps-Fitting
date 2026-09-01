@@ -18,8 +18,8 @@ from scipy import constants
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
-FreqCutoff=50
-StepNumber = 20
+FreqCutoff=20
+StepNumber = 10
 T_c = 9.2
 
 Temperature=4.2 #K
@@ -33,16 +33,16 @@ gamma_BSF = 1
 Amplitude = 250#90892.9#827795
 H=0.679 #eV
 CoherenceLength= 1.99 #nm
-gamma_BSN =   1.05173
+gamma_BSN = 0.398271
 SC_gap = 1.5E-3 #eV
 d_N1 = 5 #Thickness of the left hand normal metal nm
 d_N2 = 10 #Thickness of the right hand normal metal nm
 xi_N = 30
-gamma_NF = 1E-4
-Resistivity_F =  8949.59 #ohm nm
+gamma_NF = 7.98175e-08
+Resistivity_F =  26404.2 #ohm nm
 Resistivity_N = 87 #ohm nm
 eta = 0
-DeadLayer = -0.341119
+DeadLayer = -0.410589 
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -53,7 +53,7 @@ def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
     order for it to be supplied to Fsolve. To do this, the real and imaginary
     residuals have to calculated seperately and returned as a 2x1 array.
 
-    Args:Chi_vec
+    Args:
         Chi_vec (numpy.ndarray): Two long array containing the real and 
             imaginary components of Chi (unitless).
         gamma (float): Suppression parameter at the boundary.
@@ -473,7 +473,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         #Relax the gamma_NF = 0 condition
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess, args=(Omega, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
-                  d_N, xi_N, theta_S),
+                  d_N1, xi_N, theta_S),
             full_output=True)
         
         if ErrorCheck == 0:
@@ -493,7 +493,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess,
             args=(Omega, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
-                  d_N, xi_N, theta_S), 
+                  d_N1, xi_N, theta_S), 
             full_output=True)
         
         if ErrorCheck == 0:
@@ -676,7 +676,7 @@ Model = bmp.Curve(
     #Resistivity_F = Resistivity_F,
     gamma_NF=gamma_NF,
     gamma_BSN=gamma_BSN,
-    d_N1=d_N,
+    d_N1=d_N1,
     d_N2=d_N2,
     xi_N=xi_N,
     SC_gap=SC_gap,
@@ -692,14 +692,14 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(1E-8,1E-5)
+Model.gamma_NF.range(1E-8,1E-2)
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(10000,100000)
+#Model.Resistivity_F.range(10000,100000)
 #Model.Amplitude.range(100,3000)
-Model.DeadLayer.range(-0.5,-0.2)
+#Model.DeadLayer.range(-0.5,-0.2)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -762,7 +762,7 @@ for test in [0.7]:
         #gamma_BNF = 0.001,
         DeadLayer=DeadLayer
     )
-    plt.plot(X_axis, ytest, label=f"gamma_NF {test}", linewidth=3)
+    plt.plot(X_axis, ytest, label=f"gamma_NF {gamma_NF}", linewidth=3)
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
