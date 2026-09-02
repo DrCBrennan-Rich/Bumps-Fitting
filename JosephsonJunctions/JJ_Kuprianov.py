@@ -14,7 +14,7 @@ plt.rcParams.update({'font.size': 40})
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 JunctionResistance = 1.55E-3 #Ohms
 
-#Coherence lengths
+#Fitting parameters
 
 CriticalTemperature = 8.87267 #K
 CoherenceLength = 0.36178 #nm
