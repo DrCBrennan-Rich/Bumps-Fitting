@@ -29,9 +29,9 @@ CoherenceLength = 0.711048
 d0 = 0.488447
 
 def JC_MagneticScattering(Thickness, Temperature, T_c, H, SC_gap,
-                          alpha, CoherenceLength, d0):
+                          alpha, CoherenceLength, DeadLayers):
     
-    ThicknessEffective = Thickness - d0
+    ThicknessEffective = Thickness - DeadLayers
     d_F = ThicknessEffective/CoherenceLength
     h = H/hbar #s^-1
     Amplitude = 64*np.pi*Temperature/3
