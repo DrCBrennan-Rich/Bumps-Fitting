@@ -28,13 +28,49 @@ SC_gap = 1.5E-3 #eV
 CoherenceLength = 0.711048
 d0 = 0.488447
 
-def JC_MagneticScattering(Thickness, Temperature, T_c, H, SC_gap,
-                          alpha, CoherenceLength, DeadLayers):
+def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha, 
+                          CoherenceLength, DeadLayers, Amplitude=None):
+    """Calculate the suppresion parameter between the normal and 
+    superconducting boundary: theta_NS, for eta, gamma_NF = 0
+
+    Calculates the initial theta_NS value for the exactly solvable situation 
+    where the scattering parameter and normal-ferromagnetic suppresion 
+    parameter (eta and gamma_NF) are both 0, using equation A8. This value can
+    then be used as a starting point to solve the trancendental equation for 
+    eta, gamma_NF =/= 0.
+
+    Args:
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+            junction (nm).
+        Temperature (float): Temperature of the system (K).
+        T_c (float): Critical temperature of the superconductor.
+        H (float): Exchange energy in the ferromagnet (eV).
+        SC_gap (float): Superconducting gap (eV).
+        alpha (float): Magnetic scattering parameter defined as 1/h*tau_s
+        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        DeadLayer (float): Thickness of dead (non-magnetic) material in the 
+            ferromagnet. Negative values indicate increased effective 
+            ferromagnetic thickness due to proximity magnetisation in the 
+            normal metal (nm).
+        Amplitude (float): If provided, can be used to set an arbitrary scaled
+            amplitude for the output (unitless).
+            
+    Returns:
+        theta_NS (float): Pairing angle between normal and superconducting 
+            materials (radians).
+
+    Notes:
+        The equation being solved is:
+            
+           0 = Real[Omega]*d_N*gamma_BSN*Sin(theta_NS) + Sin(theta_NS-theta_S)
+    """
     
-    ThicknessEffective = Thickness - DeadLayers
+    ThicknessEffective = d_F - DeadLayers
     d_F = ThicknessEffective/CoherenceLength
     h = H/hbar #s^-1
-    Amplitude = 64*np.pi*Temperature/3
+    
+    if Amplitude is None:
+        Amplitude = 64*np.pi*Temperature/3  
     
     J_c = np.zeros_like(d_F, dtype=np.complex128)
     
@@ -50,7 +86,6 @@ def JC_MagneticScattering(Thickness, Temperature, T_c, H, SC_gap,
     
     eta_list = np.sqrt(alpha/(alpha+1j+Omega_list/h))
      
-    
     for q, phi, eta in zip(q_list,Phi_list,eta_list):
         
         Numerator = 2*q*d_F*phi*np.exp(-2*q*d_F)
@@ -60,11 +95,13 @@ def JC_MagneticScattering(Thickness, Temperature, T_c, H, SC_gap,
         Term = np.real(Numerator/(Denominator*Denominator))
       
         J_c += Term
+    
+    IcRn = Amplitude*np.abs(J_c)
         
-    return Amplitude*np.abs(J_c) #Return the Resistance*current in Ohm milliamps
+    return  IcRn*1E6 #Return the critical voltage in uV
 
 #Load the data from the file Data.txt
-#d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
