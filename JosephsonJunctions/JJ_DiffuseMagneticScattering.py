@@ -38,13 +38,13 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
     paper by Buzdin et al: https://link.aps.org/doi/10.1103/RevModPhys.77.935.
 
     Args:
-        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
-            junction (nm).
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic junction (nm).
+                            
         Temperature (float): Temperature of the system (K).
-        T_c (float): Critical temperature of the superconductor.
+        T_c (float): Critical temperature of the superconductor (K).
         H (float): Exchange energy in the ferromagnet (eV).
         SC_gap (float): Superconducting gap (eV).
-        alpha (float): Magnetic scattering parameter defined as 1/h*tau_s
+        alpha (float): Magnetic scattering parameter defined as 1/(h*tau_s)
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
         DeadLayer (float): Thickness of dead (non-magnetic) material in the 
             ferromagnet. Negative values indicate increased effective 
@@ -57,9 +57,6 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
         IcRn (float): Critical voltage of the Josephson junction (uV).
 
     Notes:
-        The equation being solved is:
-            
-           0 = Real[Omega]*d_N*gamma_BSN*Sin(theta_NS) + Sin(theta_NS-theta_S)
     """
     
     ThicknessEffective = d_F - DeadLayers
