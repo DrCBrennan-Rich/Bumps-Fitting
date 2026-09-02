@@ -30,14 +30,12 @@ d0 = 0.488447
 
 def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha, 
                           CoherenceLength, DeadLayers, Amplitude=None):
-    """Calculate the suppresion parameter between the normal and 
-    superconducting boundary: theta_NS, for eta, gamma_NF = 0
+    """Calculate the critical voltage across the Josephson junction according
+    to a magnetic scattering model.
 
-    Calculates the initial theta_NS value for the exactly solvable situation 
-    where the scattering parameter and normal-ferromagnetic suppresion 
-    parameter (eta and gamma_NF) are both 0, using equation A8. This value can
-    then be used as a starting point to solve the trancendental equation for 
-    eta, gamma_NF =/= 0.
+    This function calculates the critical voltage, IcRn, as a function of 
+    ferromagnetic thickness of the weak link as presented in the Eq A10 of the 
+    paper by Buzdin et al: https://link.aps.org/doi/10.1103/RevModPhys.77.935.
 
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
@@ -56,8 +54,7 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
             amplitude for the output (unitless).
             
     Returns:
-        theta_NS (float): Pairing angle between normal and superconducting 
-            materials (radians).
+        IcRn (float): Critical voltage of the Josephson junction (uV).
 
     Notes:
         The equation being solved is:
