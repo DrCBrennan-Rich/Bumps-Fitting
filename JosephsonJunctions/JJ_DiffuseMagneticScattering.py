@@ -38,24 +38,16 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
     paper by Buzdin et al: https://link.aps.org/doi/10.1103/RevModPhys.77.935.
 
     Args:
-        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic junction (nm).
-                    
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic junction (nm).            
         Temperature (float): Temperature of the system (K).
-        
-        T_c (float): Critical temperature of the superconductor (K).
-        
-        H (float): Exchange energy in the ferromagnet (eV).
-        
-        SC_gap (float): Superconducting gap (eV).
-        
-        alpha (float): Magnetic scattering parameter defined as 1/(h*tau_s) (unitless).
-        
-        CoherenceLength (float): Coherence length in the ferromagnet (nm).
-        
+        T_c (float): Critical temperature of the superconductor (K).       
+        H (float): Exchange energy in the ferromagnet (eV).        
+        SC_gap (float): Superconducting gap (eV).       
+        alpha (float): Magnetic scattering parameter defined as 1/(h*tau_s) (unitless).        
+        CoherenceLength (float): Coherence length in the ferromagnet (nm).      
         DeadLayer (float): Thickness of dead (non-magnetic) material in the ferromagnet. 
             Negative values indicate increased effective ferromagnetic thickness 
-            due to proximity magnetisation in the normal metal (nm).
-            
+            due to proximity magnetisation in the normal metal (nm).         
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output (unitless).
             
