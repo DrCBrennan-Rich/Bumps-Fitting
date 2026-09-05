@@ -93,7 +93,7 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
     return  IcRn*1E6 #Return the critical voltage in uV
 
 #Load the data from the file Data.txt
-d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
+#d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
