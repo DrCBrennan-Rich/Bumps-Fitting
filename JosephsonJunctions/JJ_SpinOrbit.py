@@ -31,7 +31,7 @@ SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 d0 = 0.40
 
-def JC_DiffuseExchange(Thickness, N, D, T_c, tau_SO, ExchangeEnergy,
+def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy,
                        SC_gap, Temperature, DeadLayers):
      """Calculate the critical voltage across the Josephson junction according
     to a spin-orbit model.
@@ -59,7 +59,7 @@ def JC_DiffuseExchange(Thickness, N, D, T_c, tau_SO, ExchangeEnergy,
 
     Notes:
     """
-    d_F = Thickness - DeadLayers
+    d_F = d_F - DeadLayers
     h = ExchangeEnergy/hbar #Units s^-1
     
     Amplitude = 2*np.pi*N*D*T_c*SC_gap*SC_gap
