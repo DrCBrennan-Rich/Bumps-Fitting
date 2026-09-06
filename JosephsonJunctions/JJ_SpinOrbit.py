@@ -37,8 +37,8 @@ def JC_DiffuseExchange(Thickness, N, D, T_c, tau_SO, ExchangeEnergy,
     to a spin-orbit model.
 
     This function calculates the critical voltage, IcRn, as a function of 
-    ferromagnetic thickness of the weak link as presented in the Eq A10 of the 
-    paper by Buzdin et al: https://link.aps.org/doi/10.1103/RevModPhys.77.935.
+    ferromagnetic thickness of the weak link as presented in the Eq 53 of the 
+    paper by Buzdin et al: https://doi.org/10.1103/PhysRevB.55.15174.
 
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic junction (nm).            
