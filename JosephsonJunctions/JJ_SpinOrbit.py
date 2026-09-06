@@ -95,7 +95,7 @@ Model = bmp.Curve(
     ExchangeEnergy = ExchangeEnergy,
     SC_gap = SC_gap,
     Temperature = Temperature,
-    d0 = d0)
+    DeadLayers = DeadLayers)
 
 ### Limits of fitting values ###
 
