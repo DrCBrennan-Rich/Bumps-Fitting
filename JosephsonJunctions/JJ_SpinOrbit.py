@@ -123,7 +123,7 @@ Model.tau_SO.value =tau_SO
 Model.ExchangeEnergy.value = ExchangeEnergy
 Model.SC_gap.value = SC_gap
 Model.Temperature.value = Temperature
-Model.DeadLayers.value = d0
+Model.DeadLayers.value = DeadLayers
 
 problem = bmp.FitProblem(Model, constraints=[Model.ExchangeEnergy/hbar*Model.tau_SO > 1])
 
@@ -149,7 +149,7 @@ for test in [1.18363e-12]:
         ExchangeEnergy= ExchangeEnergy,
         SC_gap = SC_gap,
         Temperature = Temperature,
-        d0 = d0
+        DeadLayers = DeadLayers
     )
     plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
 
