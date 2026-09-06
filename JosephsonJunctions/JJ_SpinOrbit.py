@@ -106,7 +106,7 @@ Model.tau_SO.range(tau_SO*0.1,tau_SO*10)
 Model.ExchangeEnergy.range(ExchangeEnergy*0.2,ExchangeEnergy*1.8)
 #Model.SC_gap.range(30,2000)
 #Model.Temperature.range(1.8, 2.5)
-Model.d0.range(0,0.5)
+Model.DeadLayers.range(-0.5,0.0)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -123,7 +123,7 @@ Model.tau_SO.value =tau_SO
 Model.ExchangeEnergy.value = ExchangeEnergy
 Model.SC_gap.value = SC_gap
 Model.Temperature.value = Temperature
-Model.d0.value = d0
+Model.DeadLayers.value = d0
 
 problem = bmp.FitProblem(Model, constraints=[Model.ExchangeEnergy/hbar*Model.tau_SO > 1])
 
