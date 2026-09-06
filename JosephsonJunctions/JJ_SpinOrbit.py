@@ -32,7 +32,7 @@ Temperature = 4.2 #Temperature in K
 d0 = 0.40
 
 def JC_DiffuseExchange(Thickness, N, D, T_c, tau_SO, ExchangeEnergy,
-                       SC_gap,Temperature, DeadLayers):
+                       SC_gap, Temperature, DeadLayers):
     
     d_F = Thickness - DeadLayers
     h = ExchangeEnergy/hbar #Units s^-1
