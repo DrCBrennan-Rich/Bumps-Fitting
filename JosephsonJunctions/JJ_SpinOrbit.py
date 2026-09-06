@@ -31,7 +31,8 @@ SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 d0 = 0.40
 
-def JC_DiffuseExchange(Thickness,N,D,T_c,tau_SO,ExchangeEnergy,SC_gap,Temperature,d0):
+def JC_DiffuseExchange(Thickness, N, D, T_c, tau_SO, ExchangeEnergy,
+                       SC_gap,Temperature,d0):
     
     d_F = Thickness+ d0
     h = ExchangeEnergy/hbar #Units s^-1
