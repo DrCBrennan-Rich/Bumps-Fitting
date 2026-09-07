@@ -42,9 +42,12 @@ def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy,
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic junction (nm).            
         Temperature (float): Temperature of the system (K).
-        N (float): 
+        N (float):
+        D (float):
         T_c (float): Critical temperature of the superconductor (K).       
         H (float): Exchange energy in the ferromagnet (eV).        
+        tau_SO (float):
+        ExchangeEnergy (float): 
         SC_gap (float): Superconducting gap (eV).       
         alpha (float): Magnetic scattering parameter defined as 1/(h*tau_s) (unitless).        
         CoherenceLength (float): Coherence length in the ferromagnet (nm).      
