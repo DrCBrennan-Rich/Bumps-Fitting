@@ -19,7 +19,8 @@ JunctionResistance = 1.55E-3 #Ohms
 CriticalTemperature = 8.87267 #K
 CoherenceLength = 0.36178 #nm
 SC_gap =  0.00159515 #eV
-Amplitude = 2.36283e-05
+Amplitude = None #2.36283e-05
+DeadLayers = -1.0 #nm
 
 def JC_Dirty_Limit(d_F, SC_gap, CriticalTemperature, CoherenceLength,
                    DeadLayers, Amplitude=Amplitude):
@@ -256,12 +257,13 @@ dy = dy[OrderingIndex]
 #dy = dy/JunctionResistance
 
 Model = bmp.Curve(
-    JC_Dirty_Limit_Simplified,
+    JC_Dirty_Limit,
     d_F, y, dy,
     SC_gap = SC_gap, 
     CriticalTemperature = CriticalTemperature, 
     CoherenceLength = CoherenceLength,
-    #Amplitude = Amplitude
+    DeadLayers = DeadLayers,
+    Amplitude = Amplitude
     )
 
 ### Limits of fitting values ###
@@ -269,8 +271,11 @@ Model = bmp.Curve(
 Model.SC_gap.range(1.4E-3,1.6E-3)
 Model.CriticalTemperature.range(8.5,9.5)
 Model.CoherenceLength.range(0.001,5)
+Model.DeadLayers.range(-1.0,0)
 
-Model.Amplitude.range(1E-6,1E-3)
+if Amplitude is not None:
+    Model.Amplitude.range(1E-6,1E-3)
+
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 
@@ -280,8 +285,11 @@ Model.Amplitude.range(1E-6,1E-3)
 Model.CriticalTemperature.value = CriticalTemperature
 Model.SC_gap.value = SC_gap
 Model.CoherenceLength.value = CoherenceLength
+Model.DeadLayers.value = DeadLayers
 
-Model.Amplitude.value = Amplitude
+if Amplitude is not None:
+    Model.Amplitude.value = Amplitude
+
 
 problem = bmp.FitProblem(Model)
 
@@ -299,11 +307,12 @@ plt.errorbar(
 X_axis = np.linspace(0.25, 2.4, 1000)
 
 for CoherenceLength_test in [0.361262]:
-    ytest = JC_Dirty_Limit_Simplified(
+    ytest = JC_Dirty_Limit(
         X_axis,
         SC_gap = SC_gap, 
         CriticalTemperature = CriticalTemperature, 
         CoherenceLength = CoherenceLength,
+        DeadLayers=DeadLayers,
         Amplitude=Amplitude)
     
     plt.plot(X_axis, ytest, label=f"Fitted Curve Simplifed", linewidth=3)
