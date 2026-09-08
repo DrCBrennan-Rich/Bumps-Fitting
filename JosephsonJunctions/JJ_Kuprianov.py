@@ -41,6 +41,9 @@ def JC_Dirty_Limit(d_F, SC_gap, CriticalTemperature, CoherenceLength,
         CriticalTemperature (float): Critical temperature of the 
             superconductor (K).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        DeadLayers (float): Thickness of dead (non-magnetic) material in the ferromagnet. 
+            Negative values indicate increased effective ferromagnetic thickness 
+            due to proximity magnetisation in the normal metal (nm). 
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
 
@@ -88,6 +91,9 @@ def JC_Dirty_Limit_Simplified(d_F, SC_gap, CriticalTemperature, CoherenceLength,
         CriticalTemperature (float): Critical temperature of the 
             superconductor (K).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        DeadLayers (float): Thickness of dead (non-magnetic) material in the ferromagnet. 
+            Negative values indicate increased effective ferromagnetic thickness 
+            due to proximity magnetisation in the normal metal (nm). 
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
 
