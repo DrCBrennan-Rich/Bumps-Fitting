@@ -54,6 +54,7 @@ def JC_Dirty_Limit(d_F, SC_gap, CriticalTemperature, CoherenceLength,
         Equation being solved is IcRn = pi*SC_gap^2*F(x)/(4*T_c)
         where: F(x) = 2x*(Cos(x)Sinh(x) + Sin(x)Cosh(x))/(Cosh(2x) - Cos(2x))
     """
+    d_F = d_F - DeadLayers
     
     x = d_F/CoherenceLength
     
@@ -103,6 +104,7 @@ def JC_Dirty_Limit_Simplified(d_F, SC_gap, CriticalTemperature, CoherenceLength,
     Notes:
         Equation being solved is IcRn = pi*SC_gap^2*Sinc[d_F/CoherenceLength]/(4*T)
     """
+    d_F = d_F - DeadLayers
     
     x = d_F/CoherenceLength
     
