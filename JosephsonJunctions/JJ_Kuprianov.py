@@ -9,7 +9,7 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import constants
-plt.rcParams.update({'font.size': 40})
+plt.rcParams.update({'font.size': 10})
 
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 JunctionResistance = 1.55E-3 #Ohms
