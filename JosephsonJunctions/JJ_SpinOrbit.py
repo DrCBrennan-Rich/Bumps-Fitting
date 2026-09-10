@@ -30,7 +30,11 @@ SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
 DeadLayers = -0.40
 
-def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy, SC_gap, Temperature, DeadLayers):
+#Set to None to disable
+Amplitude = 0.00253107
+
+def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy, SC_gap, 
+                       Temperature, DeadLayers, Amplitude = Amplitude):
     """Calculate the critical voltage across the Josephson junction according
    to a spin-orbit model.
 
@@ -64,7 +68,8 @@ def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy, SC_gap, Temperatu
     d_F = d_F - DeadLayers
     h = ExchangeEnergy/hbar #Units s^-1
     
-    Amplitude = 2*np.pi*N*D*T_c*SC_gap*SC_gap
+    if Amplitude is None:
+        Amplitude = 2*np.pi*N*D*T_c*SC_gap*SC_gap
     
     Alpha = 1/(tau_SO*(np.sqrt((h*h)-1/(tau_SO*tau_SO))-h))
                
@@ -262,6 +267,9 @@ Model.ExchangeEnergy.range(ExchangeEnergy*0.2,ExchangeEnergy*1.8)
 #Model.Temperature.range(1.8, 2.5)
 Model.DeadLayers.range(-0.5,0.0)
 
+if Amplitude is not None:
+    Model.Amplitude.range(1e-05,10e-05)
+
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
 #Model.Temperature.dev(std=0.1, mean=0.16, limits=None)
@@ -278,6 +286,9 @@ Model.ExchangeEnergy.value = ExchangeEnergy
 Model.SC_gap.value = SC_gap
 Model.Temperature.value = Temperature
 Model.DeadLayers.value = DeadLayers
+
+if Amplitude is not None:
+    Model.Amplitude.value = Amplitude
 
 problem = bmp.FitProblem(Model, constraints=[Model.ExchangeEnergy/hbar*Model.tau_SO > 1])
 
