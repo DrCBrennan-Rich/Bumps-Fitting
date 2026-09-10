@@ -258,8 +258,8 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-Model.N.range(N*0.1,N*10)
-Model.D.range(D*0.1,D*10)
+#Model.N.range(N*0.1,N*10)
+#Model.D.range(D*0.1,D*10)
 #Model.T_c.range(1,10)
 Model.tau_SO.range(tau_SO*0.1,tau_SO*10)
 Model.ExchangeEnergy.range(ExchangeEnergy*0.2,ExchangeEnergy*1.8)
@@ -268,7 +268,7 @@ Model.ExchangeEnergy.range(ExchangeEnergy*0.2,ExchangeEnergy*1.8)
 Model.DeadLayers.range(-0.5,0.0)
 
 if Amplitude is not None:
-    Model.Amplitude.range(1e-05,10e-05)
+    Model.Amplitude.range(1E-03,10E1)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
