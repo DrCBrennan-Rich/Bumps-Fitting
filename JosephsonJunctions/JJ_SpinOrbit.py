@@ -24,14 +24,14 @@ JunctionResistance = 1.32E-3 #Ohms
 
 N = 2.18363e-12
 D = 1.11203e+14 #nm^2/s
-tau_SO =  1.0e-14 #s
-ExchangeEnergy = 0.375 #77514   #eV
+tau_SO =  1.00051e-14 #s
+ExchangeEnergy = 0.412612 #77514   #eV
 SC_gap = 1.5E-3 #Superconducting gap in eV
 Temperature = 4.2 #Temperature in K
-DeadLayers = -0.40
+DeadLayers = -0.313719
 
 #Set to None to disable
-Amplitude = 0.00253107
+Amplitude = 0.0188748
 
 def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy, SC_gap, 
                        Temperature, DeadLayers, Amplitude = Amplitude):
@@ -94,7 +94,7 @@ def JC_DiffuseExchange(d_F, N, D, T_c, tau_SO, ExchangeEnergy, SC_gap,
         
         J_c += TotalTerm 
         
-    return Amplitude*np.abs(J_c) #Return the current in milliamps
+    return Amplitude*JunctionResistance*np.abs(J_c) #Return the current in milliamps
 
 
 
@@ -239,8 +239,8 @@ d_F = d_F[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-y = y/JunctionResistance
-dy = dy/JunctionResistance
+#y = y/JunctionResistance
+#dy = dy/JunctionResistance
 
 #d = d + 0.37
 
@@ -302,7 +302,7 @@ plt.errorbar(
     capsize=3,
     label='Experimental data')
 
-X_axis = np.linspace(0.0, 3.0, 1000)
+X_axis = np.linspace(0.1, 2,5, 1000)
 
 for test in [1.18363e-12]:
     ytest = JC_DiffuseExchange(
@@ -316,7 +316,7 @@ for test in [1.18363e-12]:
         Temperature = Temperature,
         DeadLayers = DeadLayers
     )
-    plt.plot(X_axis, ytest, label=f"Fitted {test}", linewidth=3)
+    plt.plot(X_axis, ytest, label=f"Spin-Orbit", linewidth=3)
 
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
