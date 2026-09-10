@@ -9,7 +9,7 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import constants
-plt.rcParams.update({'font.size': 40})
+plt.rcParams.update({'font.size': 10})
 
 #Physical constants
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
@@ -21,15 +21,15 @@ StepNumber = 5
 
 #Potential fitting values
 T_c = 9.2
-Temperature=2.4 #K
-H = 0.4  #Exchange energy in eV
-alpha =  1.03595
+Temperature=4.2 #K
+H = 0.679  #Exchange energy in eV
+alpha =  0.4 #1.00003
 SC_gap = 1.5E-3 #eV
-CoherenceLength = 0.711048
-DeadLayers = 0.488447
+CoherenceLength = 0.5
+DeadLayers = -0.2
 
 #Set to None to disable
-Amplitude = 0.001
+Amplitude = 0.00253107
 
 def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha, 
                           CoherenceLength, DeadLayers, Amplitude=Amplitude):
@@ -98,7 +98,7 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
-Data = 4.2
+Data = Temperature
 
 if Data == 4.2:
     d_F = np.array([2.418, 2.438, 2.29, 2.251, 2.231, 2.123, 2.103, 2.083 
@@ -226,7 +226,6 @@ elif Data == 6:
 )
 
 
-
 OrderingIndex = np.argsort(d_F)
 d_F = d_F[OrderingIndex]
 y = y[OrderingIndex]
@@ -251,14 +250,15 @@ Model = bmp.Curve(
 
 #Model.Temperature.range(0.9*Temperature, 1.1*Temperature)
 #Model.T_c.range(0.5*T_c,1.5*T_c)
-Model.H.range(0.2, 0.8)
+#Model.H.range(0.2, 0.8)
 #Model.SC_gap.range(0.5*SC_gap, 1.5*SC_gap)
-Model.alpha.range(0.01*alpha, 1000*alpha)
-Model.CoherenceLength.range(CoherenceLength*0.01, 10*CoherenceLength)
-Model.DeadLayers.range(-0.8, 0)
+Model.alpha.range(0.3, 0.5)
+Model.CoherenceLength.range(0.4, 0.6)
+Model.DeadLayers.range(-0.3, 0)
+
 
 if Amplitude is not None:
-    Model.Amplitude.range(1E-05,100E-05)
+    Model.Amplitude.range(0.001,0.01)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -306,7 +306,7 @@ for test in [0.4]:
         alpha = alpha,
         CoherenceLength = CoherenceLength,
         DeadLayers= DeadLayers)
-    plt.plot(X_axis, ytest, label="Fitted Curve", linewidth=3)
+    plt.plot(X_axis, ytest, label="Magnetic Scattering", linewidth=3)
     
 
 plt.yscale("log")
