@@ -16,7 +16,7 @@ k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
 #Function parameters
-FreqCutoff=50
+FreqCutoff = 50
 StepNumber = 5
 
 #Potential fitting values
