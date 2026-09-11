@@ -633,7 +633,6 @@ Model = bmp.Curve(
     xi_N=xi_N,
     SC_gap=SC_gap,
     CoherenceLength=CoherenceLength,
-    #Amplitude = 100
     Area = Area,
     DeadLayer = DeadLayer
     Amplitude = Amplitude
