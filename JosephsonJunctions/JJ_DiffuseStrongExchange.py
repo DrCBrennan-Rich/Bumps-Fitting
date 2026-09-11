@@ -675,7 +675,9 @@ Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = gamma_BSN
 Model.Area.value = Area
 Model.DeadLayer.value = DeadLayer
-#Model.Amplitude.value = Amplitude
+
+if Amplitude is not None:
+    Model.Amplitude.value = Amplitude
 
 problem = bmp.FitProblem(Model)
 
