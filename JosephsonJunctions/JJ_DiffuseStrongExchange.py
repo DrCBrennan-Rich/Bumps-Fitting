@@ -636,6 +636,7 @@ Model = bmp.Curve(
     #Amplitude = 100
     Area = Area,
     DeadLayer = DeadLayer
+    Amplitude = Amplitude
     )
 
 ### Limits of fitting values ###
