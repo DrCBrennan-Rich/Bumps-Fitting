@@ -8,9 +8,13 @@
 import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import constants
+plt.rcParams.update({'font.size': 10})
 
-k_B = 8.617333262E-5  #eV/K
-hbar = 6.582E-16 #eV*s
+#Physical constants
+k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
+hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
+
 T = 4.2    #K Temperature
 T_c = 9.2  #K Critical temperature
 
