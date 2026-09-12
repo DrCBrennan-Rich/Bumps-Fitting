@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({'font.size': 10})
 
 JunctionResistance = 1.55E-3 #Ohms
-
 #Fitting Paramaters
 Amplitude = 227.201 #Current amplitude
 CoherenceLength_F1=0.419556 #nm
