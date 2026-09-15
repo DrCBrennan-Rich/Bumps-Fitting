@@ -22,27 +22,29 @@ FreqCutoff=20
 StepNumber = 10
 T_c = 9.2
 
-Temperature=4.2 #K
+
 JunctionResistance = 1.55E-3 #Ohms
 InterfaceResistance = 5700 #Ohm nm^2
 Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 
-gamma_BNF = 1000
-gamma_BSF = 1
-
-Amplitude = 250#90892.9#827795
-H=0.679 #eV
+Amplitude = None#90892.9#827795
+gamma_BNF = None
 CoherenceLength= 1.99 #nm
-gamma_BSN = 0.398271
-SC_gap = 1.5E-3 #eV
+DeadLayer = 0.17 #nm
+H=0.679 #eV
+Resistivity_F = 20000 #ohm nm
+SC_gap = 0.0015 #eV
+Temperature = 4.2 #K
 d_N1 = 5 #Thickness of the left hand normal metal nm
 d_N2 = 10 #Thickness of the right hand normal metal nm
-xi_N = 30
-gamma_NF = 7.98175e-08
-Resistivity_F =  26404.2 #ohm nm
-Resistivity_N = 87 #ohm nm
 eta = 0
-DeadLayer = -0.410589 
+gamma_BSN = 1.71664
+gamma_NF = None #0.00448374 
+xi_N = 30
+
+Resistivity_N = 87 #ohm nm
+
+
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -513,9 +515,9 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
     return Chi_SNF
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
-                       eta, CoherenceLength, H, gamma_NF, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, Amplitude=None, 
-                       gamma_BNF=None, DeadLayer=0.0):
+                       eta, CoherenceLength, H, gamma_BSN, 
+                       d_N1, d_N2, xi_N, SC_gap, Area, gamma_NF = gamma_NF, 
+                       Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayer=0.0):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
 
@@ -555,7 +557,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
             normal metal.
 
     Returns:
-        IcRn (float): Voltage across the Josephson junction (uV).
+        IcRn (float): Critical voltage of the Josephson junction (uV).
 
     Notes:
 
@@ -564,6 +566,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     
     if Amplitude is None:
         Amplitude = Area*(16*np.pi*k_B*Temperature)/Resistivity_F #Area in nm^2
+    
+    if gamma_NF is None:
+        gamma_NF = xi_N*Resistivity_N/(CoherenceLength*Resistivity_F)
     
     d_F = d_F - DeadLayer
     
@@ -612,6 +617,55 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
+'''
+#RuCoRu
+d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
+              1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
+              3.5, 3.95, 4.1] )
+
+y = np.array([65.340875, 24.878000000000004, 51.64000000000001, 61.19333333333333, 
+              39.726, 25.309341886259293, 14.174717467474276, 18.957235235409815,
+              13.972562686109798, 10.008982510530531, 6.939496641380081, 
+              2.3033272230925714, 6.3283471086318865, 1.3283048839258265, 
+              2.1937826740803543, 2.6960435520171293, 2.642885048481178, 
+              26.75475, 21.053250000000006, 48.66025, 45.33733333333334, 
+              11.033598167685819, 19.0885, 2.151310036922145, 5.327660826872811,
+              2.3257632595999977, 2.2332393553653582])
+
+dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267, 
+               1.514830390212418, 0.9546742245394503, 1.624217115530211,
+               0.9081232687658485, 0.3261137420414092, 0.779596233884249,
+               0.8897751989591207, 0.23563425164791063, 0.28325155792176143,
+               0.4182558888900494, 0.26331238028429693, 0.21384513210250294,
+               0.3840692332507965, 0.204401721667579, 0.7852499999999994,
+               0.8842499999999979, 5.166759346614983, 5.5504418943199685,
+               0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
+               0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
+'''
+
+d = np.array([0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 
+ 0.85, 1.0,0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 0.15, 1.5, 1.65, 1.8])
+
+y = np.array([25.485540677019983, 20.24388234661639, 9.229536446202395, 
+              2.3917306615253358, 5.332381933490123, 6.262335355328344, 
+              5.555634474421091, 7.14605149171436, 4.670040152958881, 
+              4.466469736108299, 4.402734073344201, 2.8669437006283083,
+              2.198601946982659, 0.31666206152922616, 1.018208817810008, 
+              6.094153299948496, 6.307979995277196, 5.485744923060322,
+              2.581500267199711, 0.3440655265061016, 1.3730251946938403, 
+              0.951189258094282, 0.08461134762633567, 38.13333333333333, 
+              0.1905, 0.3, 0.12166666666666666])
+
+dy = np.array([1.1541353059558421, 1.3282852847429805, 0.43555339620836153, 
+               0.183136722622837, 0.32397334928648797, 0.16637832288545412,
+               0.4313857996461637, 0.2067104216127845, 0.26935663136737165, 
+               0.11061774240230109, 0.5189157313556868, 0.13401844281653402, 
+               0.1469797151953465, 0.051007687876081016, 0.08432750457227471, 
+               0.12104294939270999, 0.2824216946228165, 0.19224653742922326, 
+               0.03978367734086671, 0.018540196895687144, 0.20333691412042817,
+               0.0053777623606668535, 0.004048255991005446, 1.7975291683617007,
+               0.0035000000000000027, 0.04999999999999999, 0.010137937550497038])
+
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
@@ -633,9 +687,9 @@ Model = bmp.Curve(
     xi_N=xi_N,
     SC_gap=SC_gap,
     CoherenceLength=CoherenceLength,
+    Amplitude = Amplitude,
     Area = Area,
     DeadLayer = DeadLayer
-    Amplitude = Amplitude
     )
 
 ### Limits of fitting values ###
@@ -644,13 +698,19 @@ Model = bmp.Curve(
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
-Model.gamma_NF.range(1E-8,1E-2)
+
+if gamma_NF is not None:
+    Model.gamma_NF.range(1E-8,1E-2)
+
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
 #Model.Resistivity_F.range(10000,100000)
-#Model.Amplitude.range(100,3000)
+
+if Amplitude is not None:
+    Model.Amplitude.range(1,1000)
+
 #Model.DeadLayer.range(-0.5,-0.2)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
@@ -667,7 +727,10 @@ Model.Temperature.value = Temperature
 Model.eta.value = eta
 Model.Resistivity_F.value =  Resistivity_F #Ohm nm
 Model.Resistivity_N.value =  Resistivity_N #Ohm nm
-Model.gamma_NF.value = gamma_NF
+
+if gamma_NF is not None:
+    Model.gamma_NF.value = gamma_NF
+
 Model.SC_gap.value = 1.5E-3 #eV
 Model.xi_N.value = xi_N #nm
 Model.d_N1.value = 5 #nm
@@ -696,16 +759,16 @@ plt.errorbar(
 X_axis = np.linspace(0.1, 2, 100000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
-for test in [0.7]:
+for test in [2000,3000,4000]:
     ytest = JC_DiffuseExchange(
         X_axis,
         Temperature=4.2,
         Resistivity_N= Resistivity_N,#ohm nm,
-        Resistivity_F=Resistivity_F, #ohm nm,
+        Resistivity_F=test, #Resistivity_F, #ohm nm,
         CoherenceLength= CoherenceLength, #nm
         eta=eta,
         H=H, #0.6,#1.54468,#0.520934,
-        gamma_NF= gamma_NF,
+        gamma_NF= gamma_NF,#gamma_NF,
         gamma_BSN = gamma_BSN,#0.186,
         d_N1=5,
         d_N2=10,
@@ -716,7 +779,7 @@ for test in [0.7]:
         #gamma_BNF = 0.001,
         DeadLayer=DeadLayer
     )
-    plt.plot(X_axis, ytest, label=f"gamma_NF {gamma_NF}", linewidth=3)
+    plt.plot(X_axis, ytest, label=f"Resistivity_F {test}", linewidth=3)
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
