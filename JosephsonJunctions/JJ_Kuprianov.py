@@ -9,17 +9,18 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import constants
-plt.rcParams.update({'font.size': 10})
+plt.rcParams.update({'font.size': 40})
 
 k_B = constants.physical_constants['Boltzmann constant in eV/K'][0] #eV/K
 JunctionResistance = 1.55E-3 #Ohms
 
+#Coherence lengths
 #Amplitude = 260.452 #Current amplitude
-CriticalTemperature = 8.87267 #K
-CoherenceLength = 0.36178 #nm
-SC_gap =  0.00159515 #eV
-Amplitude = None #2.36283e-05
-DeadLayers = -1.0 #nm
+CriticalTemperature = 9.2 #K
+CoherenceLength = 0.356831  #nm
+SC_gap =  0.0015 #eV
+Amplitude = 3.07468e-05
+DeadLayers =-0.477983 #nm
 
 def JC_Dirty_Limit(d_F, SC_gap, CriticalTemperature, CoherenceLength,
                    DeadLayers, Amplitude=Amplitude):
@@ -267,13 +268,13 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-Model.SC_gap.range(1.4E-3,1.6E-3)
-Model.CriticalTemperature.range(8.5,9.5)
-Model.CoherenceLength.range(0.001,5)
-Model.DeadLayers.range(-1.0,0)
+#Model.SC_gap.range(1.4E-3,1.6E-3)
+#Model.CriticalTemperature.range(8.5,9.5)
+Model.CoherenceLength.range(0.20,0.4)
+Model.DeadLayers.range(-0.6,-0.1)
 
 if Amplitude is not None:
-    Model.Amplitude.range(1E-6,1E-3)
+    Model.Amplitude.range(1e-05,10e-05)
 
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
