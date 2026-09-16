@@ -628,12 +628,18 @@ def Remove_Triplet_Component(d_F, y, dy, Amplitude_Triplet,
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
             junction (nm).
-        y (numpy.ndarray): 
+        y (numpy.ndarray): List of (float) critical voltages across the junction (*).
+        dy (numpy.ndarray): List of (float) critical voltage errors across the junction (*).
+        Amplitude_Triplet (float): Amplitude of triplet component (*).
+        CoherenceLength_Triplet (float): Triplet coherence length (nm).
         
+        *Matching units required, typically V or uV
 
     Returns:
-        Chi_SNF (complex): Boundary constant between the superconducting/normal
-            /metal and ferromagnet interface (unitless).
+        y (numpy.ndarray): List of (float) critical voltages across the junction
+            now with triplet component removed (*).
+        dy (numpy.ndarray): List of (float) critical voltage errors across the 
+            junction now with triplet component removed (*).
 
     Notes:
 
@@ -642,7 +648,7 @@ def Remove_Triplet_Component(d_F, y, dy, Amplitude_Triplet,
     
     y = y - y_triplet
 
-    return d, y, dy
+    return y, dy
 
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
@@ -672,7 +678,7 @@ dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267,
                0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
                0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
 
-d, y, dy = Remove_Triplet_Component(d, y, dy, Amplitude_Triplet, CoherenceLength_Triplet)
+y, dy = Remove_Triplet_Component(d, y, dy, Amplitude_Triplet, CoherenceLength_Triplet)
 
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
