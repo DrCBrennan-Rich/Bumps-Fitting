@@ -617,7 +617,27 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
 
 def Remove_Triplet_Component(d_F, y, dy, Amplitude_Triplet, 
                              CoherenceLength_Triplet):
-    
+    """Remove a spin-triplet component from the data.
+
+    This function takes in the data and subtracts the contribution from a 
+    triplet channel. This channel is modelled as an exponential decay with a
+    given amplitude and coherence length decay rate. These parameters should
+    normally be found by fitting a phenomenological model on the high thickness
+    data points that are dominated by a triplet channel contribution.
+
+    Args:
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+            junction (nm).
+        y (numpy.ndarray): 
+        
+
+    Returns:
+        Chi_SNF (complex): Boundary constant between the superconducting/normal
+            /metal and ferromagnet interface (unitless).
+
+    Notes:
+
+    """
     y_triplet = Amplitude_Triplet*np.exp(-d_F/CoherenceLength_Triplet)
     
     y = y - y_triplet
