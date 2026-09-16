@@ -30,15 +30,15 @@ Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 Amplitude = None#90892.9#827795
 gamma_BNF = None
 CoherenceLength= 1.87 #nm
-DeadLayers = 0.0879955 #nm
+DeadLayers = 0.0931313 #nm
 H = 0.679 #eV
-Resistivity_F = 15122.1 #ohm nm
+Resistivity_F = 2000 #ohm nm
 SC_gap = 0.0015 #eV
 Temperature = 4.2 #K
 d_N1 = 5 #Thickness of the left hand normal metal nm
 d_N2 = 10 #Thickness of the right hand normal metal nm
 eta = 50
-gamma_BSN = 1.16155
+gamma_BSN =  2.62385
 gamma_NF = None #0.00448374 
 xi_N = 41
 
@@ -517,7 +517,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength, H, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, gamma_NF = gamma_NF, 
+                       d_N1, d_N2, xi_N, SC_gap, Area, T_c, gamma_NF = gamma_NF, 
                        Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
@@ -739,16 +739,18 @@ Model = bmp.Curve(
     CoherenceLength=CoherenceLength,
     Amplitude = Amplitude,
     Area = Area,
+    T_c = T_c,
     DeadLayers = DeadLayers
     )
 
 ### Limits of fitting values ###
 
 #Model.CoherenceLength.range(0.2,3.5)
-Model.DeadLayers.range(-0.1,0.5)
+Model.DeadLayers.range(-0.1,0.7)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
-#Model.eta.range(0,500)
+Model.eta.range(0,500)
+Model.T_c.range(8.3,9.2)
 
 if gamma_NF is not None:
     Model.gamma_NF.range(1E-8,1E-2)
@@ -757,7 +759,7 @@ if gamma_NF is not None:
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(100,50000)
+Model.Resistivity_F.range(1000,3000)
 
 if Amplitude is not None:
     Model.Amplitude.range(1,1000)
@@ -789,6 +791,8 @@ Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = gamma_BSN
 Model.Area.value = Area
 Model.DeadLayers.value = DeadLayers
+
+Model.T_c.value = T_c
 
 if Amplitude is not None:
     Model.Amplitude.value = Amplitude
@@ -826,6 +830,7 @@ for test in [2000]:
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
         Area = Area,
+        T_c = T_c,
         #Amplitude = 0.001
         #gamma_BNF = 0.001,
         DeadLayers=DeadLayers
