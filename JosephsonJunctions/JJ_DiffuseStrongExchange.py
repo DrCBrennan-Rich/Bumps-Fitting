@@ -44,7 +44,8 @@ xi_N = 41
 
 Resistivity_N = 87 #ohm nm
 
-
+Amplitude_Triplet = 12.066 #uV
+CoherenceLength_Triplet = 1.82 #nm
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -614,6 +615,15 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         
     return IcRn*1E6 #Return the voltage in uV
 
+def Remove_Triplet_Component(d_F, y, dy, Amplitude_Triplet, 
+                             CoherenceLength_Triplet):
+    
+    y_triplet = Amplitude_Triplet*np.exp(-d_F/CoherenceLength_Triplet)
+    
+    y = y - y_triplet
+
+    return d, y, dy
+
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
@@ -642,17 +652,13 @@ dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267,
                0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
                0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
 
+d, y, dy = Remove_Triplet_Component(d, y, dy, Amplitude_Triplet, CoherenceLength_Triplet)
+
 OrderingIndex = np.argsort(d)
 d = d[OrderingIndex]
 y = y[OrderingIndex]
 dy = dy[OrderingIndex]
 
-Amplitude_Triplet = 12.066 #uV
-CoherenceLength_Triplet = 1.82 #nm
-
-y_triplet = Amplitude_Triplet*np.exp(-d/CoherenceLength_Triplet)
-
-y = y - y_triplet
 
 Mask = d < 2.5
 
