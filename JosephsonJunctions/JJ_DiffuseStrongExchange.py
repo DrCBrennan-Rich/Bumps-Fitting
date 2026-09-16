@@ -551,7 +551,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
             amplitude for the output.
         gamma_BNF (float): If provided, sets the boundary suppresion parameter 
             between the normal metal and the ferromagnet (unitless).
-        DeadLayer (float): Thickness of dead (non-magnetic) material in the 
+        DeadLayers (float): Thickness of dead (non-magnetic) material in the 
             ferromagnet. Negative values indicate increased effective 
             ferromagnetic thickness due to proximity magnetisation in the 
             normal metal.
