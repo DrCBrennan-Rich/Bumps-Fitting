@@ -426,7 +426,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
     return Chi_SF
 
 def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial, 
-                          eta, theta_S, gamma_NF, StepNumber):
+                          eta, theta_S, gamma_NF, StepNumber, d_N, gamma_BSN, xi_N):
     """Calculate the boundary constant, Chi, between the superconducting/normal
     and ferromagnet interface.
 
@@ -476,7 +476,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         #Relax the gamma_NF = 0 condition
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess, args=(Omega, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
-                  d_N1, xi_N, theta_S),
+                  d_N, xi_N, theta_S),
             full_output=True)
         
         if ErrorCheck == 0:
@@ -496,7 +496,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess,
             args=(Omega, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
-                  d_N1, xi_N, theta_S), 
+                  d_N, xi_N, theta_S), 
             full_output=True)
         
         if ErrorCheck == 0:
