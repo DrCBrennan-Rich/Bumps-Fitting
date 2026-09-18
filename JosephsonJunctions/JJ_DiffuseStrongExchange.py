@@ -29,23 +29,22 @@ Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 
 Amplitude = None#90892.9#827795
 gamma_BNF = None
-CoherenceLength= 1.87 #nm
-DeadLayers = 0.0931313 #nm
-H = 0.679 #eV
-Resistivity_F = 2000 #ohm nm
+CoherenceLength= 1.99 #nm
+DeadLayers = -0.17 #nm
+H=0.679 #eV
+Resistivity_F = 2000#ohm nm
 SC_gap = 0.0015 #eV
 Temperature = 4.2 #K
 d_N1 = 5 #Thickness of the left hand normal metal nm
 d_N2 = 10 #Thickness of the right hand normal metal nm
-eta = 50
-gamma_BSN =  2.62385
+eta = 0
+gamma_BSN = 1.71664
 gamma_NF = None #0.00448374 
-xi_N = 41
+xi_N = 30
 
 Resistivity_N = 87 #ohm nm
 
-Amplitude_Triplet = 12.066 #uV
-CoherenceLength_Triplet = 1.82 #nm
+
 
 #Green function: F = exp(j*chi)*sin(theta)
 
@@ -548,6 +547,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         xi_N (float): Coherence length in the normal metal (nm).    
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
+        T_c (float): Critical temperature of the superconductor (K).
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
         gamma_BNF (float): If provided, sets the boundary suppresion parameter 
@@ -614,45 +614,10 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         
     return IcRn*1E6 #Return the voltage in uV
 
-def Remove_Triplet_Component(d_F, y, dy, Amplitude_Triplet, 
-                             CoherenceLength_Triplet):
-    """Remove a spin-triplet component from the data.
-
-    This function takes in the data and subtracts the contribution from a 
-    triplet channel. This channel is modelled as an exponential decay with a
-    given amplitude and coherence length decay rate. These parameters should
-    normally be found by fitting a phenomenological model on the high thickness
-    data points that are dominated by a triplet channel contribution.
-
-    Args:
-        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
-            junction (nm).
-        y (numpy.ndarray): List of (float) critical voltages across the junction (*).
-        dy (numpy.ndarray): List of (float) critical voltage errors across the junction (*).
-        Amplitude_Triplet (float): Amplitude of triplet component (*).
-        CoherenceLength_Triplet (float): Triplet coherence length (nm).
-        
-        *Matching units required, typically V or uV
-
-    Returns:
-        y (numpy.ndarray): List of (float) critical voltages across the junction
-            now with triplet component removed (*).
-        dy (numpy.ndarray): List of (float) critical voltage errors across the 
-            junction now with triplet component removed (*).
-
-    Notes:
-
-    """
-    y_triplet = Amplitude_Triplet*np.exp(-d_F/CoherenceLength_Triplet)
-    
-    y = y - y_triplet
-
-    return y, dy
-
 #Load the data from the file Data.txt
 #d,y,dy = np.loadtxt('PtCoPt data 4.2K.txt').T #units of nm, mA, mA
 
-
+'''
 #RuCoRu
 d = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8,
               1.3, 2.45, 2.9, 3.05, 0.25, 0.3001, 0.35, 0.65, 0.75, 0.85, 3.35,
@@ -676,23 +641,7 @@ dy = np.array([3.906590843129723, 0.7540000000000013, 2.8450014645573267,
                0.8842499999999979, 5.166759346614983, 5.5504418943199685,
                0.3490574302442736, 1.2972500000000018, 0.09114521005284514, 
                0.5093084657670612, 0.11055011898099443, 0.3681883271793756])
-
-y, dy = Remove_Triplet_Component(d, y, dy, Amplitude_Triplet, CoherenceLength_Triplet)
-
-OrderingIndex = np.argsort(d)
-d = d[OrderingIndex]
-y = y[OrderingIndex]
-dy = dy[OrderingIndex]
-
-
-Mask = d < 2.5
-
-d = d[Mask]
-y = y[Mask]
-dy = dy[Mask]
-
 '''
-#PtCoPt
 
 d = np.array([0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 
  0.85, 1.0,0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 0.15, 1.5, 1.65, 1.8])
@@ -716,9 +665,11 @@ dy = np.array([1.1541353059558421, 1.3282852847429805, 0.43555339620836153,
                0.03978367734086671, 0.018540196895687144, 0.20333691412042817,
                0.0053777623606668535, 0.004048255991005446, 1.7975291683617007,
                0.0035000000000000027, 0.04999999999999999, 0.010137937550497038])
-'''
 
-
+OrderingIndex = np.argsort(d)
+d = d[OrderingIndex]
+y = y[OrderingIndex]
+dy = dy[OrderingIndex]
 
 #y = y/JunctionResistance
 #dy = dy/JunctionResistance
@@ -745,11 +696,9 @@ Model = bmp.Curve(
 ### Limits of fitting values ###
 
 #Model.CoherenceLength.range(0.2,3.5)
-Model.DeadLayers.range(-0.1,0.7)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
-Model.eta.range(0,500)
-Model.T_c.range(8.3,9.2)
+#Model.eta.range(0,500)
 
 if gamma_NF is not None:
     Model.gamma_NF.range(1E-8,1E-2)
@@ -758,12 +707,12 @@ if gamma_NF is not None:
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
 #Model.xi_N.range(5,60)
-Model.Resistivity_F.range(1000,3000)
+#Model.Resistivity_F.range(10000,100000)
 
 if Amplitude is not None:
     Model.Amplitude.range(1,1000)
 
-#Model.DeadLayer.range(-0.5,-0.2)
+#Model.DeadLayers.range(-0.5,-0.2)
 
 #Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
@@ -791,8 +740,6 @@ Model.gamma_BSN.value = gamma_BSN
 Model.Area.value = Area
 Model.DeadLayers.value = DeadLayers
 
-Model.T_c.value = T_c
-
 if Amplitude is not None:
     Model.Amplitude.value = Amplitude
 
@@ -810,7 +757,7 @@ plt.errorbar(
     label='Experimental data')
 
 #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
-X_axis = np.linspace(0.1, 2.0, 100000)
+X_axis = np.linspace(0.1, 1.8, 100000)
 J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
 
 for test in [2000]:
@@ -829,15 +776,14 @@ for test in [2000]:
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
         Area = Area,
-        T_c = T_c,
         #Amplitude = 0.001
         #gamma_BNF = 0.001,
         DeadLayers=DeadLayers
     )
-    plt.plot(X_axis, ytest, label=f"RuCoRu Resistivity_F {Resistivity_F}", linewidth=3)
+    plt.plot(X_axis, ytest, label=f"PtCoPt Resistivity_F {Resistivity_F}", linewidth=3)
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
-plt.xlabel(r"$d_\mathrm{F}$/$\xi_\mathrm{F}$", fontsize=34)
-plt.ylabel(r"$I_\mathrm{c}R_\mathrm{N}/V_0$ ($\mathrm{\mu V}$)", fontsize=34)
+plt.xlabel("Thickness (nm)", fontsize=34)
+plt.ylabel(r"$I_cR_N$ ($\mathrm{\mu V}$)", fontsize=34)
 plt.show()
