@@ -455,6 +455,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         d_N (float): Thickness of the normal metal (nm).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
             and normal metal (unitless).
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).
         
 
     Returns:
