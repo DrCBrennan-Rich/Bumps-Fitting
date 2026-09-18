@@ -20,7 +20,7 @@ hbar = constants.physical_constants['reduced Planck constant in eV s'][0] #eV*s
 
 FreqCutoff=20
 StepNumber = 10
-T_c = 9.2
+CriticalTemperature = 9.2
 
 
 JunctionResistance = 1.55E-3 #Ohms
@@ -60,7 +60,7 @@ def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
             imaginary components of Chi (unitless).
         gamma (float): Suppression parameter at the boundary.
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         theta (float): Pairing angle (radians).
 
@@ -275,7 +275,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
             [4] - Real component of the pairing angle on NF boundary (radians).
             [5] - Imaginary component of the pairing angle on NF boundary (radians).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         gamma_BNF (float): Boundary suppresion parameter between the normal metal
             and the ferromagnet (unitless).
@@ -382,7 +382,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
             and ferromagnet (unitless).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
         theta_S (float): Superconducting pairing angle (unitless).
-        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         StepNumber (int): Number of steps performed between 0 and eta.
         
@@ -445,7 +445,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
             ferromagnetic materials (radians). 
         theta_NS_initial (float): Pairing angle between normal and 
             superconducting materials (radians). 
-        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         theta_S (float): Superconducting pairing angle (unitless).
         gamma_NF (float): Suppresion parameter between the normal metal
@@ -516,7 +516,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength, H, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, T_c, gamma_NF = gamma_NF, 
+                       d_N1, d_N2, xi_N, SC_gap, Area, CriticalTemperature, gamma_NF = gamma_NF, 
                        Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
@@ -534,7 +534,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         Temperature (float): Temperature of the system (K).
         Resistivity_N (float): Resistivity of the normal metal (Ohm*nm).
         Resistivity_F (float): Resistivity of the ferromagnet (Ohm*nm).
-        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*T_c*tau_m) 
+        eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
         H (float): Exchange energy in the ferromagnet (eV).
@@ -547,7 +547,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         xi_N (float): Coherence length in the normal metal (nm).    
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
-        T_c (float): Critical temperature of the superconductor (K).
+        CriticalTemperature (float): Critical temperature of the superconductor (K).
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
         gamma_BNF (float): If provided, sets the boundary suppresion parameter 
@@ -577,9 +577,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     
     N_list = np.arange(FreqCutoff)
     #"Omega" in this work will refer to Omega-tilda in the original paper
-    Omega_list = (Temperature/T_c)*(2*N_list+1)+(H/(np.pi*k_B*T_c))*1j
+    Omega_list = (Temperature/CriticalTemperature)*(2*N_list+1)+(H/(np.pi*k_B*CriticalTemperature))*1j
 
-    #eta = hbar/(np.pi*SpinScatterTime*k_B*T_c)
+    #eta = hbar/(np.pi*SpinScatterTime*k_B*CriticalTemperature)
     if gamma_BNF is None:
         gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
     
@@ -587,7 +587,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     
     for gamma, w in zip(gamma_list, Omega_list):
         #Define theta_S from equation 5
-        theta_S = np.arctan(SC_gap/(np.pi*k_B*T_c*np.real(w)))
+        theta_S = np.arctan(SC_gap/(np.pi*k_B*CriticalTemperature*np.real(w)))
         #Find the intial angles taking gamma_NF and eta = 0
         theta_NS_initial = Find_Theta_NS_Initial(d_N1, w, xi_N, gamma_BSN, theta_S)
         theta_NF_initial = Find_Theta_NF(d_N1, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
@@ -689,7 +689,7 @@ Model = bmp.Curve(
     CoherenceLength=CoherenceLength,
     Amplitude = Amplitude,
     Area = Area,
-    T_c = T_c,
+    CriticalTemperature = CriticalTemperature,
     DeadLayers = DeadLayers
     )
 
@@ -758,7 +758,7 @@ plt.errorbar(
 
 #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
 X_axis = np.linspace(0.1, 1.8, 100000)
-J_0 = Area*np.pi*k_B*T_c/(Resistivity_F*CoherenceLength)
+J_0 = Area*np.pi*k_B*CriticalTemperature/(Resistivity_F*CoherenceLength)
 
 for test in [2000]:
     ytest = JC_DiffuseExchange(
@@ -776,7 +776,7 @@ for test in [2000]:
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
         Area = Area,
-        T_c = T_c,
+        CriticalTemperature = CriticalTemperature,
         #Amplitude = 0.001
         #gamma_BNF = 0.001,
         DeadLayers=DeadLayers
