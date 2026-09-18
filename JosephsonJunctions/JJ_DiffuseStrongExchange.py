@@ -839,6 +839,6 @@ for test in [2000]:
 plt.yscale("log")
 plt.tick_params(axis='both', which='major', labelsize=34)
 plt.legend(fontsize=34)
-plt.xlabel("Thickness (nm)", fontsize=34)
-plt.ylabel(r"$I_cR_N$ ($\mathrm{\mu V}$)", fontsize=34)
+plt.xlabel(r"$d_\mathrm{F}$/$\xi_\mathrm{F}$", fontsize=34)
+plt.ylabel(r"$I_\mathrm{c}R_\mathrm{N}/V_0$ ($\mathrm{\mu V}$)", fontsize=34)
 plt.show()
