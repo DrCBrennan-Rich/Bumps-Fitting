@@ -29,7 +29,7 @@ Area = np.pi*(1.5E3)*(1.5E3) #Area of the gate in nm^2
 
 Amplitude = None#90892.9#827795
 gamma_BNF = None
-CoherenceLength= 1.99 #nm
+CoherenceLength_F= 1.99 #nm
 DeadLayers = -0.17 #nm
 H=0.679 #eV
 Resistivity_F = 2000#ohm nm
@@ -515,7 +515,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
     return Chi_SNF
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
-                       eta, CoherenceLength, H, gamma_BSN, 
+                       eta, CoherenceLength_F, H, gamma_BSN, 
                        d_N1, d_N2, xi_N, SC_gap, Area, CriticalTemperature, gamma_NF = gamma_NF, 
                        Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
     """Calculate the critical voltage across the Josephson junction according
@@ -536,7 +536,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         Resistivity_F (float): Resistivity of the ferromagnet (Ohm*nm).
         eta (float): Spin-flip scattering parameter, defined as: eta = hbar/(pi*k_B*CriticalTemperature*tau_m) 
             where tau_m is the spin-flip scattering time (unitless).
-        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        CoherenceLength_F (float): Coherence length in the ferromagnet (nm).
         H (float): Exchange energy in the ferromagnet (eV).
         gamma_NF (float): Suppresion parameter between the normal metal
             and the superconductor (unitless).
@@ -563,13 +563,13 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     Notes:
 
     """
-    #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+    #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength_F)
     
     if Amplitude is None:
         Amplitude = Area*(16*np.pi*k_B*Temperature)/Resistivity_F #Area in nm^2
     
     if gamma_NF is None:
-        gamma_NF = xi_N*Resistivity_N/(CoherenceLength*Resistivity_F)
+        gamma_NF = xi_N*Resistivity_N/(CoherenceLength_F*Resistivity_F)
     
     d_F = d_F - DeadLayers
     
@@ -581,9 +581,9 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
 
     #eta = hbar/(np.pi*SpinScatterTime*k_B*CriticalTemperature)
     if gamma_BNF is None:
-        gamma_BNF = InterfaceResistance/(CoherenceLength*Resistivity_F)
+        gamma_BNF = InterfaceResistance/(CoherenceLength_F*Resistivity_F)
     
-    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength
+    gamma_list = np.sqrt(Omega_list+eta)/CoherenceLength_F
     
     for gamma, w in zip(gamma_list, Omega_list):
         #Define theta_S from equation 5
@@ -686,7 +686,7 @@ Model = bmp.Curve(
     d_N2=d_N2,
     xi_N=xi_N,
     SC_gap=SC_gap,
-    CoherenceLength=CoherenceLength,
+    CoherenceLength_F=CoherenceLength_F,
     Amplitude = Amplitude,
     Area = Area,
     CriticalTemperature = CriticalTemperature,
@@ -695,7 +695,7 @@ Model = bmp.Curve(
 
 ### Limits of fitting values ###
 
-#Model.CoherenceLength.range(0.2,3.5)
+#Model.CoherenceLength_F.range(0.2,3.5)
 #Model.H.range(0.6,0.8)
 #Model.Temperature.range(1,10)
 #Model.eta.range(0,500)
@@ -714,7 +714,7 @@ if Amplitude is not None:
 
 #Model.DeadLayers.range(-0.5,-0.2)
 
-#Model.CoherenceLength.dev(std=0.1, mean=0.3, limits=None)
+#Model.CoherenceLength_F.dev(std=0.1, mean=0.3, limits=None)
 #Model.SC_gap.dev(std=0.1, mean=0.3, limits=None)
 #Model.Temperature.dev(std=0.1, mean=0.16, limits=None)
 #Model.Resistance.dev(std=0.1, mean=0.16, limits=None)
@@ -722,7 +722,7 @@ if Amplitude is not None:
 #######
 #Initial values
 
-Model.CoherenceLength.value = CoherenceLength #nm
+Model.CoherenceLength_F.value = CoherenceLength_F #nm
 Model.H.value = H
 Model.Temperature.value = Temperature
 Model.eta.value = eta
@@ -756,9 +756,9 @@ plt.errorbar(
     capsize=3,
     label='Experimental data')
 
-#Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength)
+#Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength_F)
 X_axis = np.linspace(0.1, 1.8, 100000)
-J_0 = Area*np.pi*k_B*CriticalTemperature/(Resistivity_F*CoherenceLength)
+J_0 = Area*np.pi*k_B*CriticalTemperature/(Resistivity_F*CoherenceLength_F)
 
 for test in [2000]:
     ytest = JC_DiffuseExchange(
@@ -766,7 +766,7 @@ for test in [2000]:
         Temperature=4.2,
         Resistivity_N= Resistivity_N,#ohm nm,
         Resistivity_F=Resistivity_F, #Resistivity_F, #ohm nm,
-        CoherenceLength= CoherenceLength, #nm
+        CoherenceLength_F= CoherenceLength_F, #nm
         eta=eta,
         H=H, #0.6,#1.54468,#0.520934,
         gamma_NF= gamma_NF,#gamma_NF,
