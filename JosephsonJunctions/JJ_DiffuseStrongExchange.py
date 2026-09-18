@@ -457,7 +457,6 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
             and normal metal (unitless).
         CoherenceLength_N (float): Coherence length in the normal metal (nm).
         
-
     Returns:
         Chi_SNF (complex): Boundary constant between the superconducting/normal
             /metal and ferromagnet interface (unitless).
