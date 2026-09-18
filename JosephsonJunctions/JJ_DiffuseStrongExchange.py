@@ -44,8 +44,6 @@ CoherenceLength_N = 30
 
 Resistivity_N = 87 #ohm nm
 
-
-
 #Green function: F = exp(j*chi)*sin(theta)
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
