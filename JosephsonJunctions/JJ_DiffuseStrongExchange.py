@@ -425,7 +425,8 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
     return Chi_SF
 
 def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial, 
-                          eta, theta_S, gamma_NF, StepNumber, d_N, gamma_BSN, CoherenceLength_N):
+                          eta, theta_S, gamma_NF, StepNumber, d_N, gamma_BSN, 
+                          CoherenceLength_N):
     """Calculate the boundary constant, Chi, between the superconducting/normal
     and ferromagnet interface.
 
