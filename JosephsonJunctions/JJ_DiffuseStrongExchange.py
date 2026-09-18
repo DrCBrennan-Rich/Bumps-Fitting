@@ -40,7 +40,7 @@ d_N2 = 10 #Thickness of the right hand normal metal nm
 eta = 0
 gamma_BSN = 1.71664
 gamma_NF = None #0.00448374 
-xi_N = 30
+CoherenceLength_N = 30
 
 Resistivity_N = 87 #ohm nm
 
@@ -145,7 +145,7 @@ def Pick_Root(Roots,gamma,Omega,theta):
     i = np.argmin(np.abs(RHS-LHS))
     return Roots[i]
 
-def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
+def Find_Theta_NF(d_N, Omega, CoherenceLength_N, theta_NS, gamma_BSN, theta_S):
     """Calculate the suppresion parameter between the normal and ferromagnetic
     boundary: theta_NF.
 
@@ -155,7 +155,7 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     Args:
         d_N (float): Thicknesses of the normal metal (nm).
         Omega (float): Dimensionless Matsurbara frequency (real component, unitless).
-        xi_N (float): Coherence length in the normal metal (nm).
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).
         theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
             and normal metal (unitless).
@@ -168,18 +168,18 @@ def Find_Theta_NF(d_N, Omega, xi_N, theta_NS, gamma_BSN, theta_S):
     Notes:
         The equation being solved is:
 
-           theta_NF = Omega*d_N^2*Sin(theta_NS)/(2*xi_N^2) + 
-                       d_N*Sin(theta_NS-theta_S)/(gamma_BSN*xi_N) + theta_NS
+           theta_NF = Omega*d_N^2*Sin(theta_NS)/(2*CoherenceLength_N^2) + 
+                       d_N*Sin(theta_NS-theta_S)/(gamma_BSN*CoherenceLength_N) + theta_NS
     """
     Difference = theta_NS-theta_S
     
-    Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*xi_N*xi_N)
-    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+    Term1 = (np.real(Omega)*d_N*d_N)*np.sin(theta_NS)/(2*CoherenceLength_N*CoherenceLength_N)
+    Term2 = (d_N*np.sin(Difference))/(gamma_BSN*CoherenceLength_N)
     theta_NF = Term1 + Term2 + theta_NS
     
     return theta_NF
 
-def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
+def Find_Theta_NS_Initial(d_N, Omega, CoherenceLength_N, gamma_BSN, theta_S):
     """Calculate the suppresion parameter between the normal and 
     superconducting boundary: theta_NS, for eta, gamma_NF = 0
 
@@ -192,7 +192,7 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     Args:
         d_N (float): Thicknesses of the normal metal (nm).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        xi_N (float): Coherence length in the normal metal (nm).
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).
         theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
             and normal metal (unitless).
@@ -208,7 +208,7 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
            0 = Real[Omega]*d_N*gamma_BSN*Sin(theta_NS) + Sin(theta_NS-theta_S)
     """
 
-    A = (np.real(Omega)*d_N*gamma_BSN)/(xi_N*np.sin(theta_S))
+    A = (np.real(Omega)*d_N*gamma_BSN)/(CoherenceLength_N*np.sin(theta_S))
     B = (A+(1/np.tan(theta_S)))*(A+(1/np.tan(theta_S)))
     C = np.sqrt(1/(B+1))
     
@@ -216,7 +216,7 @@ def Find_Theta_NS_Initial(d_N, Omega, xi_N, gamma_BSN, theta_S):
     
     return theta_NS
 
-def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
+def Find_Theta_NS_Initial2(d_N, Omega, CoherenceLength_N, gamma_BSN, theta_S):
     """Calculate the suppresion parameter between the normal and 
     superconducting boundary: theta_NS, for eta, gamma_NF = 0
 
@@ -229,7 +229,7 @@ def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
     Args:
         d_N (float): Thicknesses of the normal metal (nm).
         Omega (complex): Dimensionless Matsurbara frequency (unitless).
-        xi_N (float): Coherence length in the normal metal (nm).
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).
         theta_NS (float): Pairing angle (radians).
         gamma_BSN (float): Boundary suppresion parameter between superconductor
             and normal metal (unitless).
@@ -244,11 +244,11 @@ def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
             
             Sin(theta_NS) = lambda*Sin(theta_S)
             
-            1/(lambda^2) = 1 + 2*Cos(theta_S)*gamma_BSN*Real[Omega]*d_N/xi_N
-                            + gamma_BSN^2*Real[Omega]^2*d_N^2/xi_N^2
+            1/(lambda^2) = 1 + 2*Cos(theta_S)*gamma_BSN*Real[Omega]*d_N/CoherenceLength_N
+                            + gamma_BSN^2*Real[Omega]^2*d_N^2/CoherenceLength_N^2
     """
 
-    A = gamma_BSN*np.real(Omega)*d_N/xi_N
+    A = gamma_BSN*np.real(Omega)*d_N/CoherenceLength_N
     Lambda = np.sqrt(1+2*A*np.cos(theta_S)+A*A)
     
     theta_NS = np.arcsin(np.sin(theta_S)/Lambda)   
@@ -256,7 +256,7 @@ def Find_Theta_NS_Initial2(d_N, Omega, xi_N, gamma_BSN, theta_S):
     return theta_NS
 
 def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
-           d_N, xi_N, theta_S):
+           d_N, CoherenceLength_N, theta_S):
     
     """Form the residuals for the real and complex components of the three
     simultaneous equations.
@@ -284,7 +284,7 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
         gamma_BSN (float): Boundary suppresion parameter between superconductor
             and normal metal (unitless).
         d_N (float): Thickness of the normal metal (nm).
-        xi_N (float): Coherence length in the normal metal (nm).
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).
         theta_S (float): Superconducting pairing angle (unitless).
         
 
@@ -303,11 +303,11 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
             Eq22: 0 = Chi^4 + 2*gamma_BNF*u*S*Chi^3 + ((gamma_BNF*u)^2-1)*Chi^2 
                 - gamma_BNF*u*S*Chi + S*S/4
                 
-            EqA5: 0 = theta_NF - (Real[Omega]*d_N^2*Sin(theta_NS))/(2*xi_N^2)
-                + (d_N*np.sin(Difference))/(gamma_BSN*xi_N) + theta_NS
+            EqA5: 0 = theta_NF - (Real[Omega]*d_N^2*Sin(theta_NS))/(2*CoherenceLength_N^2)
+                + (d_N*np.sin(Difference))/(gamma_BSN*CoherenceLength_N) + theta_NS
                 
             EqA8: 0 = -2*gamma_NF*gamma_BSN*u*Chi - Sin(Difference)
-                - (Real[Omega]*d_N*gamma_BSN/xi_N)*Sin(theta_NS)
+                - (Real[Omega]*d_N*gamma_BSN/CoherenceLength_N)*Sin(theta_NS)
             
             Where:
                 Difference = theta_NS - theta_S
@@ -345,13 +345,13 @@ def All_Equations(ChiAndAngles, Omega, eta, gamma_BNF, gamma_NF, gamma_BSN,
     
     #Equation A5
     eqA5 = theta_NF - (
-        (np.real(Omega)*d_N*d_N*np.sin(theta_NS))/(2*xi_N*xi_N)
-        + (d_N*np.sin(Difference))/(gamma_BSN*xi_N)
+        (np.real(Omega)*d_N*d_N*np.sin(theta_NS))/(2*CoherenceLength_N*CoherenceLength_N)
+        + (d_N*np.sin(Difference))/(gamma_BSN*CoherenceLength_N)
         + theta_NS)
     
     #Equation A8
     eqA8 = (-2*gamma_NF*gamma_BSN*u*Chi
-        - (np.real(Omega)*d_N*gamma_BSN/xi_N)*np.sin(theta_NS)
+        - (np.real(Omega)*d_N*gamma_BSN/CoherenceLength_N)*np.sin(theta_NS)
         - np.sin(Difference))
     
     eq22_real = np.real(eq22)
@@ -425,7 +425,7 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
     return Chi_SF
 
 def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial, 
-                          eta, theta_S, gamma_NF, StepNumber, d_N, gamma_BSN, xi_N):
+                          eta, theta_S, gamma_NF, StepNumber, d_N, gamma_BSN, CoherenceLength_N):
     """Calculate the boundary constant, Chi, between the superconducting/normal
     and ferromagnet interface.
 
@@ -475,7 +475,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         #Relax the gamma_NF = 0 condition
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess, args=(Omega, 0, gamma_BNF, gammaIntermediate, gamma_BSN,
-                  d_N, xi_N, theta_S),
+                  d_N, CoherenceLength_N, theta_S),
             full_output=True)
         
         if ErrorCheck == 0:
@@ -495,7 +495,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
         Solution, Info, ErrorCheck, Message = fsolve(All_Equations,
             Guess,
             args=(Omega, EtaIntermediate, gamma_BNF, gamma_NF, gamma_BSN,
-                  d_N, xi_N, theta_S), 
+                  d_N, CoherenceLength_N, theta_S), 
             full_output=True)
         
         if ErrorCheck == 0:
@@ -516,7 +516,7 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength_F, H, gamma_BSN, 
-                       d_N1, d_N2, xi_N, SC_gap, Area, CriticalTemperature, gamma_NF = gamma_NF, 
+                       d_N1, d_N2, CoherenceLength_N, SC_gap, Area, CriticalTemperature, gamma_NF = gamma_NF, 
                        Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
@@ -544,7 +544,7 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
             and normal metal (unitless).   
         d_N1 (float): Thickness of the normal metal at the left interface (nm).
         d_N2 (float): Thickness of the normal metal at the right interface (nm).
-        xi_N (float): Coherence length in the normal metal (nm).    
+        CoherenceLength_N (float): Coherence length in the normal metal (nm).    
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
         CriticalTemperature (float): Critical temperature of the superconductor (K).
@@ -563,13 +563,13 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
     Notes:
 
     """
-    #Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength_F)
+    #Resistivity_F = (Resistivity_N*CoherenceLength_N)/(gamma_NF*CoherenceLength_F)
     
     if Amplitude is None:
         Amplitude = Area*(16*np.pi*k_B*Temperature)/Resistivity_F #Area in nm^2
     
     if gamma_NF is None:
-        gamma_NF = xi_N*Resistivity_N/(CoherenceLength_F*Resistivity_F)
+        gamma_NF = CoherenceLength_N*Resistivity_N/(CoherenceLength_F*Resistivity_F)
     
     d_F = d_F - DeadLayers
     
@@ -589,21 +589,21 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         #Define theta_S from equation 5
         theta_S = np.arctan(SC_gap/(np.pi*k_B*CriticalTemperature*np.real(w)))
         #Find the intial angles taking gamma_NF and eta = 0
-        theta_NS_initial = Find_Theta_NS_Initial(d_N1, w, xi_N, gamma_BSN, theta_S)
-        theta_NF_initial = Find_Theta_NF(d_N1, w, xi_N, theta_NS_initial, gamma_BSN, theta_S)
+        theta_NS_initial = Find_Theta_NS_Initial(d_N1, w, CoherenceLength_N, gamma_BSN, theta_S)
+        theta_NF_initial = Find_Theta_NF(d_N1, w, CoherenceLength_N, theta_NS_initial, gamma_BSN, theta_S)
         
-        theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, xi_N, gamma_BSN, theta_S)
-        theta_NF_initial2 = Find_Theta_NF(d_N2, w, xi_N, theta_NS_initial2, gamma_BSN, theta_S)
+        theta_NS_initial2 = Find_Theta_NS_Initial(d_N2, w, CoherenceLength_N, gamma_BSN, theta_S)
+        theta_NF_initial2 = Find_Theta_NF(d_N2, w, CoherenceLength_N, theta_NS_initial2, gamma_BSN, theta_S)
         
         #Exact solution of the quartic equation 20/22 and then selecting the real root
             
         Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
                              theta_NS_initial, eta, theta_S, 
-                             gamma_NF, StepNumber, d_N1, gamma_BSN, xi_N)
+                             gamma_NF, StepNumber, d_N1, gamma_BSN, CoherenceLength_N)
         
         Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
                              theta_NS_initial2, eta, theta_S, 
-                             gamma_NF, StepNumber, d_N2, gamma_BSN, xi_N)
+                             gamma_NF, StepNumber, d_N2, gamma_BSN, CoherenceLength_N)
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta, StepNumber)
         
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
@@ -684,7 +684,7 @@ Model = bmp.Curve(
     gamma_BSN=gamma_BSN,
     d_N1=d_N1,
     d_N2=d_N2,
-    xi_N=xi_N,
+    CoherenceLength_N=CoherenceLength_N,
     SC_gap=SC_gap,
     CoherenceLength_F=CoherenceLength_F,
     Amplitude = Amplitude,
@@ -706,7 +706,7 @@ if gamma_NF is not None:
 #Model.Resistivity_F.range(30,2000)
 Model.gamma_BSN.range(0.01,3)
 #Model.gamma_BNF.range(1.8, 2.5)
-#Model.xi_N.range(5,60)
+#Model.CoherenceLength_N.range(5,60)
 #Model.Resistivity_F.range(10000,100000)
 
 if Amplitude is not None:
@@ -733,7 +733,7 @@ if gamma_NF is not None:
     Model.gamma_NF.value = gamma_NF
 
 Model.SC_gap.value = 1.5E-3 #eV
-Model.xi_N.value = xi_N #nm
+Model.CoherenceLength_N.value = CoherenceLength_N #nm
 Model.d_N1.value = 5 #nm
 Model.d_N2.value = 10 #nm
 Model.gamma_BSN.value = gamma_BSN
@@ -756,7 +756,7 @@ plt.errorbar(
     capsize=3,
     label='Experimental data')
 
-#Resistivity_F = (Resistivity_N*xi_N)/(gamma_NF*CoherenceLength_F)
+#Resistivity_F = (Resistivity_N*CoherenceLength_N)/(gamma_NF*CoherenceLength_F)
 X_axis = np.linspace(0.1, 1.8, 100000)
 J_0 = Area*np.pi*k_B*CriticalTemperature/(Resistivity_F*CoherenceLength_F)
 
@@ -773,7 +773,7 @@ for test in [2000]:
         gamma_BSN = gamma_BSN,#0.186,
         d_N1=5,
         d_N2=10,
-        xi_N=xi_N,
+        CoherenceLength_N=CoherenceLength_N,
         SC_gap = 1.5E-3, #eV
         Area = Area,
         CriticalTemperature = CriticalTemperature,
