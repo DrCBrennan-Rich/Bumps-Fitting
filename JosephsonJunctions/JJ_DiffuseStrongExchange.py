@@ -453,6 +453,8 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
             and the superconductor (unitless).
         StepNumber (int): Number of steps performed between 0 and eta.
         d_N (float): Thickness of the normal metal (nm).
+        gamma_BSN (float): Boundary suppresion parameter between superconductor
+            and normal metal (unitless).
         
 
     Returns:
