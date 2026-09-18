@@ -598,13 +598,12 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         #Exact solution of the quartic equation 20/22 and then selecting the real root
             
         Chi1 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
-                                     theta_NS_initial, eta, theta_S, 
-                                     gamma_NF, StepNumber)
+                             theta_NS_initial, eta, theta_S, 
+                             gamma_NF, StepNumber, d_N1, gamma_BSN, xi_N)
         
-        Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial2, 
-                                     theta_NS_initial2, eta, theta_S,
-                                     gamma_NF, StepNumber)
-               
+        Chi2 = Find_SNF_Boundary_Chi(gamma_BNF, w, theta_NF_initial, 
+                             theta_NS_initial2, eta, theta_S, 
+                             gamma_NF, StepNumber, d_N2, gamma_BSN, xi_N)
         #Chi2 = Find_SF_Boundary_Chi(gamma_BSF, w, theta_S, eta, StepNumber)
         
         Term = np.real(gamma*np.exp(-gamma*d_F)*Chi1*Chi2)
