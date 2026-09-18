@@ -776,6 +776,7 @@ for test in [2000]:
         xi_N=xi_N,
         SC_gap = 1.5E-3, #eV
         Area = Area,
+        T_c = T_c,
         #Amplitude = 0.001
         #gamma_BNF = 0.001,
         DeadLayers=DeadLayers
