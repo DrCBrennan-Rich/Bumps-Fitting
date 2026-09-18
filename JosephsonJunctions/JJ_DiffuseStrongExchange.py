@@ -520,8 +520,9 @@ def Find_SNF_Boundary_Chi(gamma_BNF, Omega, theta_NF_initial, theta_NS_initial,
 
 def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F, 
                        eta, CoherenceLength_F, H, gamma_BSN, 
-                       d_N1, d_N2, CoherenceLength_N, SC_gap, Area, CriticalTemperature, gamma_NF = gamma_NF, 
-                       Amplitude=Amplitude, gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
+                       d_N1, d_N2, CoherenceLength_N, SC_gap, Area, CriticalTemperature,
+                       gamma_BSF, gamma_NF = gamma_NF, Amplitude=Amplitude, 
+                       gamma_BNF=gamma_BNF, DeadLayers=DeadLayers):
     """Calculate the critical voltage across the Josephson junction according
     to the Heim model.
 
@@ -552,6 +553,8 @@ def JC_DiffuseExchange(d_F, Temperature, Resistivity_N, Resistivity_F,
         SC_gap (float): Superconducting gap (eV).
         Area (float): Area of the Josephson junction (nm^2).
         CriticalTemperature (float): Critical temperature of the superconductor (K).
+        gamma_BSF (float): Boundary suppresion parameter between superconductor
+            and ferromagnetic metal (unitless).
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
         gamma_BNF (float): If provided, sets the boundary suppresion parameter 
