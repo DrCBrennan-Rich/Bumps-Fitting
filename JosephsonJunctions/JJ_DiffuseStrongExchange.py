@@ -44,6 +44,8 @@ CoherenceLength_N = 30
 
 Resistivity_N = 87 #ohm nm
 
+
+
 #Green function: F = exp(j*chi)*sin(theta)
 
 def Trancendental_Quartic(Chi_vec,gamma,Omega,eta,theta):
@@ -384,7 +386,6 @@ def Find_SF_Boundary_Chi(gamma_BSF, Omega, theta_S, eta, StepNumber):
             where tau_m is the spin-flip scattering time (unitless).
         StepNumber (int): Number of steps performed between 0 and eta.
         
-
     Returns:
         Chi_SF (complex): Boundary constant between the superconducting and 
             ferromagnet interface (unitless).
