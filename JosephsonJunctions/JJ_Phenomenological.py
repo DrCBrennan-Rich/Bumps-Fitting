@@ -39,8 +39,7 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
         IcRn (float): Voltage across the Josephson junction (uV).
 
     Notes:
-        Equation being solved is IcRn = pi*SC_gap^2*F(x)/(4*T_c)
-        where: F(x) = 2x*(Cos(x)Sinh(x) + Sin(x)Cosh(x))/(Cosh(2x) - Cos(2x))
+        Equation being solved is IcRn = A*exp(-d_F/CoherenceLength_F1)*Sin((d_F-d_0pi)/CoherenceLength_F2)
     """
     SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
     
