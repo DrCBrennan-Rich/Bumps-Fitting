@@ -31,9 +31,8 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
             junction (nm).
         Amplitude (float): Amplitude of the fitted function (uV).
-        CriticalTemperature (float): Critical temperature of the 
-            superconductor (K).
-        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        CoherenceLength_F1 (float): Coherence length controlling the decay rate (nm).
+        CoherenceLength_F2 (float): Coherence length in the ferromagnet (nm).
         DeadLayers (float): Thickness of dead (non-magnetic) material in the ferromagnet. 
             Negative values indicate increased effective ferromagnetic thickness 
             due to proximity magnetisation in the normal metal (nm). 
