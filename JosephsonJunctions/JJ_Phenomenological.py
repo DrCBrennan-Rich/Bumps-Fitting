@@ -34,8 +34,6 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
         CoherenceLength_F1 (float): Coherence length controlling the decay rate (nm).
         CoherenceLength_F2 (float): Coherence length controlling the periodicity (nm).
         d_0pi (float): Phase shift within the sinosoid (nm).
-        Amplitude (float): If provided, can be used to set an arbitrary scaled
-            amplitude for the output.
 
     Returns:
         IcRn (float): Voltage across the Josephson junction (uV).
