@@ -22,12 +22,10 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     to a phenomenological model.
 
     This function calculates the critical voltage, IcRn, as a function of 
-    ferromagnetic thickness of the weak link as presented in the Eq. 3 of 
+    ferromagnetic thickness of the weak link as presented in the Eq. 6 of 
     the paper by Birge and Satchell: https://doi.org/10.1063/5.0195229.
-    It is derived from the Usadel equations and is therefore valid in the 
-    regime where impurity scattering lengths are significantly shorter than
-    normal, superconductor, or ferromagnetic coherence lengths or dimensions of
-    the system.
+    It models a sinosoidal oscillation with a superimposed exponential
+    decay. 
 
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
