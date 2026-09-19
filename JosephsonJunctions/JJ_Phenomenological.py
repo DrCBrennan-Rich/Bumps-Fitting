@@ -18,7 +18,37 @@ CoherenceLength_F2=0.15877 #nm
 d_0pi = 0.277311 #phase
 
 def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
-    
+    """Calculate the critical voltage across the Josephson junction according
+    to a phenomenological model.
+
+    This function calculates the critical voltage, IcRn, as a function of 
+    ferromagnetic thickness of the weak link as presented in the Eq. 3 of 
+    the paper by Birge and Satchell: https://doi.org/10.1063/5.0195229.
+    It is derived from the Usadel equations and is therefore valid in the 
+    regime where impurity scattering lengths are significantly shorter than
+    normal, superconductor, or ferromagnetic coherence lengths or dimensions of
+    the system.
+
+    Args:
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+            junction (nm).
+        SC_gap (float): Superconducting gap (eV).
+        CriticalTemperature (float): Critical temperature of the 
+            superconductor (K).
+        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        DeadLayers (float): Thickness of dead (non-magnetic) material in the ferromagnet. 
+            Negative values indicate increased effective ferromagnetic thickness 
+            due to proximity magnetisation in the normal metal (nm). 
+        Amplitude (float): If provided, can be used to set an arbitrary scaled
+            amplitude for the output.
+
+    Returns:
+        IcRn (float): Voltage across the Josephson junction (uV).
+
+    Notes:
+        Equation being solved is IcRn = pi*SC_gap^2*F(x)/(4*T_c)
+        where: F(x) = 2x*(Cos(x)Sinh(x) + Sin(x)Cosh(x))/(Cosh(2x) - Cos(2x))
+    """
     SinTerm = np.sin((d_F-d_0pi)/CoherenceLength_F2)
     
     return Amplitude*(np.exp(-d_F/CoherenceLength_F1)*np.abs(SinTerm))
