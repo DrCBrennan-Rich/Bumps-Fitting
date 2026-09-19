@@ -33,7 +33,7 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
         Amplitude (float): Amplitude of the fitted function (uV).
         CoherenceLength_F1 (float): Coherence length controlling the decay rate (nm).
         CoherenceLength_F2 (float): Coherence length controlling the periodicity (nm).
-        d_0pi (float): Phase shift within the sinosoid.
+        d_0pi (float): Phase shift within the sinosoid (nm).
         Amplitude (float): If provided, can be used to set an arbitrary scaled
             amplitude for the output.
 
