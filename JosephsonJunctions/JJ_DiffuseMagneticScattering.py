@@ -59,7 +59,6 @@ def JC_MagneticScattering(d_F, Temperature, T_c, H, SC_gap, alpha,
 
     Notes:
     """
-    
     ThicknessEffective = d_F - DeadLayers
     d_F = ThicknessEffective/CoherenceLength
     h = H/hbar #s^-1
