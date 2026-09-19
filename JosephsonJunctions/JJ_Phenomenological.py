@@ -30,7 +30,7 @@ def JC_model(d_F, Amplitude, CoherenceLength_F1, CoherenceLength_F2, d_0pi):
     Args:
         d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
             junction (nm).
-        SC_gap (float): Superconducting gap (eV).
+        Amplitude (float): Amplitude of the fitted function (uV).
         CriticalTemperature (float): Critical temperature of the 
             superconductor (K).
         CoherenceLength (float): Coherence length in the ferromagnet (nm).
