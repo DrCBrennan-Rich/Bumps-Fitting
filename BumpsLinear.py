@@ -10,6 +10,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def line(x, Gradient, Intercept):
+    """Calculate the critical voltage across the Josephson junction according
+    to a ballistic model.
+
+    This function calculates the critical voltage, IcRn, as a function of 
+    ferromagnetic thickness of the weak link as presented in the Eq. 1 of 
+    the paper by Birge and Satchell: https://doi.org/10.1063/5.0195229.
+
+    Args:
+        d_F (numpy.ndarray): List of (float) thicknesses of the ferromagnetic 
+            junction (nm).
+        CoherenceLength (float): Coherence length in the ferromagnet (nm).
+        SC_gap (float): Superconducting gap (eV).
+        PhiIncriment (int): Number of sub divisions of the 2*pi phase to be 
+            tested to find the maxium current (unitless).
+
+    Returns:
+        IcRn (float): Voltage across the Josephson junction (uV).
+
+    Notes:
+        Equation being solved is IcRn = pi*SC_gap^2*Sinc[d_F/CoherenceLength]/(4*T)
+    """
     return Gradient*x + Intercept
 
 #Load the data from the file Data.txt
