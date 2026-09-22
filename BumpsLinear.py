@@ -9,7 +9,7 @@ import bumps.names as bmp
 import numpy as np
 import matplotlib.pyplot as plt
 
-def line(x, Gradient, Intercept):
+def Line(x, Gradient, Intercept):
     """Calculate the critical voltage across the Josephson junction according
     to a ballistic model.
 
@@ -35,7 +35,7 @@ def line(x, Gradient, Intercept):
 
 #Load the data from the file Data.txt
 x,y,dy = np.loadtxt('Data.txt').T
-Model = bmp.Curve(line, x, y, dy)
+Model = bmp.Curve(Line, x, y, dy)
 
 #Limits of fitting values
 Model.Gradient.range(0,3)  
