@@ -14,6 +14,18 @@ def _bgintegrand(x, n):
     return (x**n)*np.exp(x) / (np.expm1(x)*np.expm1(x))
 
 def BlochGrueneisen(T, thetaD, rho0, A, n):
+ """Calculate the Bloch-Grueneisen function.
+
+    Args:
+        x (numpy.ndarray): List of (float) x coordinates.
+        Gradient (float): Gradient of line.
+        Intercept (float): Intercept of line.
+        
+    Returns:
+        y (float): y coordinate of line.
+
+    Notes:
+    """
 
     ret = np.zeros(T.shape)
     
