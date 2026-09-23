@@ -21,7 +21,6 @@ def Line(x, Gradient, Intercept):
         y (float): y coordinate of line.
 
     Notes:
-        Equation being solved is IcRn = pi*SC_gap^2*Sinc[d_F/CoherenceLength]/(4*T)
     """
     y = Gradient*x + Intercept
     return y
