@@ -17,9 +17,11 @@ def BlochGrueneisen(T, thetaD, rho0, A, n):
  """Calculate the Bloch-Grueneisen function.
 
     Args:
-        x (numpy.ndarray): List of (float) x coordinates.
-        Gradient (float): Gradient of line.
-        Intercept (float): Intercept of line.
+        T (float): List of (float) x coordinates.
+        thetaD (float): Gradient of line.
+        rho0 (float): Intercept of line.
+        A (float): Gradient of line.
+        n (float): Gradient of line.
         
     Returns:
         y (float): y coordinate of line.
