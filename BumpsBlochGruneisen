@@ -17,11 +17,11 @@ def BlochGrueneisen(T, thetaD, rho0, A, n):
  """Calculate the Bloch-Grueneisen function.
 
     Args:
-        T (float): List of (float) x coordinates.
-        thetaD (float): Gradient of line.
-        rho0 (float): Intercept of line.
-        A (float): Gradient of line.
-        n (float): Gradient of line.
+        T (float): Temperature (K).
+        thetaD (float): Debye constant ().
+        rho0 (float): Zero Kelvin resistivity (Ohm m).
+        A (float): Phonon coupling constant ().
+        n (float): System index (unitless).
         
     Returns:
         y (float): y coordinate of line.
