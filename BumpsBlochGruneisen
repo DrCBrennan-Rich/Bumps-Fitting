@@ -42,7 +42,7 @@ def BlochGrueneisen(T, thetaD, rho0, A, n):
         ret[i] = rho0 + A * (t / thetaD) ** n * Integral
     return ret
 
-T,rho,drho = np.loadtxt('BG_Experiment.txt').T 
+T, rho, drho = np.loadtxt('BG_Experiment.txt').T 
 Model = bmp.Curve(BlochGrueneisen, T, rho, drho)
 
 ### Limits of fitting values ###
