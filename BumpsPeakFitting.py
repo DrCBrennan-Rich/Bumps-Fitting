@@ -13,8 +13,9 @@ def Gaussian(x, Mu, Sigma, Amplitude):
 
     Args:
         x (numpy.ndarray): List of (float) x coordinates.
-        Gradient (float): Gradient of line.
-        Intercept (float): Intercept of line.
+        Mu (float): Location of the peak center.
+        Sigma (float): Width of the peak.
+        Amplitude (float): Amplitude of the peak.
         
     Returns:
         y (float): y coordinate of line.
