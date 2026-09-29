@@ -9,6 +9,18 @@ import bumps.names as bmp
 import numpy as np
 
 def Gaussian(x, Mu, Sigma, Amplitude):
+    """Calculate a Gaussian profile.
+
+    Args:
+        x (numpy.ndarray): List of (float) x coordinates.
+        Gradient (float): Gradient of line.
+        Intercept (float): Intercept of line.
+        
+    Returns:
+        y (float): y coordinate of line.
+
+    Notes:
+    """
     
     return Amplitude*(1/(Sigma*np.sqrt(2*np.pi)))*np.exp(-0.5*((x-Mu)/Sigma)**2)
 
