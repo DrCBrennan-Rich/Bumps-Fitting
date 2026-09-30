@@ -22,8 +22,8 @@ def Gaussian(x, Mu, Sigma, Amplitude):
 
     Notes:
     """
-    
-    return Amplitude*(1/(Sigma*np.sqrt(2*np.pi)))*np.exp(-0.5*((x-Mu)/Sigma)**2)
+    y = Amplitude*(1/(Sigma*np.sqrt(2*np.pi)))*np.exp(-0.5*((x-Mu)/Sigma)**2)
+    return y
 
 x,y,dy = np.loadtxt('PeakData.txt').T
 Model = bmp.Curve(Gaussian, x, y, dy)
