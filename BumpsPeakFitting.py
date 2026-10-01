@@ -33,7 +33,6 @@ Model = bmp.Curve(Gaussian, x, y, dy)
 Model.Mu.range(1,100)  
 Model.Sigma.range(0,4)
 Model.Amplitude.range(0.01,100)  
-
 # Model.Gradient.dev(std=0.05, mean=None, limits=None)
 # Model.Intercept.dev(std=0.5, mean=None, limits=None)
 
