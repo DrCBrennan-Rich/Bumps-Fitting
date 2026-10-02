@@ -36,6 +36,7 @@ Model.Amplitude.range(0.01,100)
 # Model.Gradient.dev(std=0.05, mean=None, limits=None)
 # Model.Intercept.dev(std=0.5, mean=None, limits=None)
 
+
 #Initial values
 Model.Mu.value = 30
 Model.Sigma.value = 1
