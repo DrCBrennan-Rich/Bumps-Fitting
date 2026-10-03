@@ -14,7 +14,7 @@ def BlochLaw(x, M0, b):
     Args:
         x (numpy.ndarray): List of (float) temperatures (K).
         M0 (float): y-intercept of line (emu/cm^3).
-        b (float): Coefficient in front of .
+        b (float): Coefficient multiplying temperature^3/2.
         
     Returns:
         y (float): y coordinate of line.
