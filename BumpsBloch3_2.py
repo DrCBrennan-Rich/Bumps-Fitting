@@ -12,9 +12,9 @@ def BlochLaw(x, M0, b):
      """Calculate the Bloch-3/2 function.
 
     Args:
-        x (numpy.ndarray): List of (float) x coordinates.
+        x (numpy.ndarray): List of (float) temperatures (K).
         M0 (float): y-intercept of line (emu/cm^3).
-        b (float): Intercept of line.
+        b (float): Coefficient in front of .
         
     Returns:
         y (float): y coordinate of line.
