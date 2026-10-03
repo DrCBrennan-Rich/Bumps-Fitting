@@ -17,11 +17,12 @@ def BlochLaw(x, M0, b):
         b (float): Coefficient multiplying temperature^3/2.
         
     Returns:
-        y (float): y coordinate of line.
+        Magnetisation (float): Magnetisation as a function of temperature (emu/cm^3).
 
     Notes:
     """
-    return M0*(1 - b*x**(1.5))
+    Magnetisation = M0*(1 - b*x**(1.5))
+    return Magnetisation
 
 x,y,dy = np.loadtxt('BlochData.txt').T
 Model = bmp.Curve(BlochLaw, x, y, dy)
