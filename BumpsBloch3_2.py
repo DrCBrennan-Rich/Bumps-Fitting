@@ -9,7 +9,18 @@ import bumps.names as bmp
 import numpy as np
 
 def BlochLaw(x, M0, b):
-    
+     """Calculate the Bloch-3/2 function.
+
+    Args:
+        x (numpy.ndarray): List of (float) x coordinates.
+        M0 (float): y-intercept of line (emu/cm^3).
+        b (float): Intercept of line.
+        
+    Returns:
+        y (float): y coordinate of line.
+
+    Notes:
+    """
     return M0*(1 - b*x**(1.5))
 
 x,y,dy = np.loadtxt('BlochData.txt').T
