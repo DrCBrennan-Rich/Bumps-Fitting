@@ -21,7 +21,7 @@ def BlochLaw(x, M0, b):
 
     Notes:
     """
-    Magnetisation = M0*(1 - b*x**(1.5))
+    Magnetisation = M0*(1-b*x**(1.5))
     return Magnetisation
 
 x, y, dy = np.loadtxt('BlochData.txt').T
