@@ -20,7 +20,6 @@ def BlochLaw(x, M0, b):
         Magnetisation (float): Magnetisation as a function of temperature (emu/cm^3).
 
     Notes:
-    Function
     """
     Magnetisation = M0*(1 - b*x**(1.5))
     return Magnetisation
