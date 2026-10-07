@@ -20,7 +20,7 @@ def Gaussian(x, Mu, Sigma, Amplitude):
     Returns:
         y (float): y coordinate of line.
 
-    Notes:
+    Notes: Only a single peak may be fitted.
     """
     y = Amplitude*(1/(Sigma*np.sqrt(2*np.pi)))*np.exp(-0.5*((x-Mu)/Sigma)**2)
     
